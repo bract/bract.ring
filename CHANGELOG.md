@@ -6,4 +6,5 @@ None
 ## [WIP] 0.1.0 / 2017-April-??
 ### Added
 - Development/test support for Ring handlers
-- Bract inducer fn to apply configured wrappers
+- Bract inducer fn to apply configured wrappers (context)
+- Bract inducer fn to apply configured wrappers (config)
