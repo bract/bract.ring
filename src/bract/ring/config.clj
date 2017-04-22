@@ -32,11 +32,3 @@
     (echo/echo (format "Executing  %s '%s'" wrapper-type wrapper-name))
     (echo/with-inducer-name wrapper-name
       (f handler context))))
-
-
-(defn update-handler
-  "Given a context and a Ring middleware `(fn [handler & args]) -> handler`, apply the middleware to the Ring handler
-  in the context and any supplied arguments, and return context with the updated Ring handler."
-  [context f & args]
-  (let [handler (ctx-ring-handler context)]
-    (apply update context (key ctx-ring-handler) f args)))
