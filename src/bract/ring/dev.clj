@@ -25,9 +25,20 @@
 (defn init!
   "Initialize environment and the Ring handler."
   ([]
-    (init (bc-dev/init)))
+    (init! (bc-dev/init)))
   ([context]
     (let [ctx-handler (config/ctx-ring-handler context)]
       (alter-var-root #'handler (constantly ctx-handler))
       (bc-echo/echo "Updated bract.ring.dev/handler")
       context)))
+
+
+(defn init-once!
+  "Given a var e.g. (defonce a-var nil) having logical false value, set it to `true` and initialize app in DEV mode,
+  finally updating the bract.ring.dev/handler var."
+  ([]
+    (when-let [context (bc-dev/init-once!)]
+      (init! context)))
+  ([a-var]
+    (when-let [context (bc-dev/init-once! a-var)]
+      (init! context))))
