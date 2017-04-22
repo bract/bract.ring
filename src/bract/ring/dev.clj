@@ -22,7 +22,7 @@
 (def ^:redef handler unprepared-handler)
 
 
-(defn init
+(defn init!
   "Initialize environment and the Ring handler."
   ([]
     (init (bc-dev/init)))
