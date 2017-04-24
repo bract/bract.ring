@@ -5,7 +5,7 @@ A [Bract](https://github.com/bract) module for [Ring](https://github.com/ring-cl
 
 ## Usage
 
-Leiningen coordinates: `[bract/bract.ring "0.1.0-SNAPSHOT"]`
+Leiningen coordinates: `[bract/bract.ring "0.1.0"]`
 
 For documentation refer demo applications.
 
