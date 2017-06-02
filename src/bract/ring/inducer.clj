@@ -9,25 +9,25 @@
 
 (ns bract.ring.inducer
   (:require
-    [bract.core.config :as bc-config]
-    [bract.ring.config :as config]))
+    [bract.core.config :as core-config]
+    [bract.ring.config :as ring-config]))
 
 
 (defn ctx-apply-wrappers
   "Given a context with Ring handler and Ring handler wrappers (under the context key :bract.ring/wrappers), i.e. a
   seq of `(fn [handler context]) -> handler`, apply them in order finally updating the context with the handler."
   [context]
-  (config/apply-wrappers
+  (ring-config/apply-wrappers
     context
-    (key config/cfg-wrappers)
-    (config/ctx-wrappers context)))
+    (key ring-config/cfg-wrappers)
+    (ring-config/ctx-wrappers context)))
 
 
 (defn cfg-apply-wrappers
   "Given a context with Ring handler and Ring handler wrappers (under the config key \"bract.ring.wrappers\"), i.e. a
   seq of `(fn [handler context]) -> handler`, apply them in order finally updating the context with the handler."
   [context]
-  (config/apply-wrappers
+  (ring-config/apply-wrappers
     context
-    (key config/cfg-wrappers)
-    (-> context bc-config/ctx-config config/cfg-wrappers)))
+    (key ring-config/cfg-wrappers)
+    (-> context core-config/ctx-config ring-config/cfg-wrappers)))

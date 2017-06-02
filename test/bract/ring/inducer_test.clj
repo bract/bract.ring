@@ -10,7 +10,7 @@
 (ns bract.ring.inducer-test
   (:require
     [clojure.test :refer :all]
-    [bract.core.config :as bc-config]
+    [bract.core.config :as core-config]
     [bract.ring.config  :as ring-config]
     [bract.ring.inducer :as inducer]))
 
@@ -52,7 +52,7 @@
       (vreset! holder 0)
       (let [new-context (inducer/cfg-apply-wrappers context)
             new-handler (ring-config/ctx-ring-handler new-context)]
-        (is (contains? (bc-config/ctx-config new-context) "bract.ring.wrappers"))
+        (is (contains? (core-config/ctx-config new-context) "bract.ring.wrappers"))
         (is (= :foo (new-handler :foo))))
       (is (= 3 @holder))))
   (testing "missing/bad keys"
