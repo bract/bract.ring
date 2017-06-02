@@ -9,9 +9,9 @@
 
 (ns bract.ring.dev
   (:require
-    [bract.core.dev    :as bc-dev]
-    [bract.core.echo   :as bc-echo]
-    [bract.ring.config :as config]))
+    [bract.core.dev    :as core-dev]
+    [bract.core.echo   :as core-echo]
+    [bract.ring.config :as ring-config]))
 
 
 (defn- unprepared-handler
@@ -25,11 +25,11 @@
 (defn init!
   "Initialize environment and the Ring handler."
   ([]
-    (init! (bc-dev/init)))
+    (init! (core-dev/init)))
   ([context]
-    (let [ctx-handler (config/ctx-ring-handler context)]
+    (let [ctx-handler (ring-config/ctx-ring-handler context)]
       (alter-var-root #'handler (constantly ctx-handler))
-      (bc-echo/echo "Updated bract.ring.dev/handler")
+      (core-echo/echo "Updated bract.ring.dev/handler")
       context)))
 
 
@@ -37,8 +37,8 @@
   "Given a var e.g. (defonce a-var nil) having logical false value, set it to `true` and initialize app in DEV mode,
   finally updating the bract.ring.dev/handler var."
   ([]
-    (when-let [context (bc-dev/init-once!)]
+    (when-let [context (core-dev/init-once!)]
       (init! context)))
   ([a-var]
-    (when-let [context (bc-dev/init-once! a-var)]
+    (when-let [context (core-dev/init-once! a-var)]
       (init! context))))
