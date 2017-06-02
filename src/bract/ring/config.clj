@@ -15,10 +15,12 @@
 
 
 (keypin/defkey  ; context keys
-  ctx-ring-handler [:bract.ring/ring-handler fn? "Application Ring handler"])
+  ctx-ring-handler [:bract.ring/ring-handler fn?     "Application Ring handler"]
+  ctx-wrappers     [:bract.ring/wrappers     vector? "Wrapper fns or their fully qualified names"])
 
 
 (keypin/defkey  ; config keys
+  cfg-wrappers     ["bract.ring.wrappers"    vector? "Fully qualified wrapper fn names" {:parser kputil/any->edn}]
   cfg-wrappers-context ["bract.ring.wrappers.context" vector? "Fully qualified wrapper (by context) fn names"
                         {:parser kputil/any->edn}]
   cfg-wrappers-config  ["bract.ring.wrappers.config"  vector? "Fully qualified wrapper (by config) fn names"

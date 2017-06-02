@@ -15,19 +15,26 @@
 
 (deftest test-context
   (testing "happy cases"
-    (is (fn? (config/ctx-ring-handler {:bract.ring/ring-handler (fn [_])}))))
+    (is (fn? (config/ctx-ring-handler {:bract.ring/ring-handler (fn [_])})))
+    (is (vector? (config/ctx-wrappers {:bract.ring/wrappers []}))))
   (testing "missing/bad keys"
-    (is (thrown? IllegalArgumentException (config/ctx-ring-handler {:bract.ring/ring-handler 10})) "invalid")
-    (is (thrown? IllegalArgumentException (config/ctx-ring-handler {})) "missing")))
+    (is (thrown? IllegalArgumentException (config/ctx-ring-handler {:bract.ring/ring-handler 10})) "invalid handler")
+    (is (thrown? IllegalArgumentException (config/ctx-ring-handler {})) "missing handler")
+    (is (thrown? IllegalArgumentException (config/ctx-wrappers {:bract.ring/wrappers 10})) "invalid wrappers")
+    (is (thrown? IllegalArgumentException (config/ctx-wrappers {})) "missing wrappers")))
 
 
 (deftest test-config
   (testing "happy cases"
+    (is (vector? (config/cfg-wrappers {"bract.ring.wrappers" ["foo.bar/baz"
+                                                              "foo.bar/qux"]})))
     (is (vector? (config/cfg-wrappers-context {"bract.ring.wrappers.context" ["foo.bar/baz"
                                                                               "foo.bar/qux"]})))
     (is (vector? (config/cfg-wrappers-config  {"bract.ring.wrappers.config"  ["foo.bar/baz"
                                                                               "foo.bar/qux"]}))))
   (testing "missing/bad keys"
+    (is (thrown? IllegalArgumentException (config/cfg-wrappers {"bract.ring.wrappers" 20})) "invalid")
+    (is (thrown? IllegalArgumentException (config/cfg-wrappers {})) "missing")
     (is (thrown? IllegalArgumentException (config/cfg-wrappers-context {"bract.ring.wrappers.context" 20})) "invalid")
     (is (thrown? IllegalArgumentException (config/cfg-wrappers-context {})) "missing")
     (is (thrown? IllegalArgumentException (config/cfg-wrappers-config  {"bract.ring.wrappers.config"  20})) "invalid")

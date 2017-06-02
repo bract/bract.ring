@@ -9,8 +9,8 @@ None
   - [TODO] Use the GA version before release
 
 ### Added
-- [TODO] Config definition `bract.ring.config/ctx-wrappers`
-- [TODO] Config definition `bract.ring.config/cfg-wrappers`
+- Config definition `bract.ring.config/ctx-wrappers`
+- Config definition `bract.ring.config/cfg-wrappers`
 - [TODO] Inducer `bract.ring.inducer/ctx-apply-wrappers`
 - [TODO] Inducer `bract.ring.inducer/cfg-apply-wrappers`
 
