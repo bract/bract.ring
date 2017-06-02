@@ -5,7 +5,8 @@ None
 
 ## [WIP] 0.2.0 / 2017-June-??
 ### Changed
-- [TODO] Use `[bract.core "0.2.0"]`
+- Use `[bract.core "0.2.0"]`
+  - [TODO] Use the GA version before release
 
 ### Added
 - [TODO] Config definition `bract.ring.config/ctx-wrappers`
