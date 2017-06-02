@@ -27,15 +27,7 @@
 (deftest test-config
   (testing "happy cases"
     (is (vector? (config/cfg-wrappers {"bract.ring.wrappers" ["foo.bar/baz"
-                                                              "foo.bar/qux"]})))
-    (is (vector? (config/cfg-wrappers-context {"bract.ring.wrappers.context" ["foo.bar/baz"
-                                                                              "foo.bar/qux"]})))
-    (is (vector? (config/cfg-wrappers-config  {"bract.ring.wrappers.config"  ["foo.bar/baz"
-                                                                              "foo.bar/qux"]}))))
+                                                              "foo.bar/qux"]}))))
   (testing "missing/bad keys"
     (is (thrown? IllegalArgumentException (config/cfg-wrappers {"bract.ring.wrappers" 20})) "invalid")
-    (is (thrown? IllegalArgumentException (config/cfg-wrappers {})) "missing")
-    (is (thrown? IllegalArgumentException (config/cfg-wrappers-context {"bract.ring.wrappers.context" 20})) "invalid")
-    (is (thrown? IllegalArgumentException (config/cfg-wrappers-context {})) "missing")
-    (is (thrown? IllegalArgumentException (config/cfg-wrappers-config  {"bract.ring.wrappers.config"  20})) "invalid")
-    (is (thrown? IllegalArgumentException (config/cfg-wrappers-config  {})) "missing")))
+    (is (thrown? IllegalArgumentException (config/cfg-wrappers {})) "missing")))

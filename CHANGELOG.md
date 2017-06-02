@@ -15,10 +15,10 @@ None
 - Inducer `bract.ring.inducer/cfg-apply-wrappers`
 
 ### Removed
-- [TODO] Inducer `bract.ring.inducer/apply-wrappers-with-context`
-- [TODO] Inducer `bract.ring.inducer/apply-wrappers-with-config`
-- [TODO] Config definition `bract.ring.config/cfg-wrappers-context`
-- [TODO] Config definition `bract.ring.config/cfg-wrappers-config`
+- Inducer `bract.ring.inducer/apply-wrappers-with-context`
+- Inducer `bract.ring.inducer/apply-wrappers-with-config`
+- Config definition `bract.ring.config/cfg-wrappers-context`
+- Config definition `bract.ring.config/cfg-wrappers-config`
 
 
 ## 0.1.0 / 2017-April-25

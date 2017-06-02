@@ -21,11 +21,7 @@
 
 
 (keypin/defkey  ; config keys
-  cfg-wrappers     ["bract.ring.wrappers"    vector? "Fully qualified wrapper fn names" {:parser kputil/any->edn}]
-  cfg-wrappers-context ["bract.ring.wrappers.context" vector? "Fully qualified wrapper (by context) fn names"
-                        {:parser kputil/any->edn}]
-  cfg-wrappers-config  ["bract.ring.wrappers.config"  vector? "Fully qualified wrapper (by config) fn names"
-                        {:parser kputil/any->edn}])
+  cfg-wrappers     ["bract.ring.wrappers"    vector? "Fully qualified wrapper fn names" {:parser kputil/any->edn}])
 
 
 (defn apply-wrapper-by-name
