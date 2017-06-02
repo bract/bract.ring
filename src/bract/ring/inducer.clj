@@ -45,8 +45,8 @@
 
 
 (defn ctx-apply-wrappers
-  "Given a context with wrappers under the key :bract.ring/wrappers, i.e. a seq of `(fn [handler context]) -> handler`,
-  apply them in a sequence."
+  "Given a context with Ring handler and Ring handler wrappers (under the context key :bract.ring/wrappers), i.e. a
+  seq of `(fn [handler context]) -> handler`, apply them in order finally updating the context with the handler."
   [context]
   (config/apply-wrappers
     context
@@ -55,8 +55,8 @@
 
 
 (defn cfg-apply-wrappers
-  "Given a context having config with wrappers under the config key \"bract.ring.wrappers\", i.e. a seq of
-  `(fn [handler context]) -> handler`, apply them in a sequence."
+  "Given a context with Ring handler and Ring handler wrappers (under the config key \"bract.ring.wrappers\"), i.e. a
+  seq of `(fn [handler context]) -> handler`, apply them in order finally updating the context with the handler."
   [context]
   (config/apply-wrappers
     context
