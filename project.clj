@@ -1,4 +1,4 @@
-(defproject bract/bract.ring "0.1.0"
+(defproject bract/bract.ring "0.2.0-SNAPSHOT"
   :description "Bract module for Ring support"
   :url "https://github.com/bract/bract.ring"
   :license {:name "Eclipse Public License"
