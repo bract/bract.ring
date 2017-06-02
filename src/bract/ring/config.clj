@@ -11,7 +11,8 @@
   (:require
     [keypin.core :as keypin]
     [keypin.util :as kputil]
-    [bract.core.echo :as echo]))
+    [bract.core.echo :as echo]
+    [bract.core.util :as util]))
 
 
 (keypin/defkey  ; context keys
@@ -34,3 +35,21 @@
     (echo/echo (format "Executing  %s '%s'" wrapper-type wrapper-name))
     (echo/with-inducer-name wrapper-name
       (f handler context))))
+
+
+(defn apply-each-wrapper
+  "Given context  and Ring handler, apply specified wrapper to the handler."
+  [context handler config-key wrapper]
+  (if (fn? wrapper)
+    (echo/with-inducer-name wrapper
+      (wrapper handler context))
+    (apply-wrapper-by-name "wrapper" config-key handler context wrapper)))
+
+
+(defn apply-wrappers
+  [context config-key wrappers]
+  (util/induce context (fn [ctx each-wrapper]
+                         (as-> (ctx-ring-handler ctx) <>
+                           (apply-each-wrapper ctx <> config-key each-wrapper)
+                           (assoc ctx (key ctx-ring-handler) <>)))
+    wrappers))

@@ -11,8 +11,8 @@ None
 ### Added
 - Config definition `bract.ring.config/ctx-wrappers`
 - Config definition `bract.ring.config/cfg-wrappers`
-- [TODO] Inducer `bract.ring.inducer/ctx-apply-wrappers`
-- [TODO] Inducer `bract.ring.inducer/cfg-apply-wrappers`
+- Inducer `bract.ring.inducer/ctx-apply-wrappers`
+- Inducer `bract.ring.inducer/cfg-apply-wrappers`
 
 ### Removed
 - [TODO] Inducer `bract.ring.inducer/apply-wrappers-with-context`

@@ -11,6 +11,7 @@
   (:require
     [clojure.test :refer :all]
     [bract.core.config :as bc-config]
+    [bract.ring.config  :as ring-config]
     [bract.ring.inducer :as inducer]))
 
 
@@ -48,3 +49,41 @@
       (is (= 20 @sample-value))))
   (testing "missing/bad keys"
     (is (thrown? IllegalArgumentException (inducer/apply-wrappers-with-config {})))))
+
+
+(def holder (volatile! 10))
+
+
+(defn wrapper-inc
+  [handler context]
+  (vswap! holder (fn [^long n] (inc n)))
+  handler)
+
+
+(defn wrapper-add2
+  [handler context]
+  (vswap! holder (fn [^long n] (+ n 2)))
+  handler)
+
+
+(deftest test-ctx-apply-wrappers
+  (let [context {:bract.ring/ring-handler identity
+                 :bract.ring/wrappers     [wrapper-inc wrapper-add2]}]
+    (vreset! holder 0)
+    (let [new-context (inducer/ctx-apply-wrappers context)
+          new-handler (ring-config/ctx-ring-handler new-context)]
+      (is (contains? new-context :bract.ring/wrappers))
+      (is (= :foo (new-handler :foo))))
+    (is (= 3 @holder))))
+
+
+(deftest test-cfg-apply-wrappers
+  (let [context {:bract.ring/ring-handler identity
+                 :bract.core/config {"bract.ring.wrappers" ['bract.ring.inducer-test/wrapper-inc
+                                                            'bract.ring.inducer-test/wrapper-add2]}}]
+    (vreset! holder 0)
+    (let [new-context (inducer/cfg-apply-wrappers context)
+          new-handler (ring-config/ctx-ring-handler new-context)]
+      (is (contains? (bc-config/ctx-config new-context) "bract.ring.wrappers"))
+      (is (= :foo (new-handler :foo))))
+    (is (= 3 @holder))))
