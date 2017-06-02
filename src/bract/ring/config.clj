@@ -25,10 +25,10 @@
 
 
 (defn apply-wrapper-by-name
-  [wrapper-type config-key handler context wrapper-name]
-  (echo/echo (format "Looking up %s '%s'" wrapper-type wrapper-name))
+  [context handler config-key wrapper-name]
+  (echo/echo (format "Looking up Ring handler wrapper '%s'" wrapper-name))
   (let [f (kputil/str->var->deref config-key wrapper-name)]
-    (echo/echo (format "Executing  %s '%s'" wrapper-type wrapper-name))
+    (echo/echo (format "Executing  Ring handler wrapper '%s'" wrapper-name))
     (echo/with-inducer-name wrapper-name
       (f handler context))))
 
@@ -39,7 +39,7 @@
   (if (fn? wrapper)
     (echo/with-inducer-name wrapper
       (wrapper handler context))
-    (apply-wrapper-by-name "wrapper" config-key handler context wrapper)))
+    (apply-wrapper-by-name context handler config-key wrapper)))
 
 
 (defn apply-wrappers
