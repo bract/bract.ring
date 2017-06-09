@@ -3,6 +3,11 @@
 ## TODO
 None
 
+## 0.3.0 / 2017-June-??
+### Changed
+- Use `[bract/bract.core "0.3.0"]`
+  - [TODO] Remove this when using final GA version
+
 ## 0.2.0 / 2017-June-04
 ### Changed
 - Use `[bract.core "0.2.0"]`
