@@ -11,8 +11,8 @@
   (:require
     [keypin.core :as keypin]
     [keypin.util :as kputil]
-    [bract.core.echo :as echo]
-    [bract.core.util :as util]))
+    [bract.core.echo    :as echo]
+    [bract.core.inducer :as inducer]))
 
 
 (keypin/defkey  ; context keys
@@ -44,8 +44,8 @@
 
 (defn apply-wrappers
   [context config-key wrappers]
-  (util/induce context (fn [ctx each-wrapper]
-                         (as-> (ctx-ring-handler ctx) <>
-                           (apply-each-wrapper ctx <> config-key each-wrapper)
-                           (assoc ctx (key ctx-ring-handler) <>)))
-    wrappers))
+  (inducer/induce (fn [ctx each-wrapper]
+                    (as-> (ctx-ring-handler ctx) <>
+                      (apply-each-wrapper ctx <> config-key each-wrapper)
+                      (assoc ctx (key ctx-ring-handler) <>)))
+    context wrappers))
