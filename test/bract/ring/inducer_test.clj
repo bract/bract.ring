@@ -30,6 +30,30 @@
   handler)
 
 
+(deftest test-apply-wrappers
+  (testing "happy cases, wrapper fns"
+    (let [context {:bract.ring/ring-handler identity}]
+      (vreset! holder 0)
+      (let [new-context (inducer/apply-wrappers context [wrapper-inc wrapper-add2])
+            new-handler (ring-config/ctx-ring-handler new-context)]
+        (is (contains? new-context :bract.ring/ring-handler))
+        (is (= :foo (new-handler :foo))))
+      (is (= 3 @holder))))
+  (testing "happy cases, wrapper names"
+    (let [context {:bract.ring/ring-handler identity}]
+      (vreset! holder 0)
+      (let [new-context (inducer/apply-wrappers context '[bract.ring.inducer-test/wrapper-inc
+                                                          bract.ring.inducer-test/wrapper-add2])
+            new-handler (ring-config/ctx-ring-handler new-context)]
+        (is (contains? new-context :bract.ring/ring-handler))
+        (is (= :foo (new-handler :foo))))
+      (is (= 3 @holder))))
+  (testing "empty wrappers collection"
+    (inducer/apply-wrappers {} []))
+  (testing "missing Ring handler"
+    (is (thrown? IllegalArgumentException (inducer/apply-wrappers {} [(fn [x y] x)])))))
+
+
 (deftest test-ctx-apply-wrappers
   (testing "happy cases"
     (let [context {:bract.ring/ring-handler identity
