@@ -52,32 +52,3 @@
     (inducer/apply-wrappers {} []))
   (testing "missing Ring handler"
     (is (thrown? IllegalArgumentException (inducer/apply-wrappers {} [(fn [x y] x)])))))
-
-
-(deftest test-ctx-apply-wrappers
-  (testing "happy cases"
-    (let [context {:bract.ring/ring-handler identity
-                   :bract.ring/wrappers     [wrapper-inc wrapper-add2]}]
-      (vreset! holder 0)
-      (let [new-context (inducer/ctx-apply-wrappers context)
-            new-handler (ring-config/ctx-ring-handler new-context)]
-        (is (contains? new-context :bract.ring/wrappers))
-        (is (= :foo (new-handler :foo))))
-      (is (= 3 @holder))))
-  (testing "missing/bad keys"
-    (is (thrown? IllegalArgumentException (inducer/ctx-apply-wrappers {})))))
-
-
-(deftest test-cfg-apply-wrappers
-  (testing "happy cases"
-    (let [context {:bract.ring/ring-handler identity
-                   :bract.core/config {"bract.ring.wrappers" ['bract.ring.inducer-test/wrapper-inc
-                                                              'bract.ring.inducer-test/wrapper-add2]}}]
-      (vreset! holder 0)
-      (let [new-context (inducer/cfg-apply-wrappers context)
-            new-handler (ring-config/ctx-ring-handler new-context)]
-        (is (contains? (core-config/ctx-config new-context) "bract.ring.wrappers"))
-        (is (= :foo (new-handler :foo))))
-      (is (= 3 @holder))))
-  (testing "missing/bad keys"
-    (is (thrown? IllegalArgumentException (inducer/cfg-apply-wrappers {})))))

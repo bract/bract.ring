@@ -31,23 +31,3 @@
                               (core-type/iname wrapper-spec)
                               [])))
     (core-inducer/induce context)))
-
-
-(defn ctx-apply-wrappers
-  "Given a context with Ring handler and Ring handler wrappers (under the context key :bract.ring/wrappers), i.e. a
-  seq of `(fn [handler context]) -> handler`, apply them in order finally updating the context with the handler."
-  [context]
-  (ring-config/apply-wrappers
-    context
-    (key ring-config/cfg-wrappers)
-    (ring-config/ctx-wrappers context)))
-
-
-(defn cfg-apply-wrappers
-  "Given a context with Ring handler and Ring handler wrappers (under the config key \"bract.ring.wrappers\"), i.e. a
-  seq of `(fn [handler context]) -> handler`, apply them in order finally updating the context with the handler."
-  [context]
-  (ring-config/apply-wrappers
-    context
-    (key ring-config/cfg-wrappers)
-    (-> context core-config/ctx-config ring-config/cfg-wrappers)))
