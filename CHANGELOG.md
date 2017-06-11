@@ -3,7 +3,7 @@
 ## TODO
 None
 
-## 0.3.0 / 2017-June-??
+## 0.3.0 / 2017-June-11
 ### Changed
 - Use bract.core 0.3
 - Add inducer `bract.ring.inducer/apply-wrappers` accepting Ring wrappers
