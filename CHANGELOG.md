@@ -5,8 +5,7 @@ None
 
 ## 0.3.0 / 2017-June-??
 ### Changed
-- Use `[bract/bract.core "0.3.0"]`
-  - [TODO] Remove this when using final GA version
+- Use bract.core 0.3
 - Add inducer `bract.ring.inducer/apply-wrappers` accepting Ring wrappers
 - [BREAKING CHANGE] Remove unparameterized wrapper-applying inducers in favor of `apply-wrappers`
   - Remove inducer `bract.ring.inducer/ctx-apply-wrappers`
