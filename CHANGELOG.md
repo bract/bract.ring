@@ -1,7 +1,10 @@
-# bract.ring TODO and Change Log
+# bract.ring Change Log
 
-## TODO
-None
+## [WIP] 0.3.1 / 2017-June-??
+- [TODO] Use bract.core 0.3.1
+- [TODO] Update inducer docstring to reflect context/config dependencies
+- [TODO] Add docs for Github pages
+
 
 ## 0.3.0 / 2017-June-11
 ### Changed
