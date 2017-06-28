@@ -2,7 +2,7 @@
 
 ## [WIP] 0.3.1 / 2017-June-??
 - [TODO] Use bract.core 0.3.1
-- [TODO] Update inducer docstring to reflect context/config dependencies
+- Update inducer docstring to reflect the context keys they use
 - [TODO] Add docs for Github pages
 
 

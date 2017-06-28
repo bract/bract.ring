@@ -17,8 +17,8 @@
 
 
 (defn apply-wrappers
-  "Given a context with Ring handler apply the Ring handler wrappers i.e. a seq of `(fn [handler context]) -> handler`,
-  finally updating the context with the handler."
+  "Given a context with a Ring handler under context key :bract.ring/ring-handler apply the Ring handler wrappers i.e.
+  a seq of `(fn [handler context]) -> handler`, finally updating the context with the wrapped handler."
   [context wrappers]
   (core-util/expected coll? "Ring handler wrapper collection" wrappers)
   (->> wrappers
