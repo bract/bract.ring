@@ -1,9 +1,8 @@
 # bract.ring Change Log
 
 ## [WIP] 0.3.1 / 2017-June-??
-- [TODO] Use bract.core 0.3.1
+- Use bract.core 0.3.1
 - Update inducer docstring to reflect the context keys they use
-- [TODO] Add docs for Github pages
 
 
 ## 0.3.0 / 2017-June-11
