@@ -1,7 +1,9 @@
-# bract.ring TODO and Change Log
+# bract.ring Change Log
 
-## TODO
-None
+## [WIP] 0.3.1 / 2017-June-??
+- Use bract.core 0.3.1
+- Update inducer docstring to reflect the context keys they use
+
 
 ## 0.3.0 / 2017-June-11
 ### Changed

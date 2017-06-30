@@ -1,13 +1,20 @@
 # bract.ring
 
-A [Bract](https://github.com/bract) module for [Ring](https://github.com/ring-clojure) support.
+[Ring](https://github.com/ring-clojure) support module for Bract.
 
 
-## Usage
+## Clojars coordinates
 
-Leiningen coordinates: `[bract/bract.ring "0.3.0"]`
+`[bract/bract.ring "0.3.1-SNAPSHOT"]`
 
-For documentation refer demo applications.
+
+## Documentation
+
+Bract documentation: https://bract.github.io/
+
+Module documentation: https://bract.github.io/module/ring.html
+
+Demo applications: https://bract.github.io/documentation.html#demo-applications
 
 
 ## License
