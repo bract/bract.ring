@@ -2,7 +2,7 @@
 
 ## [WIP] 0.4.0 / 2017-July-??
 
-- [TODO] Use bract.core 0.4.0
+- Use bract.core 0.4.0
   - [TODO] Use the GA version of bract.core 0.4.0
 
 

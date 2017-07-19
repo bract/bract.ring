@@ -9,7 +9,6 @@
 
 (ns bract.ring.inducer
   (:require
-    [bract.core.config  :as core-config]
     [bract.core.inducer :as core-inducer]
     [bract.core.type    :as core-type]
     [bract.core.util    :as core-util]

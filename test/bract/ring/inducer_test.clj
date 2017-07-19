@@ -10,7 +10,6 @@
 (ns bract.ring.inducer-test
   (:require
     [clojure.test :refer :all]
-    [bract.core.config :as core-config]
     [bract.ring.config  :as ring-config]
     [bract.ring.inducer :as inducer]))
 
