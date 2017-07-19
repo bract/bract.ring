@@ -4,6 +4,7 @@
 
 - Use bract.core 0.4.0
   - [TODO] Use the GA version of bract.core 0.4.0
+- [BREAKING CHANGE] Rename `bract.ring.config` namespace to `bract.ring.keydef`
 
 
 ## 0.3.1 / 2017-June-30

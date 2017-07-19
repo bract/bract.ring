@@ -7,15 +7,13 @@
 ;   You must not remove this notice, or any other, from this software.
 
 
-(ns bract.ring.config-test
+(ns bract.ring.keydef
   (:require
-    [clojure.test :refer :all]
-    [bract.ring.config :as config]))
+    [keypin.core :as keypin]
+    [keypin.util :as kputil]
+    [bract.core.echo    :as echo]
+    [bract.core.inducer :as inducer]))
 
 
-(deftest test-context
-  (testing "happy cases"
-    (is (fn? (config/ctx-ring-handler {:bract.ring/ring-handler (fn [_])}))))
-  (testing "missing/bad keys"
-    (is (thrown? IllegalArgumentException (config/ctx-ring-handler {:bract.ring/ring-handler 10})) "invalid handler")
-    (is (thrown? IllegalArgumentException (config/ctx-ring-handler {})) "missing handler")))
+(keypin/defkey  ; context keys
+  ctx-ring-handler [:bract.ring/ring-handler fn? "Application Ring handler"])
