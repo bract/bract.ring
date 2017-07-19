@@ -1,5 +1,11 @@
 # bract.ring Change Log
 
+## [WIP] 0.4.0 / 2017-July-??
+
+- [TODO] Use bract.core 0.4.0
+  - [TODO] Use the GA version of bract.core 0.4.0
+
+
 ## 0.3.1 / 2017-June-30
 - Use bract.core 0.3.1
 - Update inducer docstring to reflect the context keys they use
