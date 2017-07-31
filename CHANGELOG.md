@@ -1,9 +1,13 @@
 # bract.ring Change Log
 
-## [WIP] 0.4.0 / 2017-July-??
+## TODO
 
-- Use bract.core 0.4.0
-  - [TODO] Use the GA version of bract.core 0.4.0
+- [TODO] Use the GA version of bract.core 0.4.0
+
+
+## 0.4.0-alpha1 / 2017-July-31
+
+- Use bract.core 0.4.0-alpha1
 - [BREAKING CHANGE] Rename `bract.ring.config` namespace to `bract.ring.keydef`
 
 
