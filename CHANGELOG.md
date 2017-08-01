@@ -5,7 +5,7 @@
 - [TODO] Use the GA version of bract.core 0.4.0
 
 
-## [WIP] 0.4.0-alpha2 / 2017-August-??
+## 0.4.0-alpha2 / 2017-August-01
 
 - Use bract.core 0.4.0-alpha2
 
