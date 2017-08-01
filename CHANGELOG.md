@@ -7,7 +7,7 @@
 
 ## [WIP] 0.4.0-alpha2 / 2017-August-??
 
-- [TODO] Use bract.core 0.4.0-alpha2
+- Use bract.core 0.4.0-alpha2
 
 
 ## 0.4.0-alpha1 / 2017-July-31
