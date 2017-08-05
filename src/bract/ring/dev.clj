@@ -11,7 +11,7 @@
   (:require
     [bract.core.dev    :as core-dev]
     [bract.core.echo   :as core-echo]
-    [bract.ring.config :as ring-config]))
+    [bract.ring.keydef :as ring-kdef]))
 
 
 (defn- unprepared-handler
@@ -27,7 +27,7 @@
   ([]
     (init! (core-dev/init)))
   ([context]
-    (let [ctx-handler (ring-config/ctx-ring-handler context)]
+    (let [ctx-handler (ring-kdef/ctx-ring-handler context)]
       (alter-var-root #'handler (constantly ctx-handler))
       (core-echo/echo "Updated bract.ring.dev/handler")
       context)))
