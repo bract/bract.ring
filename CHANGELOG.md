@@ -5,6 +5,11 @@
 None
 
 
+## [WIP] 0.4.1 / 2017-August-??
+
+- [TODO] Use bract.core 0.4.1
+
+
 ## 0.4.0 / 2017-August-05
 
 - Use the GA version of bract.core 0.4.0
