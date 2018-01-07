@@ -19,11 +19,11 @@
 
 - Use bract.core 0.5.0
 - Wrappers
-  - [Todo] /info handler and middleware
-  - [Todo] /ping handler and middleware
-  - [Todo] uri-trailing-slash middleware
-  - [Todo] uri-prefix-match middleware
-  - [Todo] wrap-params-normalize middleware
+  - /info handler and wrapper
+  - /ping handler and wrapper
+  - [Todo] uri-trailing-slash wrapper
+  - [Todo] uri-prefix-match wrapper
+  - [Todo] wrap-params-normalize wrapper
 
 
 ## 0.4.1 / 2017-August-08

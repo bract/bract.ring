@@ -11,6 +11,9 @@
              :coverage {:plugins [[lein-cloverage "1.0.9"]]}
              :rel {:min-lein-version "2.7.1"
                    :pedantic? :abort}
+             :dev {:dependencies [[ring "1.6.3"]
+                                  [clj-http "3.7.0"]
+                                  [cheshire "5.8.0"]]}
              :c17 {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :c18 {:dependencies [[org.clojure/clojure "1.8.0"]]}
              :c19 {:dependencies [[org.clojure/clojure "1.9.0-alpha17"]]}
