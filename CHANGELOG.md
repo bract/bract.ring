@@ -17,7 +17,7 @@
 
 ## [WIP] 0.5.0 / 2018-January-??
 
-- [Todo] Use bract.core 0.5.0
+- Use bract.core 0.5.0
 - Wrappers
   - [Todo] /info handler and middleware
   - [Todo] /ping handler and middleware
