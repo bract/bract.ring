@@ -9,7 +9,20 @@
 
 (ns bract.ring.wrapper
   (:require
-    [bract.ring.handler :as br-handler]))
+    [clojure.pprint :as pp]
+    [bract.core.util.runtime :as bcu-runtime]))
+
+
+(defn info-edn-handler
+  ([]
+    {:status 200
+     :body (-> (bcu-runtime/sysinfo)
+             pp/pprint
+             with-out-str)
+     :headers {"Content-Type"  "application/edn"
+               "Cache-Control" "no-store, no-cache, must-revalidate"}})
+  ([request] (info-edn-handler))
+  ([request respond raise] (respond (info-edn-handler))))
 
 
 (defn info-edn-wrapper
@@ -21,13 +34,25 @@
         ([request]
           (if (->> (:uri request)
                 (contains? info-uris-set))
-            (br-handler/info-edn-handler)
+            (info-edn-handler)
             (handler request)))
         ([request respond raise]
           (if (->> (:uri request)
                 (contains? info-uris-set))
-            (respond (br-handler/info-edn-handler))
+            (respond (info-edn-handler))
             (handler request respond raise)))))))
+
+
+(defn make-info-json-handler
+  [json-encoder]
+  (fn info-json
+    ([]
+      {:status 200
+       :body (json-encoder (bcu-runtime/sysinfo))
+       :headers {"Content-Type"  "application/json"
+                 "Cache-Control" "no-store, no-cache, must-revalidate"}})
+    ([request] (info-json))
+    ([request respond raise] (respond (info-json)))))
 
 
 (defn info-json-wrapper
@@ -35,7 +60,7 @@
     (info-json-wrapper handler context json-encoder #{"/info/json" "/info/json/"}))
   ([handler context json-encoder info-uris]
     (let [info-uris-set (set info-uris)
-          gen-response  (br-handler/make-info-json-handler json-encoder)]
+          gen-response  (make-info-json-handler json-encoder)]
       (fn
         ([request]
           (if (->> (:uri request)
