@@ -16,5 +16,5 @@
                                   [cheshire "5.8.0"]]}
              :c17 {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :c18 {:dependencies [[org.clojure/clojure "1.8.0"]]}
-             :c19 {:dependencies [[org.clojure/clojure "1.9.0-alpha17"]]}
+             :c19 {:dependencies [[org.clojure/clojure "1.9.0"]]}
              :dln {:jvm-opts ["-Dclojure.compiler.direct-linking=true"]}})
