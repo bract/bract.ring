@@ -2,14 +2,7 @@
 
 ## TODO
 
-- [Todo] Distributed trace
-- [Todo] Health check (cached for configured duration)
-  - `{"status": "OK"}`
-  - `{"status": "WARN", "disk": {"status": "WARN", "total": "5GB", "free": "10MB"}}`
-  - `{"status": "ERROR", "mysql": {"status": "ERROR", "circuit-breaker": "TRIPPED"}}`
-  - `{"status": "WARN", "mysql": {"status": "OK", "circuit-breaker": "CONNECTED"}, "cache": {"status": "ERROR"}}`
-- [Todo] unexpected->500
-- [Todo] Traffic drain
+- [Todo] Distributed trace (requires logging integration)
 - [Todo] SSE streaming (requires ring-sse-middleware dependency)
 - [Todo] Ring metrics  (requires ring-metrics dependency)
 - [Todo] Log level override (requires logback dependency)
@@ -18,12 +11,21 @@
 ## [WIP] 0.5.0 / 2018-January-??
 
 - Use bract.core 0.5.0
+- Inducers
+  - [Todo] enabled-wrappers (looks up config flag before applying)
 - Wrappers
   - /info handler and wrapper
   - /ping handler and wrapper
-  - [Todo] uri-trailing-slash wrapper
-  - [Todo] uri-prefix-match wrapper
+  - uri-trailing-slash wrapper
+  - uri-prefix-match wrapper
   - [Todo] wrap-params-normalize wrapper
+  - [Todo] unexpected->500 wrapper
+  - [Todo] traffic-drain wrapper
+  - [Todo] Health check (cached for configured duration)
+    - `{"status": "OK"}`
+    - `{"status": "WARN", "disk": {"status": "WARN", "total": "5GB", "free": "10MB"}}`
+    - `{"status": "ERROR", "mysql": {"status": "ERROR", "circuit-breaker": "TRIPPED"}}`
+    - `{"status": "WARN", "mysql": {"status": "OK", "circuit-breaker": "CONNECTED"}, "cache": {"status": "ERROR"}}`
 
 
 ## 0.4.1 / 2017-August-08

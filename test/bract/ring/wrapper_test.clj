@@ -140,3 +140,57 @@
               :body)
             (-> (roundtrip-get wrapped-handler {:async? true} "/ping/")
               :body))))))
+
+
+(deftest test-uri-trailing-space
+  (let [handler (fn
+                  ([request] {:status 200
+                              :body (:uri request)})
+                  ([request respond raise] (respond {:status 200
+                                                     :body (:uri request)})))
+        add-trs (wrapper/request-update-wrapper handler {} wrapper/add-uri-trailing-slash)
+        rem-trs (wrapper/request-update-wrapper handler {} wrapper/remove-uri-trailing-slash)]
+    (testing "add trailing slash"
+      (is (= {:status 200
+              :body "/foo/"}
+            (add-trs {:uri "/foo"})
+            (dissoc (roundtrip-get add-trs {} "/foo") :headers)
+            (dissoc (roundtrip-get add-trs {:async? true} "/foo") :headers)))
+      (is (= {:status 200
+              :body "/foo/"}
+            (add-trs {:uri "/foo/"})
+            (dissoc (roundtrip-get add-trs {} "/foo/") :headers)
+            (dissoc (roundtrip-get add-trs {:async? true} "/foo/") :headers))))
+    (testing "remove trailing slash"
+      (is (= {:status 200
+              :body "/foo"}
+            (rem-trs {:uri "/foo"})
+            (dissoc (roundtrip-get rem-trs {} "/foo") :headers)
+            (dissoc (roundtrip-get rem-trs {:async? true} "/foo") :headers)))
+      (is (= {:status 200
+              :body "/foo"}
+            (rem-trs {:uri "/foo/"})
+            (dissoc (roundtrip-get rem-trs {} "/foo/") :headers)
+            (dissoc (roundtrip-get rem-trs {:async? true} "/foo/") :headers))))))
+
+
+(deftest test-uri-prefix-match
+  (testing "matcher"
+    (doseq [[matcher
+             response] [[(wrapper/make-uri-prefix-matcher "/prefix" true :backup)  {:uri "/foo"
+                                                                                    :backup "/prefix/foo"}]
+                        [(wrapper/make-uri-prefix-matcher "/prefix" false :backup) {:uri "/prefix/foo"
+                                                                                    :backup "/prefix/foo"}]
+                        [(wrapper/make-uri-prefix-matcher "/prefix" false nil)     {:uri "/prefix/foo"}]]]
+      (is (= response
+            (matcher {:uri "/prefix/foo"})))
+      (is (= nil
+            (matcher {:uri "/foo/bar"})))
+      (is (= nil
+            (matcher {:uri "/prefix"})))))
+  (testing "wrapper"
+    (let [wrapped (wrapper/uri-prefix-match-wrapper handler {} "/prefix" true :backup)]
+      (is (= {:status 200
+              :body "default"
+              :headers {"Content-Type" "text/plain"}}
+            (wrapped {:uri "/prefix/foo"}))))))
