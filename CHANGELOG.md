@@ -18,7 +18,7 @@
   - /ping handler and wrapper
   - uri-trailing-slash wrapper
   - uri-prefix-match wrapper
-  - [Todo] wrap-params-normalize wrapper
+  - wrap-params-normalize wrapper
   - [Todo] unexpected->500 wrapper
   - [Todo] traffic-drain wrapper
   - [Todo] Health check (cached for configured duration)

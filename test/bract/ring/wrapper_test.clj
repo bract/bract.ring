@@ -9,13 +9,14 @@
 
 (ns bract.ring.wrapper-test
   (:require
-    [clojure.test :refer :all]
-    [clojure.edn         :as edn]
-    [cheshire.core       :as cheshire]
-    [clj-http.client     :as client]
-    [ring.adapter.jetty  :as jetty]
-    [bract.ring.keydef   :as ring-kdef]
-    [bract.ring.wrapper  :as wrapper])
+    [clojure.test :refer    :all]
+    [clojure.edn            :as edn]
+    [cheshire.core          :as cheshire]
+    [clj-http.client        :as client]
+    [ring.middleware.params :as rmp]
+    [ring.adapter.jetty     :as jetty]
+    [bract.ring.keydef      :as ring-kdef]
+    [bract.ring.wrapper     :as wrapper])
   (:import
     [org.eclipse.jetty.server Server]))
 
@@ -194,3 +195,23 @@
               :body "default"
               :headers {"Content-Type" "text/plain"}}
             (wrapped {:uri "/prefix/foo"}))))))
+
+
+(deftest test-wrap-params-normalize
+  (let [handler (fn params-as-body
+                  ([request] {:status 200
+                              :body (str (:params request))})
+                  ([request respond raise] (respond (params-as-body request))))
+        wrapped (-> handler
+                  (wrapper/wrap-params-normalize-wrapper {} clojure.core/identity)
+                  rmp/wrap-params)]
+    (is (= {:headers {}
+            :status 200
+            :body "{\"bar\" [\"20\"]}"}
+          (roundtrip-get wrapped {} "/foo?bar=20")
+          (roundtrip-get wrapped {:async? true} "/foo?bar=20")))
+    (is (= {:headers {}
+            :status 200
+            :body "{\"bar\" [\"20\" \"30\"]}"}
+          (roundtrip-get wrapped {} "/foo?bar=20&bar=30")
+          (roundtrip-get wrapped {:async? true} "/foo?bar=20&bar=30")))))
