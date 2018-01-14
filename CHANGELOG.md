@@ -19,7 +19,7 @@
   - uri-trailing-slash wrapper
   - uri-prefix-match wrapper
   - wrap-params-normalize wrapper
-  - [Todo] unexpected->500 wrapper
+  - unexpected->500 wrapper
   - [Todo] traffic-drain wrapper
   - [Todo] Health check (cached for configured duration)
     - `{"status": "OK"}`

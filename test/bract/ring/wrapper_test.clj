@@ -42,8 +42,8 @@
   [handler jetty-options path]
   (with-jetty handler (conj {:port 3000 :join? false}
                         jetty-options)
-    (-> (client/get (str "http://localhost:3000" path))
-      (dissoc 
+    (-> (client/get (str "http://localhost:3000" path) {:throw-exceptions false})
+      (dissoc
         :trace-redirects :length :orig-content-encoding
         :request-time :repeatable? :protocol-version
         :streaming? :chunked? :reason-phrase)
@@ -215,3 +215,46 @@
             :body "{\"bar\" [\"20\" \"30\"]}"}
           (roundtrip-get wrapped {} "/foo?bar=20&bar=30")
           (roundtrip-get wrapped {:async? true} "/foo?bar=20&bar=30")))))
+
+
+(deftest test-unexpected->500
+  (let [respond-not-map (fn
+                          ([request] "hey")
+                          ([request respond raise] (respond "hey")))
+        respond-bad-map (fn
+                          ([request] {:foo 10})
+                          ([request respond raise] {:foo 10}))
+        respond-200-bad (fn
+                          ([request] {:status 200})
+                          ([request respond raise] (respond {:status 200})))
+        respond-throwex (fn
+                          ([request] (throw (Exception. "test")))
+                          ([request respond raise] (throw (Exception. "test"))))]
+    (is (= {:status 500
+            :headers {"Content-Type" "text/plain"}
+            :body "500 Internal Server Error"}
+          (roundtrip-get (-> respond-not-map
+                           (wrapper/unexpected->500-wrapper {})) {} "/")
+          (roundtrip-get (-> respond-not-map
+                           (wrapper/unexpected->500-wrapper {})) {:async true} "/")))
+    (is (= {:status 500
+            :headers {"Content-Type" "text/plain"}
+            :body "500 Internal Server Error"}
+          (roundtrip-get (-> respond-bad-map
+                           (wrapper/unexpected->500-wrapper {})) {} "/")
+          (roundtrip-get (-> respond-bad-map
+                           (wrapper/unexpected->500-wrapper {})) {:async true} "/")))
+    (is (= {:status 500
+            :headers {"Content-Type" "text/plain"}
+            :body "500 Internal Server Error"}
+          (roundtrip-get (-> respond-200-bad
+                           (wrapper/unexpected->500-wrapper {})) {} "/")
+          (roundtrip-get (-> respond-200-bad
+                           (wrapper/unexpected->500-wrapper {})) {:async true} "/")))
+    (is (= {:status 500
+            :headers {"Content-Type" "text/plain"}
+            :body "500 Internal Server Error"}
+          (roundtrip-get (-> respond-throwex
+                           (wrapper/unexpected->500-wrapper {})) {} "/")
+          (roundtrip-get (-> respond-throwex
+                           (wrapper/unexpected->500-wrapper {})) {:async true} "/")))))

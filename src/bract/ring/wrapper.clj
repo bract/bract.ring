@@ -11,6 +11,7 @@
   (:require
     [clojure.pprint :as pp]
     [bract.core.type         :as core-type]
+    [bract.core.util         :as core-util]
     [bract.core.util.runtime :as bcu-runtime]))
 
 
@@ -238,3 +239,82 @@
                    (transform :query-params)
                    (transform :params))
           respond raise)))))
+
+
+(defn bad-response->500 [request response reason]
+  {:status 500
+   :headers {"Content-Type" "text/plain"}
+   :body "500 Internal Server Error"})
+
+
+(defn bad-response->verbose-500 [request response reason]
+  {:status 500
+   :headers {"Content-Type" "text/plain"}
+   :body (format "500 Internal Server Error
+
+Class: %s
+Response: %s
+Request: %s
+Reason: %s"
+           (class response)
+           (pr-str response)
+           (pr-str request)
+           reason)})
+
+
+(defn exception->500 [request ^Throwable thrown]
+  {:status 500
+   :headers {"Content-Type" "text/plain"}
+   :body "500 Internal Server Error"})
+
+
+(defn exception->verbose-500 [request ^Throwable thrown]
+  {:status 500
+   :headers {"Content-Type" "text/plain"}
+   :body (format "500 Internal Server Error
+
+%s
+Request: %s"
+           (core-util/stack-trace-str thrown)
+           (pr-str request))})
+
+
+(defn unexpected->500-wrapper
+  ([handler context]
+    (unexpected->500-wrapper handler context false))
+  ([handler context {:keys [on-bad-response
+                            on-exception]
+                     :or {on-bad-response bad-response->500
+                          on-exception    exception->500}
+                     :as options}]
+    (let [on-bad-response (core-type/ifunc on-bad-response)
+          on-exception    (core-type/ifunc on-exception)
+          unexpected->500 (fn [request response]
+                            (let [status (:status response)
+                                  body   (:body response)]
+                              (if (and (map? response)
+                                    (integer? status)
+                                    (<= 100 status 599))
+                                (cond
+                                  body       response
+                                  (= 200
+                                    status)  (on-bad-response
+                                               request response
+                                               "Response map has HTTP status 200 but body is missing")
+                                  :otherwise response)
+                                (on-bad-response
+                                  request response
+                                  "Expected Ring response to be a map with :status key and integer value"))))]
+      (fn
+        ([request]
+          (try
+            (unexpected->500 request (handler request))
+            (catch Throwable e
+              (on-exception request e))))
+        ([request respond raise]
+          (let [new-respond (fn [response]
+                              (respond (unexpected->500 request response)))]
+            (try
+              (handler request new-respond raise)
+              (catch Throwable e
+                (respond (on-exception request e))))))))))
