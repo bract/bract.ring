@@ -10,6 +10,7 @@
 (ns bract.ring.wrapper
   (:require
     [clojure.pprint :as pp]
+    [bract.core.keydef       :as core-kdef]
     [bract.core.type         :as core-type]
     [bract.core.util         :as core-util]
     [bract.core.util.runtime :as bcu-runtime]))
@@ -280,6 +281,8 @@ Request: %s"
 
 
 (defn unexpected->500-wrapper
+  "Wrap given Ring handler such that if it returns unexpected Ring response (invalid/malformed response or exception)
+  then return HTTP 500 Ring response."
   ([handler context]
     (unexpected->500-wrapper handler context false))
   ([handler context {:keys [on-bad-response
@@ -318,3 +321,37 @@ Request: %s"
               (handler request new-respond raise)
               (catch Throwable e
                 (respond (on-exception request e))))))))))
+
+
+(defn traffic-drain-middleware
+  "Given a deref'able shutdown state and a boolean flag to respond with connection-close HTTP header, wrap specified
+  Ring handler to respond with HTTP 503 (in order to drain current traffic) when the system is shutting down."
+  ([handler context]
+    (traffic-drain-middleware handler context {}))
+  ([handler context {:keys [conn-close?]
+                     :or {conn-close? true}}]
+    (let [shutdown-flag (core-kdef/ctx-shutdown-flag context)
+          response-503  (let [response {:status 503
+                                        :headers {"Content-Type" "text/plain"}
+                                        :body "503 Service Unavailable. Traffic draining is in progress."}]
+                          (if conn-close?
+                            (assoc-in response [:headers "Connection"] "close")
+                            response))
+          alive-tracker (core-kdef/ctx-alive-tstamp context)]
+      ;; initialize alive-tracker
+      (alive-tracker)
+      ;; return wrapped handler
+      (fn [request]
+        (if @shutdown-flag
+          response-503
+          (try
+            (let [response (handler request)]
+              (if (and conn-close?
+                    @shutdown-flag
+                    (map? response)
+                    (integer? (:status response)))
+                (assoc-in response [:headers "Connection"] "close")
+                response))
+            (finally
+              ;; record last service time
+              (alive-tracker))))))))

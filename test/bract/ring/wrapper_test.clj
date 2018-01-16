@@ -15,6 +15,7 @@
     [clj-http.client        :as client]
     [ring.middleware.params :as rmp]
     [ring.adapter.jetty     :as jetty]
+    [bract.core.keydef      :as core-kdef]
     [bract.ring.keydef      :as ring-kdef]
     [bract.ring.wrapper     :as wrapper])
   (:import
@@ -258,3 +259,19 @@
                            (wrapper/unexpected->500-wrapper {})) {} "/")
           (roundtrip-get (-> respond-throwex
                            (wrapper/unexpected->500-wrapper {})) {:async true} "/")))))
+
+
+(deftest test-traffic-drain
+  (let [sd-flag (volatile! false)
+        context {:bract.core/shutdown-flag sd-flag}
+        wrapped (-> handler
+                  (wrapper/traffic-drain-middleware context))]
+    (is (= {:headers {"Content-Type" "text/plain"}
+            :status 200
+            :body "default"}
+          (roundtrip-get wrapped {} "/")))
+    (vreset! sd-flag true)
+    (is (= {:headers {"Content-Type" "text/plain"}
+            :status 503
+            :body "503 Service Unavailable. Traffic draining is in progress."}
+          (roundtrip-get wrapped {} "/")))))

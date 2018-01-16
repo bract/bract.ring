@@ -14,13 +14,13 @@
 - Inducers
   - [Todo] enabled-wrappers (looks up config flag before applying)
 - Wrappers
-  - /info handler and wrapper
-  - /ping handler and wrapper
-  - uri-trailing-slash wrapper
-  - uri-prefix-match wrapper
-  - wrap-params-normalize wrapper
-  - unexpected->500 wrapper
-  - [Todo] traffic-drain wrapper
+  - /info handler
+  - /ping handler
+  - uri-trailing-slash
+  - uri-prefix-match
+  - wrap-params-normalize
+  - unexpected->500
+  - traffic-drain
   - [Todo] Health check (cached for configured duration)
     - `{"status": "OK"}`
     - `{"status": "WARN", "disk": {"status": "WARN", "total": "5GB", "free": "10MB"}}`
