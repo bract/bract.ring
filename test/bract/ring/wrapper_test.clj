@@ -161,7 +161,7 @@
               (roundtrip-get healthy-hnd {:async true} health-uri)) "health check - healthy status")))))
 
 
-(deftest test-info-wrapper
+(deftest test-info
   (doseq [{:keys [body-encoder
                   body-decoder
                   content-type]} [{:body-encoder pr-str
