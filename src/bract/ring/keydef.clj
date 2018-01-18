@@ -17,3 +17,11 @@
 
 (keypin/defkey  ; context keys
   ctx-ring-handler [:bract.ring/ring-handler fn? "Application Ring handler"])
+
+
+(keypin/defkey
+  cfg-health-codes ["bract.ring.health.codes" map? "Map of health status to HTTP status code"
+                    {:parser kputil/any->edn
+                     :default {:critical 503
+                               :degraded 500
+                               :healthy  200}}])

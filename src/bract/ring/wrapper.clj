@@ -9,11 +9,12 @@
 
 (ns bract.ring.wrapper
   (:require
-    [clojure.pprint :as pp]
+    [clojure.string          :as string]
     [bract.core.keydef       :as core-kdef]
     [bract.core.type         :as core-type]
     [bract.core.util         :as core-util]
-    [bract.core.util.runtime :as bcu-runtime]))
+    [bract.core.util.runtime :as bcu-runtime]
+    [bract.ring.keydef       :as ring-kdef]))
 
 
 ;; ----- /info -----
@@ -23,9 +24,7 @@
   "Return system info as Ring response containing EDN body string."
   ([]
     {:status 200
-     :body (-> (bcu-runtime/sysinfo)
-             pp/pprint
-             with-out-str)
+     :body (pr-str (bcu-runtime/sysinfo))
      :headers {"Content-Type"  "application/edn"
                "Cache-Control" "no-store, no-cache, must-revalidate"}})
   ([request] (info-edn-handler))
@@ -323,11 +322,11 @@ Request: %s"
                 (respond (on-exception request e))))))))))
 
 
-(defn traffic-drain-middleware
+(defn traffic-drain-wrapper
   "Given a deref'able shutdown state and a boolean flag to respond with connection-close HTTP header, wrap specified
   Ring handler to respond with HTTP 503 (in order to drain current traffic) when the system is shutting down."
   ([handler context]
-    (traffic-drain-middleware handler context {}))
+    (traffic-drain-wrapper handler context {}))
   ([handler context {:keys [conn-close?]
                      :or {conn-close? true}}]
     (let [shutdown-flag (core-kdef/ctx-shutdown-flag context)
@@ -355,3 +354,59 @@ Request: %s"
             (finally
               ;; record last service time
               (alive-tracker))))))))
+
+
+(defn health-check-response
+  "Return health-check response."
+  [health-check-fns health-http-codes body-encoder content-type]
+  (let [health-result (->> health-check-fns
+                        (mapv #(%))
+                        core-util/health-status)
+        http-status   (or (->> (:status health-result)
+                            (get health-http-codes))
+                        200)]
+    {:status http-status
+     :headers {"Content-Type" content-type}
+     :body (body-encoder health-result)}))
+
+
+(defn health-check-wrapper
+  "Given optional URIs (default: /health), body encoder (default: EDN) and content type (default: application/edn),
+  wrap specified Ring handler such that it responds to application health query when health endpoint is requested."
+  ([handler context]
+    (health-check-wrapper handler context {}))
+  ([handler context {:keys [uris
+                            body-encoder
+                            content-type]
+                     :or {uris #{"/health" "/health/"}
+                          body-encoder pr-str
+                          content-type "application/edn"}
+                     :as options}]
+    (let [body-encoder (core-type/ifunc body-encoder)
+          uri-set  (set uris)
+          hc-fns   (core-kdef/ctx-health-check context)
+          hc-codes (->> context
+                     core-kdef/ctx-config
+                     ring-kdef/cfg-health-codes
+                     (merge {:critical 503
+                             :degraded 500
+                             :healthy  200}))
+          checknow (fn [request]
+                     (let [method (:request-method request)]
+                       (if (= :get method)
+                         (health-check-response hc-fns hc-codes body-encoder content-type)
+                         {:status 405
+                          :body (str "Expected HTTP GET request for health check endpoint, but found "
+                                  (-> method
+                                    core-util/as-str
+                                    string/upper-case))
+                          :headers {"Content-Type" "text/plain"}})))]
+      (fn
+        ([request]
+          (if (contains? uri-set (:uri request))
+            (checknow request)
+            (handler request)))
+        ([request respond raise]
+          (if (contains? uri-set (:uri request))
+            (respond (checknow request))
+            (handler request respond raise)))))))

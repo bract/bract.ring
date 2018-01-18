@@ -2,18 +2,22 @@
 
 ## TODO
 
-- [Todo] Distributed trace (requires logging integration)
-- [Todo] SSE streaming (requires ring-sse-middleware dependency)
-- [Todo] Ring metrics  (requires ring-metrics dependency)
-- [Todo] Log level override (requires logback dependency)
+- Key definitions
+  - [Todo] Support for dual or multiple handlers starting at different web server ports
+- Inducers
+  - [Todo] enabled-wrappers (looks up config flag before applying)
+- Wrappers
+  - [Todo] Distributed trace (requires logging integration)
+  - [Todo] SSE streaming (requires ring-sse-middleware dependency)
+  - [Todo] Ring metrics  (requires ring-metrics dependency)
+  - [Todo] Log level override (requires logback dependency)
 
 
 ## [WIP] 0.5.0 / 2018-January-??
 
 - Use bract.core 0.5.0
-- Inducers
-  - [Todo] enabled-wrappers (looks up config flag before applying)
 - Wrappers
+  - /health handler (health-check)
   - /info handler
   - /ping handler
   - uri-trailing-slash
@@ -21,11 +25,6 @@
   - wrap-params-normalize
   - unexpected->500
   - traffic-drain
-  - [Todo] Health check (cached for configured duration)
-    - `{"status": "OK"}`
-    - `{"status": "WARN", "disk": {"status": "WARN", "total": "5GB", "free": "10MB"}}`
-    - `{"status": "ERROR", "mysql": {"status": "ERROR", "circuit-breaker": "TRIPPED"}}`
-    - `{"status": "WARN", "mysql": {"status": "OK", "circuit-breaker": "CONNECTED"}, "cache": {"status": "ERROR"}}`
 
 
 ## 0.4.1 / 2017-August-08
