@@ -20,7 +20,7 @@
   - /ping handler
   - uri-trailing-slash
   - uri-prefix-match
-  - wrap-params-normalize
+  - params-normalize
   - unexpected->500
   - traffic-drain
 

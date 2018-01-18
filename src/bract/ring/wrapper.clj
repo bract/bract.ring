@@ -251,7 +251,7 @@
             (respond res-400)))))))
 
 
-(defn wrap-params-normalize-wrapper
+(defn params-normalize-wrapper
   "Normalize the result of `wrap-params` middleware (this middleware may be invoked only after `wrap-params`) by
   transforming each request params value. The `wrap-params` middleware extracts params as string, but multiple values
   for same param are turned into a vector of string - this middleware turns all param values into vectors of string

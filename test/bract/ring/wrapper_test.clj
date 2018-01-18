@@ -282,13 +282,13 @@
             (wrapped {:uri "/prefix/foo"}))))))
 
 
-(deftest test-wrap-params-normalize
+(deftest test-params-normalize
   (let [handler (fn params-as-body
                   ([request] {:status 200
                               :body (str (:params request))})
                   ([request respond raise] (respond (params-as-body request))))
         wrapped (-> handler
-                  (wrapper/wrap-params-normalize-wrapper {:bract.core/config {}} clojure.core/identity)
+                  (wrapper/params-normalize-wrapper {:bract.core/config {}} clojure.core/identity)
                   rmp/wrap-params)]
     (is (= {:headers {}
             :status 200
