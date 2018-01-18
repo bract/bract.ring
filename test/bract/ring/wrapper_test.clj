@@ -170,8 +170,8 @@
                                   {:body-encoder cheshire/generate-string
                                    :body-decoder cheshire/parse-string
                                    :content-type "application/json"}]]
-    (let [wrapped-handler (wrapper/info-wrapper handler {} {:body-encoder body-encoder
-                                                            :content-type content-type})
+    (let [wrapped-handler (wrapper/info-wrapper handler {:bract.core/config {}} {:body-encoder body-encoder
+                                                                                 :content-type content-type})
           body-map (fn [response] (-> response
                                     :body
                                     body-decoder
@@ -201,7 +201,7 @@
 
 
 (deftest test-ping
-  (let [wrapped-handler (wrapper/ping-wrapper handler {})]
+  (let [wrapped-handler (wrapper/ping-wrapper handler {:bract.core/config {}})]
     (is (= default-response
           (wrapped-handler {:uri "/foo"})
           (roundtrip-get wrapped-handler {} "/foo")
@@ -234,8 +234,8 @@
                               :body (:uri request)})
                   ([request respond raise] (respond {:status 200
                                                      :body (:uri request)})))
-        add-trs (wrapper/request-update-wrapper handler {} wrapper/add-uri-trailing-slash)
-        rem-trs (wrapper/request-update-wrapper handler {} wrapper/remove-uri-trailing-slash)]
+        add-trs (wrapper/request-update-wrapper handler {:bract.core/config {}} wrapper/add-uri-trailing-slash)
+        rem-trs (wrapper/request-update-wrapper handler {:bract.core/config {}} wrapper/remove-uri-trailing-slash)]
     (testing "add trailing slash"
       (is (= {:status 200
               :body "/foo/"}
@@ -275,7 +275,7 @@
       (is (= nil
             (matcher {:uri "/prefix"})))))
   (testing "wrapper"
-    (let [wrapped (wrapper/uri-prefix-match-wrapper handler {} "/prefix" true :backup)]
+    (let [wrapped (wrapper/uri-prefix-match-wrapper handler {:bract.core/config {}} "/prefix" true :backup)]
       (is (= {:status 200
               :body "default"
               :headers {"Content-Type" "text/plain"}}
@@ -288,7 +288,7 @@
                               :body (str (:params request))})
                   ([request respond raise] (respond (params-as-body request))))
         wrapped (-> handler
-                  (wrapper/wrap-params-normalize-wrapper {} clojure.core/identity)
+                  (wrapper/wrap-params-normalize-wrapper {:bract.core/config {}} clojure.core/identity)
                   rmp/wrap-params)]
     (is (= {:headers {}
             :status 200
@@ -319,35 +319,36 @@
             :headers {"Content-Type" "text/plain"}
             :body "500 Internal Server Error"}
           (roundtrip-get (-> respond-not-map
-                           (wrapper/unexpected->500-wrapper {})) {} "/")
+                           (wrapper/unexpected->500-wrapper {:bract.core/config {}})) {} "/")
           (roundtrip-get (-> respond-not-map
-                           (wrapper/unexpected->500-wrapper {})) {:async true} "/")))
+                           (wrapper/unexpected->500-wrapper {:bract.core/config {}})) {:async true} "/")))
     (is (= {:status 500
             :headers {"Content-Type" "text/plain"}
             :body "500 Internal Server Error"}
           (roundtrip-get (-> respond-bad-map
-                           (wrapper/unexpected->500-wrapper {})) {} "/")
+                           (wrapper/unexpected->500-wrapper {:bract.core/config {}})) {} "/")
           (roundtrip-get (-> respond-bad-map
-                           (wrapper/unexpected->500-wrapper {})) {:async true} "/")))
+                           (wrapper/unexpected->500-wrapper {:bract.core/config {}})) {:async true} "/")))
     (is (= {:status 500
             :headers {"Content-Type" "text/plain"}
             :body "500 Internal Server Error"}
           (roundtrip-get (-> respond-200-bad
-                           (wrapper/unexpected->500-wrapper {})) {} "/")
+                           (wrapper/unexpected->500-wrapper {:bract.core/config {}})) {} "/")
           (roundtrip-get (-> respond-200-bad
-                           (wrapper/unexpected->500-wrapper {})) {:async true} "/")))
+                           (wrapper/unexpected->500-wrapper {:bract.core/config {}})) {:async true} "/")))
     (is (= {:status 500
             :headers {"Content-Type" "text/plain"}
             :body "500 Internal Server Error"}
           (roundtrip-get (-> respond-throwex
-                           (wrapper/unexpected->500-wrapper {})) {} "/")
+                           (wrapper/unexpected->500-wrapper {:bract.core/config {}})) {} "/")
           (roundtrip-get (-> respond-throwex
-                           (wrapper/unexpected->500-wrapper {})) {:async true} "/")))))
+                           (wrapper/unexpected->500-wrapper {:bract.core/config {}})) {:async true} "/")))))
 
 
 (deftest test-traffic-drain
   (let [sd-flag (volatile! false)
-        context {:bract.core/shutdown-flag sd-flag}
+        context {:bract.core/config {}
+                 :bract.core/shutdown-flag sd-flag}
         wrapped (-> handler
                   (wrapper/traffic-drain-wrapper context))]
     (is (= {:headers {"Content-Type" "text/plain"}

@@ -17,6 +17,14 @@
     [bract.ring.keydef       :as ring-kdef]))
 
 
+(defmacro when-wrapper-enabled
+  [pred handler context & body]
+  `(let [config# (core-kdef/ctx-config ~context)]
+     (if (~pred config#)
+       (do ~@body)
+       ~handler)))
+
+
 ;; ----- /health check -----
 
 
@@ -46,34 +54,35 @@
                           body-encoder pr-str
                           content-type "application/edn"}
                      :as options}]
-    (let [body-encoder (core-type/ifunc body-encoder)
-          uri-set  (set uris)
-          hc-fns   (core-kdef/ctx-health-check context)
-          hc-codes (->> context
-                     core-kdef/ctx-config
-                     ring-kdef/cfg-health-codes
-                     (merge {:critical 503
-                             :degraded 500
-                             :healthy  200}))
-          checknow (fn [request]
-                     (let [method (:request-method request)]
-                       (if (= :get method)
-                         (health-check-response hc-fns hc-codes body-encoder content-type)
-                         {:status 405
-                          :body (str "Expected HTTP GET request for health check endpoint, but found "
-                                  (-> method
-                                    core-util/as-str
-                                    string/upper-case))
-                          :headers {"Content-Type" "text/plain"}})))]
-      (fn
-        ([request]
-          (if (contains? uri-set (:uri request))
-            (checknow request)
-            (handler request)))
-        ([request respond raise]
-          (if (contains? uri-set (:uri request))
-            (respond (checknow request))
-            (handler request respond raise)))))))
+    (when-wrapper-enabled ring-kdef/cfg-health-check-wrapper? handler context
+      (let [body-encoder (core-type/ifunc body-encoder)
+            uri-set  (set uris)
+            hc-fns   (core-kdef/ctx-health-check context)
+            hc-codes (->> context
+                       core-kdef/ctx-config
+                       ring-kdef/cfg-health-codes
+                       (merge {:critical 503
+                               :degraded 500
+                               :healthy  200}))
+            checknow (fn [request]
+                       (let [method (:request-method request)]
+                         (if (= :get method)
+                           (health-check-response hc-fns hc-codes body-encoder content-type)
+                           {:status 405
+                            :body (str "Expected HTTP GET request for health check endpoint, but found "
+                                    (-> method
+                                      core-util/as-str
+                                      string/upper-case))
+                            :headers {"Content-Type" "text/plain"}})))]
+        (fn
+          ([request]
+            (if (contains? uri-set (:uri request))
+              (checknow request)
+              (handler request)))
+          ([request respond raise]
+            (if (contains? uri-set (:uri request))
+              (respond (checknow request))
+              (handler request respond raise))))))))
 
 
 ;; ----- /info -----
@@ -98,27 +107,28 @@
                           body-encoder pr-str
                           content-type "application/edn"}
                      :as options}]
-    (let [uri-set      (set uris)
-          body-encoder (core-type/ifunc body-encoder)
-          info-process (fn [request]
-                         (let [method (:request-method request)]
-                           (if (= :get method)
-                             (info-response body-encoder content-type)
-                             {:status 405
-                              :body (str "Expected HTTP GET request for info endpoint, but found "
-                                      (-> method
-                                        core-util/as-str
-                                        string/upper-case))
-                              :headers {"Content-Type" "text/plain"}})))]
-      (fn
-        ([request]
-          (if (contains? uri-set (:uri request))
-            (info-process request)
-            (handler request)))
-        ([request respond raise]
-          (if (contains? uri-set (:uri request))
-            (respond (info-process request))
-            (handler request respond raise)))))))
+    (when-wrapper-enabled ring-kdef/cfg-info-wrapper? handler context
+      (let [uri-set      (set uris)
+            body-encoder (core-type/ifunc body-encoder)
+            info-process (fn [request]
+                           (let [method (:request-method request)]
+                             (if (= :get method)
+                               (info-response body-encoder content-type)
+                               {:status 405
+                                :body (str "Expected HTTP GET request for info endpoint, but found "
+                                        (-> method
+                                          core-util/as-str
+                                          string/upper-case))
+                                :headers {"Content-Type" "text/plain"}})))]
+        (fn
+          ([request]
+            (if (contains? uri-set (:uri request))
+              (info-process request)
+              (handler request)))
+          ([request respond raise]
+            (if (contains? uri-set (:uri request))
+              (respond (info-process request))
+              (handler request respond raise))))))))
 
 
 ;; ----- /ping -----
@@ -132,22 +142,23 @@
   ([handler context ping-uris]
     (ping-wrapper handler context ping-uris "pong"))
   ([handler context ping-uris body]
-    (let [ping-uris-set (set ping-uris)
-          ping-response (fn [] {:status 200
-                                :body (str body)
-                                :headers {"Content-Type"  "text/plain"
-                                          "Cache-Control" "no-store, no-cache, must-revalidate"}})]
-      (fn
-        ([request]
-          (if (->> (:uri request)
-                (contains? ping-uris-set))
-            (ping-response)
-            (handler request)))
-        ([request respond raise]
-          (if (->> (:uri request)
-                (contains? ping-uris-set))
-            (respond (ping-response))
-            (handler request respond raise)))))))
+    (when-wrapper-enabled ring-kdef/cfg-ping-wrapper? handler context
+      (let [ping-uris-set (set ping-uris)
+            ping-response (fn [] {:status 200
+                                  :body (str body)
+                                  :headers {"Content-Type"  "text/plain"
+                                            "Cache-Control" "no-store, no-cache, must-revalidate"}})]
+        (fn
+          ([request]
+            (if (->> (:uri request)
+                  (contains? ping-uris-set))
+              (ping-response)
+              (handler request)))
+          ([request respond raise]
+            (if (->> (:uri request)
+                  (contains? ping-uris-set))
+              (respond (ping-response))
+              (handler request respond raise))))))))
 
 
 ;; ----- request update (URI trailing slash) -----
@@ -179,16 +190,17 @@
   "Given Ring handler, Bract context and request-updater function `(fn [request]) -> request`, wrap the handler such
   that the request is updated before the Ring handler is applied to it."
   [handler context request-updater]
-  (let [request-updater-fn (core-type/ifunc request-updater)]
-    (fn
-      ([request]
-        (-> request
-          request-updater-fn
-          handler))
-      ([request respond raise]
-        (-> request
-          request-updater-fn
-          (handler respond raise))))))
+  (when-wrapper-enabled ring-kdef/cfg-uri-trailing-slash-wrapper? handler context
+    (let [request-updater-fn (core-type/ifunc request-updater)]
+      (fn
+        ([request]
+          (-> request
+            request-updater-fn
+            handler))
+        ([request respond raise]
+          (-> request
+            request-updater-fn
+            (handler respond raise)))))))
 
 
 ;; ----- URI prefix -----
@@ -223,19 +235,20 @@
   or returns HTTP 400 on no match.
   See: make-uri-prefix-matcher"
   [handler context ^String uri-prefix strip-uri? backup-key]
-  (let [matcher (make-uri-prefix-matcher ^String uri-prefix strip-uri? backup-key)
-        res-400 {:status 400
-                 :body (format "Expected URI to start with and be longer than '%s'" uri-prefix)
-                 :headers {"Content-Type" "text/plain"}}]
-    (fn
-      ([request]
-        (if-let [request (matcher request)]
-          (handler request)
-          res-400))
-      ([request respond raise]
-        (if-let [request (matcher request)]
-          (handler request respond raise)
-          (respond res-400))))))
+  (when-wrapper-enabled ring-kdef/cfg-uri-prefix-match-wrapper? handler context
+    (let [matcher (make-uri-prefix-matcher ^String uri-prefix strip-uri? backup-key)
+          res-400 {:status 400
+                   :body (format "Expected URI to start with and be longer than '%s'" uri-prefix)
+                   :headers {"Content-Type" "text/plain"}}]
+      (fn
+        ([request]
+          (if-let [request (matcher request)]
+            (handler request)
+            res-400))
+        ([request respond raise]
+          (if-let [request (matcher request)]
+            (handler request respond raise)
+            (respond res-400)))))))
 
 
 (defn wrap-params-normalize-wrapper
@@ -252,28 +265,29 @@
   {\"foo\" \"bar\"
    \"baz\" \"quux\"}"
   [handler context normalizer]
-  (let [normalize (comp (core-type/ifunc normalizer) (fn [x] (cond
-                                                               (vector? x) x
-                                                               (coll? x)   (vec x)
-                                                               :otherwise  [x])))
-        transform (fn [m k]
-                    (if-let [pairs (get m k)]
-                      (->> pairs
-                        (reduce-kv (fn [mm kk vv] (assoc mm kk (normalize vv))) {})
-                        (assoc m k))
-                      m))]
-    (fn
-      ([request]
-        (handler (-> request
-                   (transform :form-params)
-                   (transform :query-params)
-                   (transform :params))))
-      ([request respond raise]
-        (handler (-> request
-                   (transform :form-params)
-                   (transform :query-params)
-                   (transform :params))
-          respond raise)))))
+  (when-wrapper-enabled ring-kdef/cfg-params-normalize-wrapper? handler context
+    (let [normalize (comp (core-type/ifunc normalizer) (fn [x] (cond
+                                                                 (vector? x) x
+                                                                 (coll? x)   (vec x)
+                                                                 :otherwise  [x])))
+          transform (fn [m k]
+                      (if-let [pairs (get m k)]
+                        (->> pairs
+                          (reduce-kv (fn [mm kk vv] (assoc mm kk (normalize vv))) {})
+                          (assoc m k))
+                        m))]
+      (fn
+        ([request]
+          (handler (-> request
+                     (transform :form-params)
+                     (transform :query-params)
+                     (transform :params))))
+        ([request respond raise]
+          (handler (-> request
+                     (transform :form-params)
+                     (transform :query-params)
+                     (transform :params))
+            respond raise))))))
 
 
 (defn bad-response->500 [request response reason]
@@ -324,37 +338,38 @@ Request: %s"
                      :or {on-bad-response bad-response->500
                           on-exception    exception->500}
                      :as options}]
-    (let [on-bad-response (core-type/ifunc on-bad-response)
-          on-exception    (core-type/ifunc on-exception)
-          unexpected->500 (fn [request response]
-                            (let [status (:status response)
-                                  body   (:body response)]
-                              (if (and (map? response)
-                                    (integer? status)
-                                    (<= 100 status 599))
-                                (cond
-                                  body       response
-                                  (= 200
-                                    status)  (on-bad-response
-                                               request response
-                                               "Response map has HTTP status 200 but body is missing")
-                                  :otherwise response)
-                                (on-bad-response
-                                  request response
-                                  "Expected Ring response to be a map with :status key and integer value"))))]
-      (fn
-        ([request]
-          (try
-            (unexpected->500 request (handler request))
-            (catch Throwable e
-              (on-exception request e))))
-        ([request respond raise]
-          (let [new-respond (fn [response]
-                              (respond (unexpected->500 request response)))]
+    (when-wrapper-enabled ring-kdef/cfg-unexpected->500-wrapper? handler context
+      (let [on-bad-response (core-type/ifunc on-bad-response)
+            on-exception    (core-type/ifunc on-exception)
+            unexpected->500 (fn [request response]
+                              (let [status (:status response)
+                                    body   (:body response)]
+                                (if (and (map? response)
+                                      (integer? status)
+                                      (<= 100 status 599))
+                                  (cond
+                                    body       response
+                                    (= 200
+                                      status)  (on-bad-response
+                                                 request response
+                                                 "Response map has HTTP status 200 but body is missing")
+                                    :otherwise response)
+                                  (on-bad-response
+                                    request response
+                                    "Expected Ring response to be a map with :status key and integer value"))))]
+        (fn
+          ([request]
             (try
-              (handler request new-respond raise)
+              (unexpected->500 request (handler request))
               (catch Throwable e
-                (respond (on-exception request e))))))))))
+                (on-exception request e))))
+          ([request respond raise]
+            (let [new-respond (fn [response]
+                                (respond (unexpected->500 request response)))]
+              (try
+                (handler request new-respond raise)
+                (catch Throwable e
+                  (respond (on-exception request e)))))))))))
 
 
 (defn traffic-drain-wrapper
@@ -364,28 +379,29 @@ Request: %s"
     (traffic-drain-wrapper handler context {}))
   ([handler context {:keys [conn-close?]
                      :or {conn-close? true}}]
-    (let [shutdown-flag (core-kdef/ctx-shutdown-flag context)
-          response-503  (let [response {:status 503
-                                        :headers {"Content-Type" "text/plain"}
-                                        :body "503 Service Unavailable. Traffic draining is in progress."}]
-                          (if conn-close?
-                            (assoc-in response [:headers "Connection"] "close")
-                            response))
-          alive-tracker (core-kdef/ctx-alive-tstamp context)]
-      ;; initialize alive-tracker
-      (alive-tracker)
-      ;; return wrapped handler
-      (fn [request]
-        (if @shutdown-flag
-          response-503
-          (try
-            (let [response (handler request)]
-              (if (and conn-close?
-                    @shutdown-flag
-                    (map? response)
-                    (integer? (:status response)))
-                (assoc-in response [:headers "Connection"] "close")
-                response))
-            (finally
-              ;; record last service time
-              (alive-tracker))))))))
+    (when-wrapper-enabled ring-kdef/cfg-traffic-drain-wrapper? handler context
+      (let [shutdown-flag (core-kdef/ctx-shutdown-flag context)
+            response-503  (let [response {:status 503
+                                          :headers {"Content-Type" "text/plain"}
+                                          :body "503 Service Unavailable. Traffic draining is in progress."}]
+                            (if conn-close?
+                              (assoc-in response [:headers "Connection"] "close")
+                              response))
+            alive-tracker (core-kdef/ctx-alive-tstamp context)]
+        ;; initialize alive-tracker
+        (alive-tracker)
+        ;; return wrapped handler
+        (fn [request]
+          (if @shutdown-flag
+            response-503
+            (try
+              (let [response (handler request)]
+                (if (and conn-close?
+                      @shutdown-flag
+                      (map? response)
+                      (integer? (:status response)))
+                  (assoc-in response [:headers "Connection"] "close")
+                  response))
+              (finally
+                ;; record last service time
+                (alive-tracker)))))))))

@@ -4,8 +4,6 @@
 
 - Key definitions
   - [Todo] Support for dual or multiple handlers starting at different web server ports
-- Inducers
-  - [Todo] enabled-wrappers (looks up config flag before applying)
 - Wrappers
   - [Todo] Distributed trace (requires logging integration)
   - [Todo] SSE streaming (requires ring-sse-middleware dependency)
@@ -16,7 +14,7 @@
 ## [WIP] 0.5.0 / 2018-January-??
 
 - Use bract.core 0.5.0
-- Wrappers
+- Wrappers (can toggle each with config flag)
   - /health handler (health-check)
   - /info handler
   - /ping handler
