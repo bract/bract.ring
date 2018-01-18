@@ -75,6 +75,92 @@
   ([_ respond _] (respond default-response)))
 
 
+(deftest test-health-check
+  (doseq [{:keys [health-uri
+                  content-type
+                  body-encoder]} [{:health-uri "/health"
+                                   :content-type "application/edn"
+                                   :body-encoder pr-str}
+                                  {:health-uri "/health"
+                                   :content-type "application/json"
+                                   :body-encoder cheshire/generate-string}]]
+    (testing "sanity checks"
+      (let [wrapped (-> handler
+                      (wrapper/health-check-wrapper {:bract.core/config {}}
+                        {:body-encoder body-encoder
+                         :content-type content-type}))]
+        (is (= {:status 200
+                :body "default"
+                :headers {"Content-Type" "text/plain"}}
+              (roundtrip-get wrapped {} "/")
+              (roundtrip-get wrapped {:async true} "/")) "no health check - regular URI cannot trigger health check")
+        (is (= {:status 405
+                :headers {"Content-Type" "text/plain"}
+                :body "Expected HTTP GET request for health check endpoint, but found PUT"}
+              (roundtrip-put wrapped {} health-uri)
+              (roundtrip-put wrapped {:async true} health-uri)) "health check - PUT request should return HTTP 405")
+        (is (= {:status 200
+                :headers {"Content-Type" content-type}
+                :body (body-encoder {:status :healthy, :components []})}
+              (roundtrip-get wrapped {} health-uri)
+              (roundtrip-get wrapped {:async true} health-uri)) "health check - no component")))
+    (testing "components"
+      (let [mysql-broken {:id     :mysql
+                          :status :critical
+                          :impact :hard
+                          :breaker :half-open
+                          :retry-in "14000ms"}
+            mysql-status {:id     :mysql
+                          :status :degraded
+                          :impact :hard
+                          :breaker :half-open
+                          :retry-in "14000ms"}
+            cache-status {:id     :cache
+                          :status :critical
+                          :impact :soft}
+            disk-status  {:id     :disk
+                          :status :healthy
+                          :impact :none
+                          :free-gb 39.42}
+            critical-hnd (-> handler
+                           (wrapper/health-check-wrapper {:bract.core/config {}
+                                                          :bract.core/health-check [(fn [] mysql-broken)]}
+                             {:body-encoder body-encoder
+                              :content-type content-type}))
+            degraded-hnd (-> handler
+                           (wrapper/health-check-wrapper {:bract.core/config {}
+                                                          :bract.core/health-check [(fn [] mysql-status)
+                                                                                    (fn [] cache-status)
+                                                                                    (fn [] disk-status)]}
+                             {:body-encoder body-encoder
+                              :content-type content-type}))
+            healthy-hnd  (-> handler
+                           (wrapper/health-check-wrapper {:bract.core/config {}
+                                                          :bract.core/health-check [(fn [] disk-status)]}
+                             {:body-encoder body-encoder
+                              :content-type content-type}))]
+        (is (= {:status 503
+                :headers {"Content-Type" content-type}
+                :body (body-encoder {:status :critical
+                                     :components [mysql-broken]})}
+              (roundtrip-get critical-hnd {} health-uri)
+              (roundtrip-get critical-hnd {:async true} health-uri)) "health check - critical status")
+        (is (= {:status 500
+                :headers {"Content-Type" content-type}
+                :body (body-encoder {:status :degraded
+                                     :components [mysql-status
+                                                  cache-status
+                                                  disk-status]})}
+              (roundtrip-get degraded-hnd {} health-uri)
+              (roundtrip-get degraded-hnd {:async true} health-uri)) "health check - degraded status")
+        (is (= {:status 200
+                :headers {"Content-Type" content-type}
+                :body (body-encoder {:status :healthy
+                                     :components [disk-status]})}
+              (roundtrip-get healthy-hnd {} health-uri)
+              (roundtrip-get healthy-hnd {:async true} health-uri)) "health check - healthy status")))))
+
+
 (deftest test-info-wrapper
   (doseq [{:keys [body-encoder
                   body-decoder
@@ -273,89 +359,3 @@
             :status 503
             :body "503 Service Unavailable. Traffic draining is in progress."}
           (roundtrip-get wrapped {} "/")))))
-
-
-(deftest test-health-check
-  (doseq [{:keys [health-uri
-                  content-type
-                  body-encoder]} [{:health-uri "/health"
-                                   :content-type "application/edn"
-                                   :body-encoder pr-str}
-                                  {:health-uri "/health"
-                                   :content-type "application/json"
-                                   :body-encoder cheshire/generate-string}]]
-    (testing "sanity checks"
-      (let [wrapped (-> handler
-                      (wrapper/health-check-wrapper {:bract.core/config {}}
-                        {:body-encoder body-encoder
-                         :content-type content-type}))]
-        (is (= {:status 200
-                :body "default"
-                :headers {"Content-Type" "text/plain"}}
-              (roundtrip-get wrapped {} "/")
-              (roundtrip-get wrapped {:async true} "/")) "no health check - regular URI cannot trigger health check")
-        (is (= {:status 405
-                :headers {"Content-Type" "text/plain"}
-                :body "Expected HTTP GET request for health check endpoint, but found PUT"}
-              (roundtrip-put wrapped {} health-uri)
-              (roundtrip-put wrapped {:async true} health-uri)) "health check - PUT request should return HTTP 405")
-        (is (= {:status 200
-                :headers {"Content-Type" content-type}
-                :body (body-encoder {:status :healthy, :components []})}
-              (roundtrip-get wrapped {} health-uri)
-              (roundtrip-get wrapped {:async true} health-uri)) "health check - no component")))
-    (testing "components"
-      (let [mysql-broken {:id     :mysql
-                          :status :critical
-                          :impact :hard
-                          :breaker :half-open
-                          :retry-in "14000ms"}
-            mysql-status {:id     :mysql
-                          :status :degraded
-                          :impact :hard
-                          :breaker :half-open
-                          :retry-in "14000ms"}
-            cache-status {:id     :cache
-                          :status :critical
-                          :impact :soft}
-            disk-status  {:id     :disk
-                          :status :healthy
-                          :impact :none
-                          :free-gb 39.42}
-            critical-hnd (-> handler
-                           (wrapper/health-check-wrapper {:bract.core/config {}
-                                                          :bract.core/health-check [(fn [] mysql-broken)]}
-                             {:body-encoder body-encoder
-                              :content-type content-type}))
-            degraded-hnd (-> handler
-                           (wrapper/health-check-wrapper {:bract.core/config {}
-                                                          :bract.core/health-check [(fn [] mysql-status)
-                                                                                    (fn [] cache-status)
-                                                                                    (fn [] disk-status)]}
-                             {:body-encoder body-encoder
-                              :content-type content-type}))
-            healthy-hnd  (-> handler
-                           (wrapper/health-check-wrapper {:bract.core/config {}
-                                                          :bract.core/health-check [(fn [] disk-status)]}
-                             {:body-encoder body-encoder
-                              :content-type content-type}))]
-        (is (= {:status 503
-                :headers {"Content-Type" content-type}
-                :body (body-encoder {:status :critical
-                                     :components [mysql-broken]})}
-              (roundtrip-get critical-hnd {} health-uri)
-              (roundtrip-get critical-hnd {:async true} health-uri)) "health check - critical status")
-        (is (= {:status 500
-                :headers {"Content-Type" content-type}
-                :body (body-encoder {:status :degraded
-                                     :components [mysql-status
-                                                  cache-status
-                                                  disk-status]})}
-              (roundtrip-get degraded-hnd {} health-uri)
-              (roundtrip-get degraded-hnd {:async true} health-uri)) "health check - degraded status")
-        (is (= {:status 200
-                :headers {"Content-Type" content-type}
-                :body (body-encoder {:status :healthy
-                                     :components [disk-status]})}
-              (roundtrip-get healthy-hnd {} health-uri)
-              (roundtrip-get healthy-hnd {:async true} health-uri)) "health check - healthy status")))))
