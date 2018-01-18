@@ -75,64 +75,43 @@
   ([_ respond _] (respond default-response)))
 
 
-(deftest test-info-edn
-  (let [wrapped-handler (wrapper/info-edn-wrapper handler {})
-        body-map (fn [response] (-> response
-                                  :body
-                                  edn/read-string
-                                  (select-keys [:os-name :os-arch :os-memory-physical-total])))]
-    (is (= default-response
-          (wrapped-handler {:uri "/foo"})
-          (roundtrip-get wrapped-handler {} "/foo")
-          (roundtrip-get wrapped-handler {:async? true} "/foo")))
-    (testing "info URI without trailing slash"
-      (is (not= default-response
-            (wrapped-handler {:uri "/info/edn"})))
-      (is (= (-> (wrapped-handler {:uri "/info/edn"})
-               body-map)
-            (-> (roundtrip-get wrapped-handler {} "/info/edn")
-              body-map)
-            (-> (roundtrip-get wrapped-handler {:async? true} "/info/edn")
-              body-map))))
-    (testing "info URI with trailing slash"
-      (is (not= default-response
-            (wrapped-handler {:uri "/info/edn/"})))
-      (is (= (-> (wrapped-handler {:uri "/info/edn/"})
-               body-map)
-            (-> (roundtrip-get wrapped-handler {} "/info/edn/")
-              body-map)
-            (-> (roundtrip-get wrapped-handler {:async? true} "/info/edn/")
-              body-map))))))
-
-
-(deftest test-info-json
-  (let [wrapped-handler (wrapper/info-json-wrapper handler {} cheshire/generate-string)
-        body-map (fn [response] (-> response
-                                  :body
-                                  cheshire/parse-string
-                                  (select-keys [:os-name :os-arch :os-memory-physical-total])))]
-    (is (= default-response
-          (wrapped-handler {:uri "/foo"})
-          (roundtrip-get wrapped-handler {} "/foo")
-          (roundtrip-get wrapped-handler {:async? true} "/foo")))
-    (testing "info URI without trailing slash"
-      (is (not= default-response
-            (wrapped-handler {:uri "/info/json"})))
-      (is (= (-> (wrapped-handler {:uri "/info/json"})
-               body-map)
-            (-> (roundtrip-get wrapped-handler {} "/info/json")
-              body-map)
-            (-> (roundtrip-get wrapped-handler {:async? true} "/info/json")
-              body-map))))
-    (testing "info URI with trailing slash"
-      (is (not= default-response
-            (wrapped-handler {:uri "/info/json/"})))
-      (is (= (-> (wrapped-handler {:uri "/info/json/"})
-               body-map)
-            (-> (roundtrip-get wrapped-handler {} "/info/json/")
-              body-map)
-            (-> (roundtrip-get wrapped-handler {:async? true} "/info/json/")
-              body-map))))))
+(deftest test-info-wrapper
+  (doseq [{:keys [body-encoder
+                  body-decoder
+                  content-type]} [{:body-encoder pr-str
+                                   :body-decoder edn/read-string
+                                   :content-type "application/edn"}
+                                  {:body-encoder cheshire/generate-string
+                                   :body-decoder cheshire/parse-string
+                                   :content-type "application/json"}]]
+    (let [wrapped-handler (wrapper/info-wrapper handler {} {:body-encoder body-encoder
+                                                            :content-type content-type})
+          body-map (fn [response] (-> response
+                                    :body
+                                    body-decoder
+                                    (select-keys [:os-name :os-arch :os-memory-physical-total])))]
+      (is (= default-response
+            (wrapped-handler {:uri "/foo"})
+            (roundtrip-get wrapped-handler {} "/foo")
+            (roundtrip-get wrapped-handler {:async? true} "/foo")))
+      (testing "info URI without trailing slash"
+        (is (not= default-response
+              (wrapped-handler {:uri "/info" :request-method :get})))
+        (is (= (-> (wrapped-handler {:uri "/info/" :request-method :get})
+                 body-map)
+              (-> (roundtrip-get wrapped-handler {} "/info")
+                body-map)
+              (-> (roundtrip-get wrapped-handler {:async? true} "/info")
+                body-map))))
+      (testing "info URI with trailing slash"
+        (is (not= default-response
+              (wrapped-handler {:uri "/info/" :request-method :get})))
+        (is (= (-> (wrapped-handler {:uri "/info/" :request-method :get})
+                 body-map)
+              (-> (roundtrip-get wrapped-handler {} "/info/")
+                body-map)
+              (-> (roundtrip-get wrapped-handler {:async? true} "/info/")
+                body-map)))))))
 
 
 (deftest test-ping

@@ -20,73 +20,49 @@
 ;; ----- /info -----
 
 
-(defn info-edn-handler
-  "Return system info as Ring response containing EDN body string."
-  ([]
-    {:status 200
-     :body (pr-str (bcu-runtime/sysinfo))
-     :headers {"Content-Type"  "application/edn"
-               "Cache-Control" "no-store, no-cache, must-revalidate"}})
-  ([request] (info-edn-handler))
-  ([request respond raise] (respond (info-edn-handler))))
+(defn info-response
+  "Return /info response."
+  [body-encoder content-type]
+  {:status 200
+   :headers {"Content-Type" content-type
+             "Cache-Control" "no-store, no-cache, must-revalidate"}
+   :body (body-encoder (bcu-runtime/sysinfo))})
 
 
-(defn info-edn-wrapper
-  "Given Ring handler and Bract context, wrap the handler such that info (default: /info/edn and /info/edn/) URIs
-  lead to returning system info as EDN string body of the response."
+(defn info-wrapper
   ([handler context]
-    (info-edn-wrapper handler context #{"/info/edn" "/info/edn/"}))
-  ([handler context info-uris]
-    (let [info-uris-set (set info-uris)]
-      (fn info-edn
-        ([request]
-          (if (->> (:uri request)
-                (contains? info-uris-set))
-            (info-edn-handler)
-            (handler request)))
-        ([request respond raise]
-          (if (->> (:uri request)
-                (contains? info-uris-set))
-            (respond (info-edn-handler))
-            (handler request respond raise)))))))
-
-
-(defn make-info-json-handler
-  "Given JSON encoder function, make a Ring handler function that returns system info as Ring response containing
-  JSON body string."
-  [json-encoder]
-  (fn info-json
-    ([]
-      {:status 200
-       :body (json-encoder (bcu-runtime/sysinfo))
-       :headers {"Content-Type"  "application/json"
-                 "Cache-Control" "no-store, no-cache, must-revalidate"}})
-    ([request] (info-json))
-    ([request respond raise] (respond (info-json)))))
-
-
-(defn info-json-wrapper
-  "Given Ring handler, Bract context and JSON encoder function, wrap the handler such that info (default: /info/json
-  and /info/json/) URIs lead to returning system info as JSON string body of the response."
-  ([handler context json-encoder]
-    (info-json-wrapper handler context json-encoder #{"/info/json" "/info/json/"}))
-  ([handler context json-encoder info-uris]
-    (let [info-uris-set (set info-uris)
-          gen-response  (make-info-json-handler json-encoder)]
+    (info-wrapper handler context {}))
+  ([handler context {:keys [uris
+                            body-encoder
+                            content-type]
+                     :or {uris         #{"/info" "/info/"}
+                          body-encoder pr-str
+                          content-type "application/edn"}
+                     :as options}]
+    (let [uri-set      (set uris)
+          body-encoder (core-type/ifunc body-encoder)
+          info-process (fn [request]
+                         (let [method (:request-method request)]
+                           (if (= :get method)
+                             (info-response body-encoder content-type)
+                             {:status 405
+                              :body (str "Expected HTTP GET request for info endpoint, but found "
+                                      (-> method
+                                        core-util/as-str
+                                        string/upper-case))
+                              :headers {"Content-Type" "text/plain"}})))]
       (fn
         ([request]
-          (if (->> (:uri request)
-                (contains? info-uris-set))
-            (gen-response)
+          (if (contains? uri-set (:uri request))
+            (info-process request)
             (handler request)))
         ([request respond raise]
-          (if (->> (:uri request)
-                (contains? info-uris-set))
-            (respond (gen-response))
+          (if (contains? uri-set (:uri request))
+            (respond (info-process request))
             (handler request respond raise)))))))
 
 
-;; ----- ping -----
+;; ----- /ping -----
 
 
 (defn ping-wrapper
