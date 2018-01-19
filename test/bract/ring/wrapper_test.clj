@@ -161,7 +161,7 @@
               (roundtrip-get healthy-hnd {:async true} health-uri)) "health check - healthy status")))))
 
 
-(deftest test-info
+(deftest test-info-endpoint
   (doseq [{:keys [body-encoder
                   body-decoder
                   content-type]} [{:body-encoder pr-str
@@ -170,8 +170,8 @@
                                   {:body-encoder cheshire/generate-string
                                    :body-decoder cheshire/parse-string
                                    :content-type "application/json"}]]
-    (let [wrapped-handler (wrapper/info-wrapper handler {:bract.core/config {}} {:body-encoder body-encoder
-                                                                                 :content-type content-type})
+    (let [wrapped-handler (wrapper/info-endpoint-wrapper handler {:bract.core/config {}} {:body-encoder body-encoder
+                                                                                          :content-type content-type})
           body-map (fn [response] (-> response
                                     :body
                                     body-decoder
@@ -201,7 +201,7 @@
 
 
 (deftest test-ping
-  (let [wrapped-handler (wrapper/ping-wrapper handler {:bract.core/config {}})]
+  (let [wrapped-handler (wrapper/ping-endpoint-wrapper handler {:bract.core/config {}})]
     (is (= default-response
           (wrapped-handler {:uri "/foo"})
           (roundtrip-get wrapped-handler {} "/foo")

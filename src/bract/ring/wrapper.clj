@@ -97,9 +97,9 @@
    :body (body-encoder (bcu-runtime/sysinfo))})
 
 
-(defn info-wrapper
+(defn info-endpoint-wrapper
   ([handler context]
-    (info-wrapper handler context {}))
+    (info-endpoint-wrapper handler context {}))
   ([handler context {:keys [uris
                             body-encoder
                             content-type]
@@ -134,13 +134,13 @@
 ;; ----- /ping -----
 
 
-(defn ping-wrapper
+(defn ping-endpoint-wrapper
   "Given Ring handler and Bract context, wrap the handler such that ping (default: /ping and /ping/) URIs lead to
   returning a ping response."
   ([handler context]
-    (ping-wrapper handler context #{"/ping" "/ping/"}))
+    (ping-endpoint-wrapper handler context #{"/ping" "/ping/"}))
   ([handler context ping-uris]
-    (ping-wrapper handler context ping-uris "pong"))
+    (ping-endpoint-wrapper handler context ping-uris "pong"))
   ([handler context ping-uris body]
     (when-wrapper-enabled ring-kdef/cfg-ping-endpoint-wrapper? handler context
       (let [ping-uris-set (set ping-uris)
