@@ -108,7 +108,7 @@
                           content-type "application/edn"}
                      :as options}]
     (when-wrapper-enabled ring-kdef/cfg-info-endpoint-wrapper? handler context
-      (let [uri-set      (set uris)
+      (let [info-uri-set (set uris)
             body-encoder (core-type/ifunc body-encoder)
             info-process (fn [request]
                            (let [method (:request-method request)]
@@ -122,11 +122,11 @@
                                 :headers {"Content-Type" "text/plain"}})))]
         (fn
           ([request]
-            (if (contains? uri-set (:uri request))
+            (if (contains? info-uri-set (:uri request))
               (info-process request)
               (handler request)))
           ([request respond raise]
-            (if (contains? uri-set (:uri request))
+            (if (contains? info-uri-set (:uri request))
               (respond (info-process request))
               (handler request respond raise))))))))
 
