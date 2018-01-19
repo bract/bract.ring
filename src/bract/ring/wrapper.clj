@@ -138,26 +138,27 @@
   "Given Ring handler and Bract context, wrap the handler such that ping (default: /ping and /ping/) URIs lead to
   returning a ping response."
   ([handler context]
-    (ping-endpoint-wrapper handler context #{"/ping" "/ping/"}))
-  ([handler context ping-uris]
-    (ping-endpoint-wrapper handler context ping-uris "pong"))
-  ([handler context ping-uris body]
+    (ping-endpoint-wrapper handler context {}))
+  ([handler context {:keys [uris body content-type]
+                     :or {uris #{"/ping" "/ping/"}
+                          body "pong"
+                          content-type "text/plain"}}]
     (when-wrapper-enabled ring-kdef/cfg-ping-endpoint-wrapper? handler context
-      (let [ping-uris-set (set ping-uris)
-            ping-response (fn [] {:status 200
-                                  :body (str body)
-                                  :headers {"Content-Type"  "text/plain"
-                                            "Cache-Control" "no-store, no-cache, must-revalidate"}})]
+      (let [ping-uri-set  (set uris)
+            ping-response {:status 200
+                           :body body
+                           :headers {"Content-Type"  content-type
+                                     "Cache-Control" "no-store, no-cache, must-revalidate"}}]
         (fn
           ([request]
             (if (->> (:uri request)
-                  (contains? ping-uris-set))
-              (ping-response)
+                  (contains? ping-uri-set))
+              ping-response
               (handler request)))
           ([request respond raise]
             (if (->> (:uri request)
-                  (contains? ping-uris-set))
-              (respond (ping-response))
+                  (contains? ping-uri-set))
+              (respond ping-response)
               (handler request respond raise))))))))
 
 
