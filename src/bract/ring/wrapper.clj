@@ -236,21 +236,25 @@
   implies no-backup) to backup the old URI to, return updated Ring handler that matches prefix and proceeds on success
   or returns HTTP 400 on no match.
   See: make-uri-prefix-matcher"
-  [handler context ^String uri-prefix strip-uri? backup-key]
-  (when-wrapper-enabled ring-kdef/cfg-uri-prefix-match-wrapper? handler context
-    (let [matcher (make-uri-prefix-matcher ^String uri-prefix strip-uri? backup-key)
-          res-400 {:status 400
-                   :body (format "Expected URI to start with and be longer than '%s'" uri-prefix)
-                   :headers {"Content-Type" "text/plain"}}]
-      (fn
-        ([request]
-          (if-let [request (matcher request)]
-            (handler request)
-            res-400))
-        ([request respond raise]
-          (if-let [request (matcher request)]
-            (handler request respond raise)
-            (respond res-400)))))))
+  ([handler context ^String uri-prefix]
+    (uri-prefix-match-wrapper handler context uri-prefix {}))
+  ([handler context ^String uri-prefix {:keys [strip-uri? backup-key]
+                                        :or {strip-uri? true
+                                             backup-key :original-uri}}]
+    (when-wrapper-enabled ring-kdef/cfg-uri-prefix-match-wrapper? handler context
+      (let [matcher (make-uri-prefix-matcher ^String uri-prefix strip-uri? backup-key)
+            res-400 {:status 400
+                     :body (format "Expected URI to start with and be longer than '%s'" uri-prefix)
+                     :headers {"Content-Type" "text/plain"}}]
+        (fn
+          ([request]
+            (if-let [request (matcher request)]
+              (handler request)
+              res-400))
+          ([request respond raise]
+            (if-let [request (matcher request)]
+              (handler request respond raise)
+              (respond res-400))))))))
 
 
 (defn params-normalize-wrapper

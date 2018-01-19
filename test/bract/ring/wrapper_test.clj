@@ -288,11 +288,16 @@
       (is (= nil
             (matcher {:uri "/prefix"})))))
   (testing "wrapper"
-    (let [wrapped (wrapper/uri-prefix-match-wrapper handler {:bract.core/config {}} "/prefix" true :backup)]
+    (let [wrapped (wrapper/uri-prefix-match-wrapper handler {:bract.core/config {}} "/prefix" {:strip-uri? true
+                                                                                               :backup-key :backup})]
       (is (= {:status 200
               :body "default"
               :headers {"Content-Type" "text/plain"}}
-            (wrapped {:uri "/prefix/foo"}))))))
+            (wrapped {:uri "/prefix/foo"})))
+      (is (= {:status 400
+              :body "Expected URI to start with and be longer than '/prefix'"
+              :headers {"Content-Type" "text/plain"}}
+            (wrapped {:uri "/foo"}))))))
 
 
 (deftest test-params-normalize
