@@ -22,22 +22,14 @@
 (keypin/defkey  ; config keys for wrappers enabled flag
   {:parser kputil/any->edn
    :default true}
-  cfg-health-check-wrapper?       ["bract.ring.health.check.wrapper.enabled"       kputil/bool?
-                                   "Is health-check wrapper enabled?"]
-  cfg-info-wrapper?               ["bract.ring.info.wrapper.enabled"               kputil/bool?
-                                   "Is info wrapper enabled"]
-  cfg-ping-wrapper?               ["bract.ring.ping.wrapper.enabled"               kputil/bool?
-                                   "Is ping wrapper enabled?"]
-  cfg-uri-trailing-slash-wrapper? ["bract.ring.uri.trailing.slash.wrapper.enabled" kputil/bool?
-                                   "Is URI trailing slash wrapper enabled?"]
-  cfg-uri-prefix-match-wrapper?   ["bract.ring.uri.prefix.match.wrapper.enabled"   kputil/bool?
-                                   "Is URI prefix match wrapper enabled?"]
-  cfg-params-normalize-wrapper?   ["bract.ring.params.normalize.wrapper.enabled"   kputil/bool?
-                                   "Is wrap-params normalize wrapper enabled?"]
-  cfg-unexpected->500-wrapper?    ["bract.ring.unexpected.500.wrapper.enabled"     kputil/bool?
-                                   "Is unexpected->500 wrapper enabled?"]
-  cfg-traffic-drain-wrapper?      ["bract.ring.traffic.drain.wrapper.enabled"      kputil/bool?
-                                   "Is traffic-drain wrapper enabled?"])
+  cfg-health-check-wrapper?       ["bract.ring.health.check.enabled"       kputil/bool? "Health-check enabled?"]
+  cfg-info-wrapper?               ["bract.ring.info.enabled"               kputil/bool? "Info endpoint enabled?"]
+  cfg-ping-wrapper?               ["bract.ring.ping.enabled"               kputil/bool? "Ping endpoint enabled?"]
+  cfg-uri-trailing-slash-wrapper? ["bract.ring.uri.trailing.slash.enabled" kputil/bool? "URI trailing slash enabled?"]
+  cfg-uri-prefix-match-wrapper?   ["bract.ring.uri.prefix.match.enabled"   kputil/bool? "Is URI prefix match enabled?"]
+  cfg-params-normalize-wrapper?   ["bract.ring.params.normalize.enabled"   kputil/bool? "Is params normalize enabled?"]
+  cfg-unexpected->500-wrapper?    ["bract.ring.unexpected.500.enabled"     kputil/bool? "Is unexpected->500 enabled?"]
+  cfg-traffic-drain-wrapper?      ["bract.ring.traffic.drain.enabled"      kputil/bool? "Is traffic-drain enabled?"])
 
 
 (keypin/defkey  ; config keys for wrappers
