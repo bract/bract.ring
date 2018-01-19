@@ -15,9 +15,9 @@
 
 - Use bract.core 0.5.0
 - Wrappers (can toggle each with config flag)
-  - /health handler (health-check)
-  - /info handler
-  - /ping handler
+  - Health check (/health)
+  - Info endpoint (/info)
+  - Ping endpoint (/ping)
   - uri-trailing-slash
   - uri-prefix-match
   - params-normalize

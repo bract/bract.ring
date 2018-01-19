@@ -170,8 +170,14 @@
                                   {:body-encoder cheshire/generate-string
                                    :body-decoder cheshire/parse-string
                                    :content-type "application/json"}]]
-    (let [wrapped-handler (wrapper/info-endpoint-wrapper handler {:bract.core/config {}} {:body-encoder body-encoder
-                                                                                          :content-type content-type})
+    (let [wrapped-handler (wrapper/info-endpoint-wrapper handler {:bract.core/config {}}
+                            {:body-encoder body-encoder
+                             :content-type content-type})
+          wrapped-custom  (wrapper/info-endpoint-wrapper handler {:bract.core/config {}
+                                                                  :bract.core/runtime-info [#(do {:foo 10
+                                                                                                  :bar 20})]}
+                            {:body-encoder body-encoder
+                             :content-type content-type})
           body-map (fn [response] (-> response
                                     :body
                                     body-decoder
@@ -197,6 +203,13 @@
               (-> (roundtrip-get wrapped-handler {} "/info/")
                 body-map)
               (-> (roundtrip-get wrapped-handler {:async? true} "/info/")
+                body-map))))
+      (testing "info URI with custom info generators"
+        (is (= (-> (wrapped-custom {:uri "/info/" :request-method :get})
+                 body-map)
+              (-> (roundtrip-get wrapped-custom {} "/info/")
+                body-map)
+              (-> (roundtrip-get wrapped-custom {:async? true} "/info/")
                 body-map)))))))
 
 

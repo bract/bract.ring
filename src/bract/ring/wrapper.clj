@@ -90,11 +90,11 @@
 
 (defn info-response
   "Return /info response."
-  [body-encoder content-type]
+  [info-gen-fns body-encoder content-type]
   {:status 200
    :headers {"Content-Type" content-type
              "Cache-Control" "no-store, no-cache, must-revalidate"}
-   :body (body-encoder (bcu-runtime/sysinfo))})
+   :body (body-encoder (bcu-runtime/runtime-info info-gen-fns))})
 
 
 (defn info-endpoint-wrapper
@@ -110,10 +110,11 @@
     (when-wrapper-enabled ring-kdef/cfg-info-endpoint-wrapper? handler context
       (let [info-uri-set (set uris)
             body-encoder (core-type/ifunc body-encoder)
+            info-gen-fns (core-kdef/ctx-runtime-info context)
             info-process (fn [request]
                            (let [method (:request-method request)]
                              (if (= :get method)
-                               (info-response body-encoder content-type)
+                               (info-response info-gen-fns body-encoder content-type)
                                {:status 405
                                 :body (str "Expected HTTP GET request for info endpoint, but found "
                                         (-> method
