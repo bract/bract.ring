@@ -23,18 +23,18 @@
   {:parser kputil/any->edn
    :default true}
   cfg-health-check-wrapper?       ["bract.ring.health.check.enabled"       kputil/bool? "Health-check enabled?"]
-  cfg-info-wrapper?               ["bract.ring.info.enabled"               kputil/bool? "Info endpoint enabled?"]
-  cfg-ping-wrapper?               ["bract.ring.ping.enabled"               kputil/bool? "Ping endpoint enabled?"]
+  cfg-info-endpoint-wrapper?      ["bract.ring.info.endpoint.enabled"      kputil/bool? "Info endpoint enabled?"]
+  cfg-ping-endpoint-wrapper?      ["bract.ring.ping.endpoint.enabled"      kputil/bool? "Ping endpoint enabled?"]
   cfg-uri-trailing-slash-wrapper? ["bract.ring.uri.trailing.slash.enabled" kputil/bool? "URI trailing slash enabled?"]
-  cfg-uri-prefix-match-wrapper?   ["bract.ring.uri.prefix.match.enabled"   kputil/bool? "Is URI prefix match enabled?"]
-  cfg-params-normalize-wrapper?   ["bract.ring.params.normalize.enabled"   kputil/bool? "Is params normalize enabled?"]
-  cfg-unexpected->500-wrapper?    ["bract.ring.unexpected.500.enabled"     kputil/bool? "Is unexpected->500 enabled?"]
-  cfg-traffic-drain-wrapper?      ["bract.ring.traffic.drain.enabled"      kputil/bool? "Is traffic-drain enabled?"])
+  cfg-uri-prefix-match-wrapper?   ["bract.ring.uri.prefix.match.enabled"   kputil/bool? "URI prefix match enabled?"]
+  cfg-params-normalize-wrapper?   ["bract.ring.params.normalize.enabled"   kputil/bool? "Params normalize enabled?"]
+  cfg-unexpected->500-wrapper?    ["bract.ring.unexpected.500.enabled"     kputil/bool? "Unexpected->500 enabled?"]
+  cfg-traffic-drain-wrapper?      ["bract.ring.traffic.drain.enabled"      kputil/bool? "Traffic-drain enabled?"])
 
 
 (keypin/defkey  ; config keys for wrappers
-  cfg-health-codes ["bract.ring.health.codes" map? "Map of health status to HTTP status code"
-                    {:parser kputil/any->edn
-                     :default {:critical 503
-                               :degraded 500
-                               :healthy  200}}])
+  cfg-health-check-http-codes     ["bract.ring.health.check.http.codes" map? "Map of health status to HTTP status code"
+                                   {:parser kputil/any->edn
+                                    :default {:critical 503
+                                              :degraded 500
+                                              :healthy  200}}])

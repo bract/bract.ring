@@ -60,7 +60,7 @@
             hc-fns   (core-kdef/ctx-health-check context)
             hc-codes (->> context
                        core-kdef/ctx-config
-                       ring-kdef/cfg-health-codes
+                       ring-kdef/cfg-health-check-http-codes
                        (merge {:critical 503
                                :degraded 500
                                :healthy  200}))
@@ -107,7 +107,7 @@
                           body-encoder pr-str
                           content-type "application/edn"}
                      :as options}]
-    (when-wrapper-enabled ring-kdef/cfg-info-wrapper? handler context
+    (when-wrapper-enabled ring-kdef/cfg-info-endpoint-wrapper? handler context
       (let [uri-set      (set uris)
             body-encoder (core-type/ifunc body-encoder)
             info-process (fn [request]
@@ -142,7 +142,7 @@
   ([handler context ping-uris]
     (ping-wrapper handler context ping-uris "pong"))
   ([handler context ping-uris body]
-    (when-wrapper-enabled ring-kdef/cfg-ping-wrapper? handler context
+    (when-wrapper-enabled ring-kdef/cfg-ping-endpoint-wrapper? handler context
       (let [ping-uris-set (set ping-uris)
             ping-response (fn [] {:status 200
                                   :body (str body)
