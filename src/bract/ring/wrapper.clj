@@ -56,12 +56,12 @@
 (defn health-check-wrapper
   "Given optional URIs (default: /health), body encoder (default: EDN) and content type (default: application/edn),
   wrap specified Ring handler such that it responds to application health query when health endpoint is requested.
-  Option        | Config key                         | Default config value                       |
-  --------------|------------------------------------|--------------------------------------------|
-  :uris         | bract.ring.health.check.uris       | [\"/health\" \"/health/\"]                 |
-  :body-encoder | bract.ring.health.body.encoder     | clojure.core/pr-str                        |
-  :content-type | bract.ring.health.content.type     | application/edn                            |
-  :http-codes   | bract.ring.health.check.http.codes | {:critical 503 :degraded 500 :healthy 200} |"
+  | Option        | Config key                     | Default config value                       |
+  |---------------|--------------------------------|--------------------------------------------|
+  | :uris         | bract.ring.health.check.uris   | [\"/health\" \"/health/\"]                 |
+  | :body-encoder | bract.ring.health.body.encoder | clojure.core/pr-str                        |
+  | :content-type | bract.ring.health.content.type | application/edn                            |
+  | :http-codes   | bract.ring.health.http.codes   | {:critical 503 :degraded 500 :healthy 200} |"
   ([handler context]
     (health-check-wrapper handler context {}))
   ([handler context options]
@@ -69,13 +69,13 @@
       (let [uri-set      (->> ring-kdef/cfg-health-check-uris
                            (opt-or-config :uris)
                            set)
-            body-encoder (->> ring-kdef/cfg-health-check-body-encoder
+            body-encoder (->> ring-kdef/cfg-health-body-encoder
                            (opt-or-config :body-encoder)
                            core-type/ifunc)
-            content-type (->> ring-kdef/cfg-health-check-content-type
+            content-type (->> ring-kdef/cfg-health-content-type
                            (opt-or-config :content-type))
             hc-functions (core-kdef/ctx-health-check context)
-            http-codes   (->> ring-kdef/cfg-health-check-http-codes
+            http-codes   (->> ring-kdef/cfg-health-http-codes
                            (opt-or-config :http-codes)
                            (merge {:critical 503
                                    :degraded 500
@@ -117,7 +117,7 @@
   "Given Ring handler and Bract context, wrap the handler such that info (default: /info and /info/) URIs lead to
   returning a runtime info response.
   | Option        | Config key                        | Default config value   |
-  | --------------|-----------------------------------|------------------------|
+  |---------------|-----------------------------------|------------------------|
   | :uris         | bract.ring.info.endpoint.uris     | [\"/info\" \"/info/\"] |
   | :body-encoder | bract.ring.info.body.encoder      | clojure.core/pr-str    |
   | :content-type | bract.ring.info.body.content.type | application/edn        |"
