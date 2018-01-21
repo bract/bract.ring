@@ -163,12 +163,15 @@
   returning a ping response."
   ([handler context]
     (ping-endpoint-wrapper handler context {}))
-  ([handler context {:keys [uris body content-type]
-                     :or {uris #{"/ping" "/ping/"}
-                          body "pong"
-                          content-type "text/plain"}}]
+  ([handler context options]
     (when-wrapper-enabled ring-kdef/cfg-ping-endpoint-wrapper? handler context
-      (let [ping-uri-set  (set uris)
+      (let [ping-uri-set (->> ring-kdef/cfg-ping-endpoint-uris
+                           (opt-or-config :uris)
+                           set)
+            body         (->> ring-kdef/cfg-ping-endpoint-body
+                           (opt-or-config :body))
+            content-type (->> ring-kdef/cfg-ping-content-type
+                           (opt-or-config :content-type))
             ping-response {:status 200
                            :body body
                            :headers {"Content-Type"  content-type

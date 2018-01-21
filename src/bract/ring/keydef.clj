@@ -58,4 +58,11 @@
   cfg-info-content-type           ["bract.ring.info.content.type"       string? "Content type for info body"
                                    {:default "application/edn"}]
   ;; ping endpoint
+  cfg-ping-endpoint-uris          ["bract.ring.ping.endpoint.uris"      vector? "Vector of ping endpoint URIs"
+                                   {:parser kputil/any->edn
+                                    :default ["/ping" "/ping/"]}]
+  cfg-ping-endpoint-body          ["bract.ring.ping.endpoint.body"      string? "String body for ping response"
+                                   {:default "pong"}]
+  cfg-ping-content-type           ["bract.ring.ping.content.type"       string? "Content type for ping body"
+                                   {:default "text/plain"}]
   )
