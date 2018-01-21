@@ -278,11 +278,11 @@
 (deftest test-uri-prefix-match
   (testing "matcher"
     (doseq [[matcher
-             response] [[(wrapper/make-uri-prefix-matcher "/prefix" true :backup)  {:uri "/foo"
-                                                                                    :backup "/prefix/foo"}]
-                        [(wrapper/make-uri-prefix-matcher "/prefix" false :backup) {:uri "/prefix/foo"
-                                                                                    :backup "/prefix/foo"}]
-                        [(wrapper/make-uri-prefix-matcher "/prefix" false nil)     {:uri "/prefix/foo"}]]]
+             response] [[(wrapper/make-uri-prefix-matcher "/prefix" true  true  :backup)  {:uri "/foo"
+                                                                                           :backup "/prefix/foo"}]
+                        [(wrapper/make-uri-prefix-matcher "/prefix" false true  :backup) {:uri "/prefix/foo"
+                                                                                          :backup "/prefix/foo"}]
+                        [(wrapper/make-uri-prefix-matcher "/prefix" false false nil)     {:uri "/prefix/foo"}]]]
       (is (= response
             (matcher {:uri "/prefix/foo"})))
       (is (= nil
@@ -290,8 +290,9 @@
       (is (= nil
             (matcher {:uri "/prefix"})))))
   (testing "wrapper"
-    (let [wrapped (wrapper/uri-prefix-match-wrapper handler {:bract.core/config {}} "/prefix" {:strip-uri? true
-                                                                                               :backup-key :backup})]
+    (let [wrapped (wrapper/uri-prefix-match-wrapper handler
+                    {:bract.core/config {"bract.ring.uri.prefix.match.token" "/prefix"
+                                         "bract.ring.uri.prefix.backup.key"  :backup}})]
       (is (= {:status 200
               :body "default"
               :headers {"Content-Type" "text/plain"}}

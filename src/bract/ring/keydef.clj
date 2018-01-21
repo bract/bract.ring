@@ -72,7 +72,7 @@
                                    {:default "text/plain"}])
 
 
-(keypin/defkey  ; config keys for ping endpoint wrapper
+(keypin/defkey  ; config keys for URI trailing slash wrapper
   cfg-uri-trailing-slash-action   ["bract.ring.uri.trailing.slash.action" {:pred (every-pred string? #{"add" "remove"})
                                                                            :desc "Action string: 'add' or 'remove'"
                                                                            :parser (fn [k v] (-> v
@@ -80,3 +80,16 @@
                                                                                                string/trim
                                                                                                string/lower-case))
                                                                            :default "remove"}])
+
+
+(keypin/defkey  ; config keys for URI trailing slash wrapper
+  cfg-uri-prefix-match-token      ["bract.ring.uri.prefix.match.token"  string? "URI prefix to be matched"]
+  cfg-uri-prefix-strip-prefix?    ["bract.ring.uri.prefix.strip.flag"   kputil/bool? "Strip prefix from the URI?"
+                                   {:parser  kputil/any->edn
+                                    :default true}]
+  cfg-uri-prefix-backup-uri?      ["bract.ring.uri.prefix.backup.flag"  kputil/bool? "Backup original URI?"
+                                   {:parser  kputil/any->edn
+                                    :default true}]
+  cfg-uri-prefix-backup-key       ["bract.ring.uri.prefix.backup.key"   some?   "Backup key in request map to save URI"
+                                   {:parser  kputil/any->edn
+                                    :default :original-uri}])

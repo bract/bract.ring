@@ -250,13 +250,13 @@
   "Given a URI prefix, a flag to decide whether to strip the prefix and a key (nil=disabled) to backup the old URI to,
   return a function `(fn [request]) -> request?` returning updated request on successful prefix match, nil otherwise.
   See: uri-prefix-match-wrapper"
-  [^String uri-prefix strip-uri? backup-key]
+  [^String uri-prefix strip-prefix? uri-backup? backup-key]
   (let [n (.length uri-prefix)
-        backup-uri (if (some? backup-key)
+        backup-uri (if uri-backup?
                      (fn [request] (assoc request backup-key (:uri request)))
                      identity)
         sub-uri    (fn ^String [^String uri] (subs uri n))
-        strip-uri  (if strip-uri?
+        strip-uri  (if strip-prefix?
                      (fn [request] (update request :uri sub-uri))
                      identity)]
     (fn [request]
@@ -274,13 +274,19 @@
   implies no-backup) to backup the old URI to, return updated Ring handler that matches prefix and proceeds on success
   or returns HTTP 400 on no match.
   See: make-uri-prefix-matcher"
-  ([handler context ^String uri-prefix]
-    (uri-prefix-match-wrapper handler context uri-prefix {}))
-  ([handler context ^String uri-prefix {:keys [strip-uri? backup-key]
-                                        :or {strip-uri? true
-                                             backup-key :original-uri}}]
+  ([handler context]
+    (uri-prefix-match-wrapper handler context {}))
+  ([handler context options]
     (when-wrapper-enabled ring-kdef/cfg-uri-prefix-match-wrapper? handler context
-      (let [matcher (make-uri-prefix-matcher ^String uri-prefix strip-uri? backup-key)
+      (let [uri-prefix    (->> ring-kdef/cfg-uri-prefix-match-token
+                            (opt-or-config :uri-prefix))
+            strip-prefix? (->> ring-kdef/cfg-uri-prefix-strip-prefix?
+                            (opt-or-config :strip-prefix?))
+            backup-uri?   (->> ring-kdef/cfg-uri-prefix-backup-uri?
+                            (opt-or-config :backup-uri?))
+            backup-key    (->> ring-kdef/cfg-uri-prefix-backup-key
+                            (opt-or-config :backup-key))
+            matcher (make-uri-prefix-matcher uri-prefix strip-prefix? backup-uri? backup-key)
             res-400 {:status 400
                      :body (format "Expected URI to start with and be longer than '%s'" uri-prefix)
                      :headers {"Content-Type" "text/plain"}}]
