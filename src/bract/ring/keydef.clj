@@ -20,16 +20,17 @@
 
 
 (keypin/defkey  ; config keys for wrappers enabled flag
-  {:parser kputil/any->edn
+  {:pred kputil/bool?
+   :parser kputil/any->edn
    :default true}
-  cfg-health-check-wrapper?       ["bract.ring.health.check.enabled"       kputil/bool? "Health-check enabled?"]
-  cfg-info-endpoint-wrapper?      ["bract.ring.info.endpoint.enabled"      kputil/bool? "Info endpoint enabled?"]
-  cfg-ping-endpoint-wrapper?      ["bract.ring.ping.endpoint.enabled"      kputil/bool? "Ping endpoint enabled?"]
-  cfg-uri-trailing-slash-wrapper? ["bract.ring.uri.trailing.slash.enabled" kputil/bool? "URI trailing slash enabled?"]
-  cfg-uri-prefix-match-wrapper?   ["bract.ring.uri.prefix.match.enabled"   kputil/bool? "URI prefix match enabled?"]
-  cfg-params-normalize-wrapper?   ["bract.ring.params.normalize.enabled"   kputil/bool? "Params normalize enabled?"]
-  cfg-unexpected->500-wrapper?    ["bract.ring.unexpected.500.enabled"     kputil/bool? "Unexpected->500 enabled?"]
-  cfg-traffic-drain-wrapper?      ["bract.ring.traffic.drain.enabled"      kputil/bool? "Traffic-drain enabled?"])
+  cfg-health-check-wrapper?       ["bract.ring.health.check.enabled"       {:desc "Health-check enabled?"}]
+  cfg-info-endpoint-wrapper?      ["bract.ring.info.endpoint.enabled"      {:desc "Info endpoint enabled?"}]
+  cfg-ping-endpoint-wrapper?      ["bract.ring.ping.endpoint.enabled"      {:desc "Ping endpoint enabled?"}]
+  cfg-uri-trailing-slash-wrapper? ["bract.ring.uri.trailing.slash.enabled" {:desc "URI trailing slash enabled?"}]
+  cfg-uri-prefix-match-wrapper?   ["bract.ring.uri.prefix.match.enabled"   {:desc "URI prefix match enabled?"}]
+  cfg-params-normalize-wrapper?   ["bract.ring.params.normalize.enabled"   {:desc "Params normalize enabled?"}]
+  cfg-unexpected->500-wrapper?    ["bract.ring.unexpected.500.enabled"     {:desc "Unexpected->500 enabled?"}]
+  cfg-traffic-drain-wrapper?      ["bract.ring.traffic.drain.enabled"      {:desc "Traffic-drain enabled?"}])
 
 
 (keypin/defkey  ; config keys for wrappers
