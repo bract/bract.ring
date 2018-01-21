@@ -160,7 +160,12 @@
 
 (defn ping-endpoint-wrapper
   "Given Ring handler and Bract context, wrap the handler such that ping (default: /ping and /ping/) URIs lead to
-  returning a ping response."
+  returning a ping response.
+  | Option        | Config key                    | Default config value   |
+  |---------------|-------------------------------|------------------------|
+  | :uris         | bract.ring.ping.endpoint.uris | [\"/ping\" \"/ping/\"] |
+  | :body         | bract.ring.ping.endpoint.body | \"pong\"               |
+  | :content-type | bract.ring.ping.content.type  | text/plain             |"
   ([handler context]
     (ping-endpoint-wrapper handler context {}))
   ([handler context options]
@@ -231,6 +236,11 @@
 
 
 (defn uri-trailing-slash-wrapper
+  "Wrap handler such that the trailing slash is either added (if missing) or removed (if present) depending upon the
+  specified optional action.
+  | Option        | Config key                           | Default config value |
+  |---------------|--------------------------------------|----------------------|
+  | :action       | bract.ring.uri.trailing.slash.action | \"remove\"           |"
   ([handler context]
     (uri-trailing-slash-wrapper handler context {}))
   ([handler context options]
@@ -273,6 +283,12 @@
   "Given a Ring handler, a Bract context, a URI prefix, a flag to decide whether to strip the prefix and a key (nil
   implies no-backup) to backup the old URI to, return updated Ring handler that matches prefix and proceeds on success
   or returns HTTP 400 on no match.
+  | Option         | Config key                        | Default config value |
+  |----------------|-----------------------------------|----------------------|
+  | :uri-prefix    | bract.ring.uri.prefix.match.token |                      |
+  | :strip-prefix? | bract.ring.uri.prefix.strip.flag  | true                 |
+  | :backup-uri?   | bract.ring.uri.prefix.backup.flag | true                 |
+  | :backup-key    | bract.ring.uri.prefix.backup.key  | :original-uri        |
   See: make-uri-prefix-matcher"
   ([handler context]
     (uri-prefix-match-wrapper handler context {}))
