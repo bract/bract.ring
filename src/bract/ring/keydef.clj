@@ -34,6 +34,7 @@
 
 
 (keypin/defkey  ; config keys for wrappers
+  ;; health check
   cfg-health-check-uris           ["bract.ring.health.check.uris"       vector? "Vector of health check endpoint URIs"
                                    {:parser kputil/any->edn
                                     :default ["/health" "/health/"]}]
@@ -46,4 +47,15 @@
                                    {:parser kputil/any->edn
                                     :default {:critical 503
                                               :degraded 500
-                                              :healthy  200}}])
+                                              :healthy  200}}]
+  ;; info endpoint
+  cfg-info-endpoint-uris          ["bract.ring.info.endpoint.uris"      vector? "Vector of info endpoint URIs"
+                                   {:parser kputil/any->edn
+                                    :default ["/info" "/info/"]}]
+  cfg-info-body-encoder           ["bract.ring.info.body.encoder"       fn?     "Function to encode info data as body"
+                                   {:parser kputil/str->var->deref
+                                    :default pr-str}]
+  cfg-info-content-type           ["bract.ring.info.content.type"       string? "Content type for info body"
+                                   {:default "application/edn"}]
+  ;; ping endpoint
+  )

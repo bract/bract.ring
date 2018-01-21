@@ -114,18 +114,25 @@
 
 
 (defn info-endpoint-wrapper
+  "Given Ring handler and Bract context, wrap the handler such that info (default: /info and /info/) URIs lead to
+  returning a runtime info response.
+  | Option        | Config key                        | Default config value   |
+  | --------------|-----------------------------------|------------------------|
+  | :uris         | bract.ring.info.endpoint.uris     | [\"/info\" \"/info/\"] |
+  | :body-encoder | bract.ring.info.body.encoder      | clojure.core/pr-str    |
+  | :content-type | bract.ring.info.body.content.type | application/edn        |"
   ([handler context]
     (info-endpoint-wrapper handler context {}))
-  ([handler context {:keys [uris
-                            body-encoder
-                            content-type]
-                     :or {uris         #{"/info" "/info/"}
-                          body-encoder pr-str
-                          content-type "application/edn"}
-                     :as options}]
+  ([handler context options]
     (when-wrapper-enabled ring-kdef/cfg-info-endpoint-wrapper? handler context
-      (let [info-uri-set (set uris)
-            body-encoder (core-type/ifunc body-encoder)
+      (let [info-uri-set (->> ring-kdef/cfg-info-endpoint-uris
+                           (opt-or-config :uris)
+                           set)
+            body-encoder (->> ring-kdef/cfg-info-body-encoder
+                           (opt-or-config :body-encoder)
+                           core-type/ifunc)
+            content-type (->> ring-kdef/cfg-info-content-type
+                           (opt-or-config :content-type))
             info-gen-fns (core-kdef/ctx-runtime-info context)
             info-process (fn [request]
                            (let [method (:request-method request)]
