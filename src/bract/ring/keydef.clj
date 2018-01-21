@@ -9,10 +9,12 @@
 
 (ns bract.ring.keydef
   (:require
+    [clojure.string :as string]
     [keypin.core :as keypin]
     [keypin.util :as kputil]
     [bract.core.echo    :as echo]
-    [bract.core.inducer :as inducer]))
+    [bract.core.inducer :as inducer]
+    [bract.core.util    :as core-util]))
 
 
 (keypin/defkey  ; context keys
@@ -68,3 +70,13 @@
                                    {:default "pong"}]
   cfg-ping-content-type           ["bract.ring.ping.content.type"       string? "Content type for ping body"
                                    {:default "text/plain"}])
+
+
+(keypin/defkey  ; config keys for ping endpoint wrapper
+  cfg-uri-trailing-slash-action   ["bract.ring.uri.trailing.slash.action" {:pred (every-pred string? #{"add" "remove"})
+                                                                           :desc "Action string: 'add' or 'remove'"
+                                                                           :parser (fn [k v] (-> v
+                                                                                               core-util/as-str
+                                                                                               string/trim
+                                                                                               string/lower-case))
+                                                                           :default "remove"}])

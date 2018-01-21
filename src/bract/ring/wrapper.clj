@@ -218,17 +218,29 @@
   "Given Ring handler, Bract context and request-updater function `(fn [request]) -> request`, wrap the handler such
   that the request is updated before the Ring handler is applied to it."
   [handler context request-updater]
-  (when-wrapper-enabled ring-kdef/cfg-uri-trailing-slash-wrapper? handler context
-    (let [request-updater-fn (core-type/ifunc request-updater)]
-      (fn
-        ([request]
-          (-> request
-            request-updater-fn
-            handler))
-        ([request respond raise]
-          (-> request
-            request-updater-fn
-            (handler respond raise)))))))
+  (let [request-updater-fn (core-type/ifunc request-updater)]
+    (fn
+      ([request]
+        (-> request
+          request-updater-fn
+          handler))
+      ([request respond raise]
+        (-> request
+          request-updater-fn
+          (handler respond raise))))))
+
+
+(defn uri-trailing-slash-wrapper
+  ([handler context]
+    (uri-trailing-slash-wrapper handler context {}))
+  ([handler context options]
+    (when-wrapper-enabled ring-kdef/cfg-uri-trailing-slash-wrapper? handler context
+      (let [action (->> ring-kdef/cfg-uri-trailing-slash-action
+                     (opt-or-config :action))]
+        (case action
+          "add"    (request-update-wrapper handler context add-uri-trailing-slash)
+          "remove" (request-update-wrapper handler context remove-uri-trailing-slash)
+          (core-util/expected "action string 'add' or 'remove'" action))))))
 
 
 ;; ----- URI prefix -----
