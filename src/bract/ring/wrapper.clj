@@ -25,6 +25,17 @@
        ~handler)))
 
 
+(defmacro opt-or-config
+  "Assuming 'options and 'context symbols are bound to respective arguments, extract the value of specified option
+  falling back to config."
+  [opt-key config-f]
+  `(if (contains? ~'options ~opt-key)
+     (get ~'options ~opt-key)
+     (->> ~'context
+       core-kdef/ctx-config
+       ~config-f)))
+
+
 ;; ----- /health check -----
 
 
@@ -44,44 +55,49 @@
 
 (defn health-check-wrapper
   "Given optional URIs (default: /health), body encoder (default: EDN) and content type (default: application/edn),
-  wrap specified Ring handler such that it responds to application health query when health endpoint is requested."
+  wrap specified Ring handler such that it responds to application health query when health endpoint is requested.
+  Option        | Config key                         | Default config value                       |
+  --------------|------------------------------------|--------------------------------------------|
+  :uris         | bract.ring.health.check.uris       | [\"/health\" \"/health/\"]                 |
+  :body-encoder | bract.ring.health.body.encoder     | clojure.core/pr-str                        |
+  :content-type | bract.ring.health.content.type     | application/edn                            |
+  :http-codes   | bract.ring.health.check.http.codes | {:critical 503 :degraded 500 :healthy 200} |"
   ([handler context]
     (health-check-wrapper handler context {}))
-  ([handler context {:keys [uris
-                            body-encoder
-                            content-type]
-                     :or {uris #{"/health" "/health/"}
-                          body-encoder pr-str
-                          content-type "application/edn"}
-                     :as options}]
+  ([handler context options]
     (when-wrapper-enabled ring-kdef/cfg-health-check-wrapper? handler context
-      (let [body-encoder (core-type/ifunc body-encoder)
-            uri-set  (set uris)
-            hc-fns   (core-kdef/ctx-health-check context)
-            hc-codes (->> context
-                       core-kdef/ctx-config
-                       ring-kdef/cfg-health-check-http-codes
-                       (merge {:critical 503
-                               :degraded 500
-                               :healthy  200}))
-            checknow (fn [request]
-                       (let [method (:request-method request)]
-                         (if (= :get method)
-                           (health-check-response hc-fns hc-codes body-encoder content-type)
-                           {:status 405
-                            :body (str "Expected HTTP GET request for health check endpoint, but found "
-                                    (-> method
-                                      core-util/as-str
-                                      string/upper-case))
-                            :headers {"Content-Type" "text/plain"}})))]
+      (let [uri-set      (->> ring-kdef/cfg-health-check-uris
+                           (opt-or-config :uris)
+                           set)
+            body-encoder (->> ring-kdef/cfg-health-check-body-encoder
+                           (opt-or-config :body-encoder)
+                           core-type/ifunc)
+            content-type (->> ring-kdef/cfg-health-check-content-type
+                           (opt-or-config :content-type))
+            hc-functions (core-kdef/ctx-health-check context)
+            http-codes   (->> ring-kdef/cfg-health-check-http-codes
+                           (opt-or-config :http-codes)
+                           (merge {:critical 503
+                                   :degraded 500
+                                   :healthy  200}))
+            check-now    (fn [request]
+                           (let [method (:request-method request)]
+                             (if (= :get method)
+                               (health-check-response hc-functions http-codes body-encoder content-type)
+                               {:status 405
+                                :body (str "Expected HTTP GET request for health check endpoint, but found "
+                                        (-> method
+                                          core-util/as-str
+                                          string/upper-case))
+                                :headers {"Content-Type" "text/plain"}})))]
         (fn
           ([request]
             (if (contains? uri-set (:uri request))
-              (checknow request)
+              (check-now request)
               (handler request)))
           ([request respond raise]
             (if (contains? uri-set (:uri request))
-              (respond (checknow request))
+              (respond (check-now request))
               (handler request respond raise))))))))
 
 

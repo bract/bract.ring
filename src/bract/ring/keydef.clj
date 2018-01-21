@@ -33,7 +33,15 @@
 
 
 (keypin/defkey  ; config keys for wrappers
-  cfg-health-check-http-codes     ["bract.ring.health.check.http.codes" map? "Map of health status to HTTP status code"
+  cfg-health-check-uris           ["bract.ring.health.check.uris"       vector? "Vector of health check endpoint URIs"
+                                   {:parser kputil/any->edn
+                                    :default ["/health" "/health/"]}]
+  cfg-health-check-body-encoder   ["bract.ring.health.body.encoder"     fn?     "Function to encode health-check data"
+                                   {:parser kputil/str->var->deref
+                                    :default pr-str}]
+  cfg-health-check-content-type   ["bract.ring.health.content.type"     string? "Content type for health-check body"
+                                   {:default "application/edn"}]
+  cfg-health-check-http-codes     ["bract.ring.health.check.http.codes" map?    "Map of health status to HTTP status"
                                    {:parser kputil/any->edn
                                     :default {:critical 503
                                               :degraded 500
