@@ -33,8 +33,7 @@
   cfg-traffic-drain-wrapper?      ["bract.ring.traffic.drain.enabled"      {:desc "Traffic-drain enabled?"}])
 
 
-(keypin/defkey  ; config keys for wrappers
-  ;; health check
+(keypin/defkey  ; config keys for health check wrapper
   cfg-health-check-uris           ["bract.ring.health.check.uris"       vector? "Vector of health check endpoint URIs"
                                    {:parser kputil/any->edn
                                     :default ["/health" "/health/"]}]
@@ -47,8 +46,10 @@
                                    {:parser kputil/any->edn
                                     :default {:critical 503
                                               :degraded 500
-                                              :healthy  200}}]
-  ;; info endpoint
+                                              :healthy  200}}])
+
+
+(keypin/defkey  ; config keys for info endpoint wrapper
   cfg-info-endpoint-uris          ["bract.ring.info.endpoint.uris"      vector? "Vector of info endpoint URIs"
                                    {:parser kputil/any->edn
                                     :default ["/info" "/info/"]}]
@@ -56,13 +57,14 @@
                                    {:parser kputil/str->var->deref
                                     :default pr-str}]
   cfg-info-content-type           ["bract.ring.info.content.type"       string? "Content type for info body"
-                                   {:default "application/edn"}]
-  ;; ping endpoint
+                                   {:default "application/edn"}])
+
+
+(keypin/defkey  ; config keys for ping endpoint wrapper
   cfg-ping-endpoint-uris          ["bract.ring.ping.endpoint.uris"      vector? "Vector of ping endpoint URIs"
                                    {:parser kputil/any->edn
                                     :default ["/ping" "/ping/"]}]
   cfg-ping-endpoint-body          ["bract.ring.ping.endpoint.body"      string? "String body for ping response"
                                    {:default "pong"}]
   cfg-ping-content-type           ["bract.ring.ping.content.type"       string? "Content type for ping body"
-                                   {:default "text/plain"}]
-  )
+                                   {:default "text/plain"}])
