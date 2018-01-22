@@ -373,7 +373,11 @@
 
 (defn unexpected->500-wrapper
   "Wrap given Ring handler such that if it returns unexpected Ring response (invalid/malformed response or exception)
-  then return HTTP 500 Ring response."
+  then return HTTP 500 Ring response.
+  | Option           | Config key                         | Default config value              |
+  |------------------|------------------------------------|-----------------------------------|
+  | :on-bad-response | bract.ring.unexpected.response.fn  | bract.ring.util/bad-response->500 |
+  | :on-exception    | bract.ring.unexpected.exception.fn | bract.ring.util/exception->500    |"
   ([handler context]
     (unexpected->500-wrapper handler context {}))
   ([handler context options]
