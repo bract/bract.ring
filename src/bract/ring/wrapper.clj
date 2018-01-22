@@ -317,6 +317,9 @@
               (respond res-400))))))))
 
 
+;; ----- params normalize -----
+
+
 (defn params-normalize-wrapper
   "Normalize the result of `wrap-params` middleware (this middleware may be invoked only after `wrap-params`) by
   transforming each request params value. The `wrap-params` middleware extracts params as string, but multiple values
@@ -365,57 +368,22 @@
               respond raise)))))))
 
 
-(defn bad-response->500 [request response reason]
-  {:status 500
-   :headers {"Content-Type" "text/plain"}
-   :body "500 Internal Server Error"})
-
-
-(defn bad-response->verbose-500 [request response reason]
-  {:status 500
-   :headers {"Content-Type" "text/plain"}
-   :body (format "500 Internal Server Error
-
-Class: %s
-Response: %s
-Request: %s
-Reason: %s"
-           (class response)
-           (pr-str response)
-           (pr-str request)
-           reason)})
-
-
-(defn exception->500 [request ^Throwable thrown]
-  {:status 500
-   :headers {"Content-Type" "text/plain"}
-   :body "500 Internal Server Error"})
-
-
-(defn exception->verbose-500 [request ^Throwable thrown]
-  {:status 500
-   :headers {"Content-Type" "text/plain"}
-   :body (format "500 Internal Server Error
-
-%s
-Request: %s"
-           (core-util/stack-trace-str thrown)
-           (pr-str request))})
+;; ----- unexpected to HTTP 500 -----
 
 
 (defn unexpected->500-wrapper
   "Wrap given Ring handler such that if it returns unexpected Ring response (invalid/malformed response or exception)
   then return HTTP 500 Ring response."
   ([handler context]
-    (unexpected->500-wrapper handler context false))
-  ([handler context {:keys [on-bad-response
-                            on-exception]
-                     :or {on-bad-response bad-response->500
-                          on-exception    exception->500}
-                     :as options}]
+    (unexpected->500-wrapper handler context {}))
+  ([handler context options]
     (when-wrapper-enabled ring-kdef/cfg-unexpected->500-wrapper? handler context
-      (let [on-bad-response (core-type/ifunc on-bad-response)
-            on-exception    (core-type/ifunc on-exception)
+      (let [on-bad-response (->> ring-kdef/cfg-unexpected-response-fn
+                              (opt-or-config :on-bad-response)
+                              core-type/ifunc)
+            on-exception    (->> ring-kdef/cfg-unexpected-exception-fn
+                              (opt-or-config :on-exception)
+                              core-type/ifunc)
             unexpected->500 (fn [request response]
                               (let [status (:status response)
                                     body   (:body response)]
@@ -445,6 +413,9 @@ Request: %s"
                 (handler request new-respond raise)
                 (catch Throwable e
                   (respond (on-exception request e)))))))))))
+
+
+;; ----- traffic draining -----
 
 
 (defn traffic-drain-wrapper

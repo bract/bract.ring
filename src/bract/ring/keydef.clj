@@ -14,7 +14,8 @@
     [keypin.util :as kputil]
     [bract.core.echo    :as echo]
     [bract.core.inducer :as inducer]
-    [bract.core.util    :as core-util]))
+    [bract.core.util    :as core-util]
+    [bract.ring.util    :as ring-util]))
 
 
 (keypin/defkey  ; context keys
@@ -98,3 +99,12 @@
 (keypin/defkey  ; config keys for URI trailing slash wrapper
   cfg-params-normalize-function   ["bract.ring.params.normalize.function" fn?   "Function to normalize request params"
                                    {:default clojure.core/identity}])
+
+
+(keypin/defkey  ; config keys for unexpected->500
+  cfg-unexpected-response-fn      ["bract.ring.unexpected.response.fn"  fn? "Fn (fn [req res cause]) for bad responses"
+                                   {:parser kputil/str->var->deref
+                                    :default ring-util/bad-response->500}]
+  cfg-unexpected-exception-fn     ["bract.ring.unexpected.exception.fn" fn? "Fn (fn [req ex]) to handle exception"
+                                   {:parser kputil/str->var->deref
+                                    :default ring-util/exception->500}])
