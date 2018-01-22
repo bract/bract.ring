@@ -101,10 +101,16 @@
                                    {:default clojure.core/identity}])
 
 
-(keypin/defkey  ; config keys for unexpected->500
+(keypin/defkey  ; config keys for unexpected->500 wrapper
   cfg-unexpected-response-fn      ["bract.ring.unexpected.response.fn"  fn? "Fn (fn [req res cause]) for bad responses"
                                    {:parser kputil/str->var->deref
                                     :default ring-util/bad-response->500}]
   cfg-unexpected-exception-fn     ["bract.ring.unexpected.exception.fn" fn? "Fn (fn [req ex]) to handle exception"
                                    {:parser kputil/str->var->deref
                                     :default ring-util/exception->500}])
+
+
+(keypin/defkey  ; config keys for traffic drain wrapper
+  cfg-traffic-drain-conn-close?   ["bract.ring.traffic.conn.close.flag" kputil/bool? "Send 'conn close' header?"
+                                   {:parser kputil/any->bool
+                                    :default true}])

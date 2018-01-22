@@ -424,13 +424,17 @@
 
 (defn traffic-drain-wrapper
   "Given a deref'able shutdown state and a boolean flag to respond with connection-close HTTP header, wrap specified
-  Ring handler to respond with HTTP 503 (in order to drain current traffic) when the system is shutting down."
+  Ring handler to respond with HTTP 503 (in order to drain current traffic) when the system is shutting down.
+  | Option       | Config key                         | Default config value  |
+  |--------------|------------------------------------|-----------------------|
+  | :conn-close? | bract.ring.traffic.conn.close.flag | true                  |"
   ([handler context]
     (traffic-drain-wrapper handler context {}))
-  ([handler context {:keys [conn-close?]
-                     :or {conn-close? true}}]
+  ([handler context options]
     (when-wrapper-enabled ring-kdef/cfg-traffic-drain-wrapper? handler context
-      (let [shutdown-flag (core-kdef/ctx-shutdown-flag context)
+      (let [conn-close?   (->> ring-kdef/cfg-traffic-drain-conn-close?
+                            (opt-or-config :conn-close?))
+            shutdown-flag (core-kdef/ctx-shutdown-flag context)
             response-503  (let [response {:status 503
                                           :headers {"Content-Type" "text/plain"}
                                           :body "503 Service Unavailable. Traffic draining is in progress."}]
