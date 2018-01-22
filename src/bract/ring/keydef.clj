@@ -93,3 +93,8 @@
   cfg-uri-prefix-backup-key       ["bract.ring.uri.prefix.backup.key"   some?   "Backup key in request map to save URI"
                                    {:parser  kputil/any->edn
                                     :default :original-uri}])
+
+
+(keypin/defkey  ; config keys for URI trailing slash wrapper
+  cfg-params-normalize-function   ["bract.ring.params.normalize.function" fn?   "Function to normalize request params"
+                                   {:default clojure.core/identity}])

@@ -285,7 +285,7 @@
   or returns HTTP 400 on no match.
   | Option         | Config key                        | Default config value |
   |----------------|-----------------------------------|----------------------|
-  | :uri-prefix    | bract.ring.uri.prefix.match.token |                      |
+  | :uri-prefix    | bract.ring.uri.prefix.match.token | (required config)    |
   | :strip-prefix? | bract.ring.uri.prefix.strip.flag  | true                 |
   | :backup-uri?   | bract.ring.uri.prefix.backup.flag | true                 |
   | :backup-key    | bract.ring.uri.prefix.backup.key  | :original-uri        |
@@ -322,38 +322,47 @@
   transforming each request params value. The `wrap-params` middleware extracts params as string, but multiple values
   for same param are turned into a vector of string - this middleware turns all param values into vectors of string
   and applies normalizer to that vector.
+  | Option      | Config key                           | Default config value  |
+  |-------------|--------------------------------------|-----------------------|
+  | :normalizer | bract.ring.params.normalize.function | clojure.core/identity |
 
-  Without this middleware:
+  Without this middleware/wrapper:
   {\"foo\" \"bar\"
    \"baz\" [\"quux\" \"corge\"]}
 
   After using this middleware, where normalizer is `clojure.core/first`:
   {\"foo\" \"bar\"
    \"baz\" \"quux\"}"
-  [handler context normalizer]
-  (when-wrapper-enabled ring-kdef/cfg-params-normalize-wrapper? handler context
-    (let [normalize (comp (core-type/ifunc normalizer) (fn [x] (cond
-                                                                 (vector? x) x
-                                                                 (coll? x)   (vec x)
-                                                                 :otherwise  [x])))
-          transform (fn [m k]
-                      (if-let [pairs (get m k)]
-                        (->> pairs
-                          (reduce-kv (fn [mm kk vv] (assoc mm kk (normalize vv))) {})
-                          (assoc m k))
-                        m))]
-      (fn
-        ([request]
-          (handler (-> request
-                     (transform :form-params)
-                     (transform :query-params)
-                     (transform :params))))
-        ([request respond raise]
-          (handler (-> request
-                     (transform :form-params)
-                     (transform :query-params)
-                     (transform :params))
-            respond raise))))))
+  ([handler context]
+    (params-normalize-wrapper handler context {}))
+  ([handler context options]
+    (when-wrapper-enabled ring-kdef/cfg-params-normalize-wrapper? handler context
+      (let [normalize (as-> ring-kdef/cfg-params-normalize-function $
+                        (opt-or-config :normalizer $)
+                        (core-type/ifunc $)
+                        (comp $ (fn [x] (cond
+                                          (string? x) [x]
+                                          (vector? x) x
+                                          (coll? x)   (vec x)
+                                          :otherwise  [x]))))
+            transform (fn [m k]
+                        (if-let [pairs (get m k)]
+                          (->> pairs
+                            (reduce-kv (fn [mm kk vv] (assoc mm kk (normalize vv))) {})
+                            (assoc m k))
+                          m))]
+        (fn
+          ([request]
+            (handler (-> request
+                       (transform :form-params)
+                       (transform :query-params)
+                       (transform :params))))
+          ([request respond raise]
+            (handler (-> request
+                       (transform :form-params)
+                       (transform :query-params)
+                       (transform :params))
+              respond raise)))))))
 
 
 (defn bad-response->500 [request response reason]

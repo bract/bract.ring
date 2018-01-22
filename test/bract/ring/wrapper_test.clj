@@ -309,7 +309,7 @@
                               :body (str (:params request))})
                   ([request respond raise] (respond (params-as-body request))))
         wrapped (-> handler
-                  (wrapper/params-normalize-wrapper {:bract.core/config {}} clojure.core/identity)
+                  (wrapper/params-normalize-wrapper {:bract.core/config {}})
                   rmp/wrap-params)]
     (is (= {:headers {}
             :status 200
