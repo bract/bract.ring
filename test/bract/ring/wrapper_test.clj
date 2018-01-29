@@ -40,16 +40,18 @@
 
 
 (defn roundtrip-get
-  [handler jetty-options path]
-  (with-jetty handler (conj {:port 3000 :join? false}
-                        jetty-options)
-    (-> (str "http://localhost:3000" path)
-      (client/get {:throw-exceptions false})
-      (dissoc
-        :trace-redirects :length :orig-content-encoding
-        :request-time :repeatable? :protocol-version
-        :streaming? :chunked? :reason-phrase)
-      (update-in [:headers] dissoc "Date" "Connection" "Server"))))
+  ([handler jetty-options path http-options]
+    (with-jetty handler (conj {:port 3000 :join? false}
+                          jetty-options)
+      (-> (str "http://localhost:3000" path)
+        (client/get (merge {:throw-exceptions false} http-options))
+        (dissoc
+          :trace-redirects :length :orig-content-encoding
+          :request-time :repeatable? :protocol-version
+          :streaming? :chunked? :reason-phrase)
+        (update-in [:headers] dissoc "Date" "Connection" "Server"))))
+  ([handler jetty-options path]
+    (roundtrip-get handler jetty-options path {})))
 
 
 (defn roundtrip-put
@@ -381,3 +383,60 @@
             :status 503
             :body "503 Service Unavailable. Traffic draining is in progress."}
           (roundtrip-get wrapped {} "/")))))
+
+
+(defn valid-id
+  [id]
+  (when (< (count id) 4) "ID too short"))
+
+
+(deftest test-distributed-trace
+  (let [handler (fn self
+                  ([request]
+                    {:status 200
+                     :body (cheshire/generate-string {:trace-id  (:trace-id request)
+                                                      :span-id   (:span-id request)
+                                                      :parent-id (:parent-id request)})})
+                  ([request respond raise]
+                    (respond (self request))))
+        wrapped (-> handler
+                  (wrapper/distributed-trace-wrapper {:bract.core/config {}}))
+        needhdr (-> handler
+                  (wrapper/distributed-trace-wrapper {:bract.core/config {"bract.ring.trace.trace.id.req.flag" true}}))
+        nlength (-> handler
+                  (wrapper/distributed-trace-wrapper {:bract.core/config {"bract.ring.trace.trace.id.valid.fn"
+                                                                          #'valid-id}}))]
+    (doseq [response [(roundtrip-get wrapped {} "/")
+                      (roundtrip-get wrapped {:async true} "/")]]
+      (let [data (-> response
+                   :body
+                   cheshire/parse-string)]
+        (is (= 32 (count (get data "trace-id"))))
+        (is (= 32 (count (get data "span-id"))))
+        (is (nil? (get data "parent-id")))))
+    (doseq [response [(roundtrip-get wrapped {} "/" {:headers {"x-trace-id" "1234"}})
+                      (roundtrip-get needhdr {} "/" {:headers {"x-trace-id" "1234"}})
+                      (roundtrip-get nlength {} "/" {:headers {"x-trace-id" "1234"}})
+                      (roundtrip-get wrapped {:async true} "/" {:headers {"x-trace-id" "1234"}})
+                      (roundtrip-get needhdr {:async true} "/" {:headers {"x-trace-id" "1234"}})
+                      (roundtrip-get nlength {:async true} "/" {:headers {"x-trace-id" "1234"}})]]
+      (let [data (-> response
+                   :body
+                   cheshire/parse-string)]
+        (is (= {"trace-id" "1234"
+                "parent-id" nil}
+              (select-keys data ["trace-id" "parent-id"])))))
+    (is (= {:status 400
+            :headers {"Content-Type" "text/plain"}
+            :body "400 Missing Trace-ID
+
+Every request must bear the header 'x-trace-id'"}
+          (roundtrip-get needhdr {} "/")
+          (roundtrip-get needhdr {:async true} "/")))
+    (is (= {:status 400
+            :headers {"Content-Type" "text/plain"}
+            :body "400 Invalid Trace-ID
+
+Header 'x-trace-id' has invalid value: ID too short"}
+          (roundtrip-get nlength {} "/" {:headers {"x-trace-id" "123"}})
+          (roundtrip-get nlength {:async true} "/" {:headers {"x-trace-id" "123"}})))))

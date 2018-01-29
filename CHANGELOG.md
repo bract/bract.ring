@@ -4,11 +4,6 @@
 
 - Key definitions
   - [Todo] Support for dual or multiple handlers starting at different web server ports
-- Wrappers
-  - [Todo] Distributed trace (requires logging integration)
-  - [Todo] SSE streaming (requires ring-sse-middleware dependency)
-  - [Todo] Ring metrics  (requires ring-metrics dependency)
-  - [Todo] Log level override (requires logback dependency)
 
 
 ## [WIP] 0.5.0 / 2018-January-??
@@ -23,6 +18,7 @@
   - params-normalize
   - unexpected->500
   - traffic-drain
+  - distributed-trace
 
 
 ## 0.4.1 / 2017-August-08

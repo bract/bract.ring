@@ -33,7 +33,8 @@
   cfg-uri-prefix-match-wrapper?   ["bract.ring.uri.prefix.match.enabled"   {:desc "URI prefix match enabled?"}]
   cfg-params-normalize-wrapper?   ["bract.ring.params.normalize.enabled"   {:desc "Params normalize enabled?"}]
   cfg-unexpected->500-wrapper?    ["bract.ring.unexpected.500.enabled"     {:desc "Unexpected->500 enabled?"}]
-  cfg-traffic-drain-wrapper?      ["bract.ring.traffic.drain.enabled"      {:desc "Traffic-drain enabled?"}])
+  cfg-traffic-drain-wrapper?      ["bract.ring.traffic.drain.enabled"      {:desc "Traffic-drain enabled?"}]
+  cfg-distributed-trace-wrapper?  ["bract.ring.distributed.trace.enabled"  {:desc "Distributed trace enabled?"}])
 
 
 (keypin/defkey  ; config keys for health check wrapper
@@ -114,3 +115,25 @@
   cfg-traffic-drain-conn-close?   ["bract.ring.traffic.conn.close.flag" kputil/bool? "Send 'conn close' header?"
                                    {:parser kputil/any->bool
                                     :default true}])
+
+
+(keypin/defkey  ; config keys for distributed trace wrapper
+  cfg-trace-trace-id-header       ["bract.ring.trace.trace.id.header"   string? "HTTP header for trace ID"
+                                   {:default "x-trace-id"}]
+  cfg-trace-parent-id-header      ["bract.ring.trace.parent.id.header"  string? "HTTP header for parent ID"
+                                   {:default "x-trace-parent-id"}]
+  cfg-trace-trace-id-required?    ["bract.ring.trace.trace.id.req.flag" kputil/bool? "Is trace ID required?"
+                                   {:parser kputil/any->bool
+                                    :default false}]
+  cfg-trace-trace-id-validator    ["bract.ring.trace.trace.id.valid.fn" fn?     "Validator (fn [trace-id]) -> error?"
+                                   {:parser kputil/any->var->deref
+                                    :default (constantly nil)}]
+  cfg-trace-trace-id-request-key  ["bract.ring.trace.trace.id.req.key"  some?   "Request key to store trace ID at"
+                                   {:parser  kputil/any->edn
+                                    :default :trace-id}]
+  cfg-trace-span-id-request-key   ["bract.ring.trace.span.id.req.key"   some?   "Request key to store span ID at"
+                                   {:parser  kputil/any->edn
+                                    :default :span-id}]
+  cfg-trace-parent-id-request-key ["bract.ring.trace.parent.id.req.key" some?   "Request key to store parent ID at"
+                                   {:parser  kputil/any->edn
+                                    :default :parent-id}])

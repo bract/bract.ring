@@ -459,3 +459,76 @@
               (finally
                 ;; record last service time
                 (alive-tracker)))))))))
+
+
+;; ----- tracing -----
+
+
+(defn distributed-trace-wrapper
+  "Parse distributed trace HTTP headers and populate request with well configured attributes.
+  | Option                 | Config key                         | Default config value  |
+  |------------------------|------------------------------------|-----------------------|
+  | :trace-id-header       | bract.ring.trace.trace.id.header   | x-trace-id            |
+  | :parent-id-header      | bract.ring.trace.parent.id.header  | x-trace-parent-id     |
+  | :trace-id-required?    | bract.ring.trace.trace.id.req.flag | false                 |
+  | :trace-id-validator    | bract.ring.trace.trace.id.valid.fn | (constantly nil)      | ; retuns error message or nil
+  | :trace-id-request-key  | bract.ring.trace.trace.id.req.key  | :trace-id             |
+  | :span-id-request-key   | bract.ring.trace.span.id.req.key   | :span-id              |
+  | :parent-id-request-key | bract.ring.trace.parent.id.req.key | :parent-id            |"
+  ([handler context]
+    (distributed-trace-wrapper handler context {}))
+  ([handler context options]
+    (when-wrapper-enabled ring-kdef/cfg-distributed-trace-wrapper? handler context
+      (let [trace-id-header       (->> ring-kdef/cfg-trace-trace-id-header
+                                    (opt-or-config :trace-id-header)
+                                    string/lower-case)
+            parent-id-header      (->> ring-kdef/cfg-trace-parent-id-header
+                                    (opt-or-config :parent-id-header))
+            trace-id-required?    (->> ring-kdef/cfg-trace-trace-id-required?
+                                    (opt-or-config :trace-id-required?))
+            trace-id-validator    (->> ring-kdef/cfg-trace-trace-id-validator
+                                    (opt-or-config :trace-id-validator))
+            trace-id-request-key  (->> ring-kdef/cfg-trace-trace-id-request-key
+                                    (opt-or-config :trace-id-request-key))
+            span-id-request-key   (->> ring-kdef/cfg-trace-span-id-request-key
+                                    (opt-or-config :span-id-request-key))
+            parent-id-request-key (->> ring-kdef/cfg-trace-parent-id-request-key
+                                    (opt-or-config :parent-id-request-key))
+            missing-trace-id      {:status 400
+                                   :headers {"Content-Type" "text/plain"}
+                                   :body (format "400 Missing Trace-ID
+
+Every request must bear the header '%s'" trace-id-header)}
+            invalid-trace-id-400  (fn [reason]
+                                    {:status 400
+                                     :headers {"Content-Type" "text/plain"}
+                                     :body (format "400 Invalid Trace-ID
+
+Header '%s' has invalid value: %s" trace-id-header reason)})
+            assoc-ids             (fn [request trace-id parent-id]
+                                    (let [span-id (core-util/clean-uuid)]
+                                      (if trace-id
+                                        (assoc request
+                                          trace-id-request-key  trace-id
+                                          span-id-request-key   span-id
+                                          parent-id-request-key parent-id)
+                                        (assoc request
+                                          trace-id-request-key  span-id
+                                          span-id-request-key   span-id
+                                          parent-id-request-key nil))))
+            handle-trace          (fn [request respond handler-more-args]
+                                    (let [headers   (get request :headers)
+                                          trace-id  (get headers trace-id-header)
+                                          parent-id (get headers parent-id-header)]
+                                      (if trace-id
+                                        (if-let [error (trace-id-validator trace-id)]
+                                          (respond (invalid-trace-id-400 error))
+                                          (apply handler (assoc-ids request trace-id parent-id) handler-more-args))
+                                        (if trace-id-required?
+                                          (respond missing-trace-id)
+                                          (apply handler (assoc-ids request trace-id parent-id) handler-more-args)))))]
+        (fn
+          ([request]
+            (handle-trace request identity []))
+          ([request respond raise]
+            (handle-trace request respond [respond raise])))))))
