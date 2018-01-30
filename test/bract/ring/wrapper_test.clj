@@ -384,7 +384,8 @@
             :status 503
             :body "503 Service Unavailable. Traffic draining is in progress."}
           ;; avoid HTTP roundtrip here because the web server doesn't propagate the 'Connection: close' header
-          (wrapped {:uri "/"}))))
+          (wrapped {:uri "/"})
+          (wrapped {:uri "/"} identity #(throw %)))))
   (let [sd-flag (volatile! false)
         wrapped (-> handler
                   (wrapper/traffic-drain-wrapper {:bract.core/config {"bract.ring.traffic.conn.close.flag" false}
