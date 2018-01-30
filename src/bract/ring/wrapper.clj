@@ -441,24 +441,34 @@
                             (if conn-close?
                               (assoc-in response [:headers "Connection"] "close")
                               response))
-            alive-tracker (core-kdef/ctx-alive-tstamp context)]
+            alive-tracker (core-kdef/ctx-alive-tstamp context)
+            drain-respond (fn [respond response]
+                            (try
+                              (respond (if (and conn-close?
+                                             @shutdown-flag
+                                             (map? response)
+                                             (integer? (:status response)))
+                                         (assoc-in response [:headers "Connection"] "close")
+                                         response))
+                              (finally
+                                ;; record last service time
+                                (alive-tracker))))
+            drain-handler (fn [respond invoke-handler]
+                            (if @shutdown-flag
+                              (respond response-503)
+                              (try
+                                (invoke-handler)
+                                (finally
+                                  ;; record last service time
+                                  (alive-tracker)))))]
         ;; initialize alive-tracker
         (alive-tracker)
         ;; return wrapped handler
-        (fn [request]
-          (if @shutdown-flag
-            response-503
-            (try
-              (let [response (handler request)]
-                (if (and conn-close?
-                      @shutdown-flag
-                      (map? response)
-                      (integer? (:status response)))
-                  (assoc-in response [:headers "Connection"] "close")
-                  response))
-              (finally
-                ;; record last service time
-                (alive-tracker)))))))))
+        (fn
+          ([request]
+            (drain-handler identity #(drain-respond identity (handler request))))
+          ([request respond raise]
+            (drain-handler respond #(handler request (partial drain-respond respond) raise))))))))
 
 
 ;; ----- tracing -----

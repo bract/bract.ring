@@ -377,12 +377,14 @@
     (is (= {:headers {"Content-Type" "text/plain"}
             :status 200
             :body "default"}
-          (roundtrip-get wrapped {} "/")))
+          (roundtrip-get wrapped {} "/")
+          (roundtrip-get wrapped {:async true} "/")))
     (vreset! sd-flag true)
     (is (= {:headers {"Content-Type" "text/plain"}
             :status 503
             :body "503 Service Unavailable. Traffic draining is in progress."}
-          (roundtrip-get wrapped {} "/")))))
+          (roundtrip-get wrapped {} "/")
+          (roundtrip-get wrapped {:async true} "/")))))
 
 
 (defn valid-id
