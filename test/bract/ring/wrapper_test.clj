@@ -370,10 +370,25 @@
 
 (deftest test-traffic-drain
   (let [sd-flag (volatile! false)
-        context {:bract.core/config {}
-                 :bract.core/shutdown-flag sd-flag}
         wrapped (-> handler
-                  (wrapper/traffic-drain-wrapper context))]
+                  (wrapper/traffic-drain-wrapper {:bract.core/config {}
+                                                  :bract.core/shutdown-flag sd-flag}))]
+    (is (= {:headers {"Content-Type" "text/plain"}
+            :status 200
+            :body "default"}
+          (roundtrip-get wrapped {} "/")
+          (roundtrip-get wrapped {:async true} "/")))
+    (vreset! sd-flag true)
+    (is (= {:headers {"Content-Type" "text/plain"
+                      "Connection" "close"}
+            :status 503
+            :body "503 Service Unavailable. Traffic draining is in progress."}
+          ;; avoid HTTP roundtrip here because the web server doesn't propagate the 'Connection: close' header
+          (wrapped {:uri "/"}))))
+  (let [sd-flag (volatile! false)
+        wrapped (-> handler
+                  (wrapper/traffic-drain-wrapper {:bract.core/config {"bract.ring.traffic.conn.close.flag" false}
+                                                  :bract.core/shutdown-flag sd-flag}))]
     (is (= {:headers {"Content-Type" "text/plain"}
             :status 200
             :body "default"}
