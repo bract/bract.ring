@@ -493,7 +493,8 @@
                                     (opt-or-config :trace-id-header)
                                     string/lower-case)
             parent-id-header      (->> ring-kdef/cfg-trace-parent-id-header
-                                    (opt-or-config :parent-id-header))
+                                    (opt-or-config :parent-id-header)
+                                    string/lower-case)
             trace-id-required?    (->> ring-kdef/cfg-trace-trace-id-required?
                                     (opt-or-config :trace-id-required?))
             trace-id-validator    (->> ring-kdef/cfg-trace-trace-id-validator
