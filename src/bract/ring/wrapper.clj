@@ -248,9 +248,9 @@
       (let [action (->> ring-kdef/cfg-uri-trailing-slash-action
                      (opt-or-config :action))]
         (case action
-          "add"    (request-update-wrapper handler context add-uri-trailing-slash)
-          "remove" (request-update-wrapper handler context remove-uri-trailing-slash)
-          (core-util/expected "action string 'add' or 'remove'" action))))))
+          :add    (request-update-wrapper handler context add-uri-trailing-slash)
+          :remove (request-update-wrapper handler context remove-uri-trailing-slash)
+          (core-util/expected "action keyword :add or :remove" action))))))
 
 
 ;; ----- URI prefix -----

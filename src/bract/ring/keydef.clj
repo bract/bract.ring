@@ -62,12 +62,9 @@
 
 
 (keypin/defkey  ; config keys for URI trailing slash wrapper
-  cfg-uri-trailing-slash-action   ["bract.ring.uri.trailing.slash.action" {:pred (every-pred string? #{"add" "remove"})
-                                                                           :desc "Action string: 'add' or 'remove'"
-                                                                           :parser (fn [k v] (-> v
-                                                                                               core-util/as-str
-                                                                                               string/trim
-                                                                                               string/lower-case))}])
+  cfg-uri-trailing-slash-action   ["bract.ring.uri.trailing.slash.action" {:pred (every-pred keyword? #{:add :remove})
+                                                                           :desc "Action keyword :add or :remove"
+                                                                           :parser kputil/any->edn}])
 
 
 (keypin/defkey  ; config keys for URI trailing slash wrapper
