@@ -50,3 +50,7 @@ Request: %s"
            (pr-str request))})
 
 
+(defn nop
+  "Do nothing at all, returning nil."
+  [& args]
+  nil)

@@ -24,8 +24,7 @@
 
 (keypin/defkey  ; config keys for wrappers enabled flag
   {:pred kputil/bool?
-   :parser kputil/any->edn
-   :default true}
+   :parser kputil/any->edn}
   cfg-health-check-wrapper?       ["bract.ring.health.check.enabled"       {:desc "Health-check enabled?"}]
   cfg-info-endpoint-wrapper?      ["bract.ring.info.endpoint.enabled"      {:desc "Info endpoint enabled?"}]
   cfg-ping-endpoint-wrapper?      ["bract.ring.ping.endpoint.enabled"      {:desc "Ping endpoint enabled?"}]
@@ -39,39 +38,27 @@
 
 (keypin/defkey  ; config keys for health check wrapper
   cfg-health-check-uris           ["bract.ring.health.check.uris"       vector? "Vector of health check endpoint URIs"
-                                   {:parser kputil/any->edn
-                                    :default ["/health" "/health/"]}]
+                                   {:parser kputil/any->edn}]
   cfg-health-body-encoder         ["bract.ring.health.body.encoder"     fn?     "Function to encode health-check data"
-                                   {:parser kputil/str->var->deref
-                                    :default pr-str}]
-  cfg-health-content-type         ["bract.ring.health.content.type"     string? "Content type for health-check body"
-                                   {:default "application/edn"}]
+                                   {:parser kputil/any->var->deref}]
+  cfg-health-content-type         ["bract.ring.health.content.type"     string? "Content type for health-check body"]
   cfg-health-http-codes           ["bract.ring.health.http.codes"       map?    "Map of health status to HTTP status"
-                                   {:parser kputil/any->edn
-                                    :default {:critical 503
-                                              :degraded 500
-                                              :healthy  200}}])
+                                   {:parser kputil/any->edn}])
 
 
 (keypin/defkey  ; config keys for info endpoint wrapper
   cfg-info-endpoint-uris          ["bract.ring.info.endpoint.uris"      vector? "Vector of info endpoint URIs"
-                                   {:parser kputil/any->edn
-                                    :default ["/info" "/info/"]}]
+                                   {:parser kputil/any->edn}]
   cfg-info-body-encoder           ["bract.ring.info.body.encoder"       fn?     "Function to encode info data as body"
-                                   {:parser kputil/str->var->deref
-                                    :default pr-str}]
-  cfg-info-content-type           ["bract.ring.info.content.type"       string? "Content type for info body"
-                                   {:default "application/edn"}])
+                                   {:parser kputil/any->var->deref}]
+  cfg-info-content-type           ["bract.ring.info.content.type"       string? "Content type for info body"])
 
 
 (keypin/defkey  ; config keys for ping endpoint wrapper
   cfg-ping-endpoint-uris          ["bract.ring.ping.endpoint.uris"      vector? "Vector of ping endpoint URIs"
-                                   {:parser kputil/any->edn
-                                    :default ["/ping" "/ping/"]}]
-  cfg-ping-endpoint-body          ["bract.ring.ping.endpoint.body"      string? "String body for ping response"
-                                   {:default "pong"}]
-  cfg-ping-content-type           ["bract.ring.ping.content.type"       string? "Content type for ping body"
-                                   {:default "text/plain"}])
+                                   {:parser kputil/any->edn}]
+  cfg-ping-endpoint-body          ["bract.ring.ping.endpoint.body"      string? "String body for ping response"]
+  cfg-ping-content-type           ["bract.ring.ping.content.type"       string? "Content type for ping body"])
 
 
 (keypin/defkey  ; config keys for URI trailing slash wrapper
@@ -80,60 +67,46 @@
                                                                            :parser (fn [k v] (-> v
                                                                                                core-util/as-str
                                                                                                string/trim
-                                                                                               string/lower-case))
-                                                                           :default "remove"}])
+                                                                                               string/lower-case))}])
 
 
 (keypin/defkey  ; config keys for URI trailing slash wrapper
   cfg-uri-prefix-match-token      ["bract.ring.uri.prefix.match.token"  string? "URI prefix to be matched"]
   cfg-uri-prefix-strip-prefix?    ["bract.ring.uri.prefix.strip.flag"   kputil/bool? "Strip prefix from the URI?"
-                                   {:parser  kputil/any->edn
-                                    :default true}]
+                                   {:parser  kputil/any->edn}]
   cfg-uri-prefix-backup-uri?      ["bract.ring.uri.prefix.backup.flag"  kputil/bool? "Backup original URI?"
-                                   {:parser  kputil/any->edn
-                                    :default true}]
+                                   {:parser  kputil/any->edn}]
   cfg-uri-prefix-backup-key       ["bract.ring.uri.prefix.backup.key"   some?   "Backup key in request map to save URI"
-                                   {:parser  kputil/any->edn
-                                    :default :original-uri}])
+                                   {:parser  kputil/any->edn}])
 
 
 (keypin/defkey  ; config keys for URI trailing slash wrapper
   cfg-params-normalize-function   ["bract.ring.params.normalize.function" fn?   "Function to normalize request params"
-                                   {:default clojure.core/identity}])
+                                   {:parser kputil/any->var->deref}])
 
 
 (keypin/defkey  ; config keys for unexpected->500 wrapper
   cfg-unexpected-response-fn      ["bract.ring.unexpected.response.fn"  fn? "Fn (fn [req res cause]) for bad responses"
-                                   {:parser kputil/str->var->deref
-                                    :default ring-util/bad-response->500}]
+                                   {:parser kputil/any->var->deref}]
   cfg-unexpected-exception-fn     ["bract.ring.unexpected.exception.fn" fn? "Fn (fn [req ex]) to handle exception"
-                                   {:parser kputil/str->var->deref
-                                    :default ring-util/exception->500}])
+                                   {:parser kputil/any->var->deref}])
 
 
 (keypin/defkey  ; config keys for traffic drain wrapper
   cfg-traffic-drain-conn-close?   ["bract.ring.traffic.conn.close.flag" kputil/bool? "Send 'conn close' header?"
-                                   {:parser kputil/any->bool
-                                    :default true}])
+                                   {:parser kputil/any->bool}])
 
 
 (keypin/defkey  ; config keys for distributed trace wrapper
-  cfg-trace-trace-id-header       ["bract.ring.trace.trace.id.header"   string? "HTTP header for trace ID"
-                                   {:default "x-trace-id"}]
-  cfg-trace-parent-id-header      ["bract.ring.trace.parent.id.header"  string? "HTTP header for parent ID"
-                                   {:default "x-trace-parent-id"}]
+  cfg-trace-trace-id-header       ["bract.ring.trace.trace.id.header"   string? "HTTP header for trace ID"]
+  cfg-trace-parent-id-header      ["bract.ring.trace.parent.id.header"  string? "HTTP header for parent ID"]
   cfg-trace-trace-id-required?    ["bract.ring.trace.trace.id.req.flag" kputil/bool? "Is trace ID required?"
-                                   {:parser kputil/any->bool
-                                    :default false}]
+                                   {:parser kputil/any->bool}]
   cfg-trace-trace-id-validator    ["bract.ring.trace.trace.id.valid.fn" fn?     "Validator (fn [trace-id]) -> error?"
-                                   {:parser kputil/any->var->deref
-                                    :default (constantly nil)}]
+                                   {:parser kputil/any->var->deref}]
   cfg-trace-trace-id-request-key  ["bract.ring.trace.trace.id.req.key"  some?   "Request key to store trace ID at"
-                                   {:parser  kputil/any->edn
-                                    :default :trace-id}]
+                                   {:parser  kputil/any->edn}]
   cfg-trace-span-id-request-key   ["bract.ring.trace.span.id.req.key"   some?   "Request key to store span ID at"
-                                   {:parser  kputil/any->edn
-                                    :default :span-id}]
+                                   {:parser  kputil/any->edn}]
   cfg-trace-parent-id-request-key ["bract.ring.trace.parent.id.req.key" some?   "Request key to store parent ID at"
-                                   {:parser  kputil/any->edn
-                                    :default :parent-id}])
+                                   {:parser  kputil/any->edn}])

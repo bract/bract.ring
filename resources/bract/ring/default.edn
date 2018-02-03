@@ -1,0 +1,70 @@
+{;; Default config for bract.ring module - include in your project as a parent as follows:
+ ;;
+ ;; "parent.config.filenames" [;; other config files
+ ;;                            "bract/ring/default.edn"]
+ ;;
+ "bract.ring.wrappers" [bract.ring.wrapper/uri-prefix-match-wrapper
+                        bract.ring.wrapper/uri-trailing-slash-wrapper
+                        bract.ring.wrapper/traffic-drain-wrapper
+                        bract.ring.wrapper/distributed-trace-wrapper
+                        bract.ring.wrapper/params-normalize-wrapper
+                        bract.ring.wrapper/health-check-wrapper
+                        bract.ring.wrapper/info-endpoint-wrapper
+                        bract.ring.wrapper/ping-endpoint-wrapper
+                        bract.ring.wrapper/unexpected->500-wrapper]
+ ;; all wrappers are enabled
+
+ ;; health-check wrapper
+ "bract.ring.health.check.enabled"       true
+ "bract.ring.health.check.uris"          ["/health" "/health/"]
+ "bract.ring.health.body.encoder"        clojure.core/pr-str
+ "bract.ring.health.content.type"        "application/edn"
+ "bract.ring.health.http.codes"          {:critical 503
+                                          :degraded 500
+                                          :healthy  200}
+
+ ;; /info endpoint wrappper
+ "bract.ring.info.endpoint.enabled"      true
+ "bract.ring.info.endpoint.uris"         ["/info" "/info/"]
+ "bract.ring.info.body.encoder"          clojure.core/pr-str
+ "bract.ring.info.content.type"          "application/edn"
+
+ ;; /ping endpoint wrapper
+ "bract.ring.ping.endpoint.enabled"      true
+ "bract.ring.ping.endpoint.uris"         ["/ping" "/ping/"]
+ "bract.ring.ping.endpoint.body"         "pong"
+ "bract.ring.ping.content.type"          "text/plain"
+
+ ;; URI trailing slash wrapper
+ "bract.ring.uri.trailing.slash.enabled" true
+ "bract.ring.uri.trailing.slash.action"  "remove"  ; add or remove
+
+ "bract.ring.uri.prefix.match.enabled"   true
+ ;; "bract.ring.uri.prefix.match.token"     to be defined
+ "bract.ring.uri.prefix.strip.flag"      true
+ "bract.ring.uri.prefix.backup.flag"     true
+ "bract.ring.uri.prefix.backup.key"      :original-uri
+
+ ;; params normalize wrapper
+ "bract.ring.params.normalize.enabled"   true
+ "bract.ring.params.normalize.function"  clojure.core/identity
+
+ ;; unexpected->500 wrapper
+ "bract.ring.unexpected.500.enabled"     true
+ "bract.ring.unexpected.response.fn"     bract.ring.util/bad-response->500
+ "bract.ring.unexpected.exception.fn"    bract.ring.util/exception->500
+
+ ;; traffic drain wrapper
+ "bract.ring.traffic.drain.enabled"      true
+ "bract.ring.traffic.conn.close.flag"    true
+
+ ;; distributed trace wrapper
+ "bract.ring.distributed.trace.enabled"  true
+ "bract.ring.trace.trace.id.header"      "x-trace-id"
+ "bract.ring.trace.parent.id.header"     "x-trace-parent-id"
+ "bract.ring.trace.trace.id.req.flag"    false
+ "bract.ring.trace.trace.id.valid.fn"    bract.ring.util/nop
+ "bract.ring.trace.trace.id.req.key"     :trace-id
+ "bract.ring.trace.span.id.req.key"      :span-id
+ "bract.ring.trace.parent.id.req.key"    :parent-id
+ }
