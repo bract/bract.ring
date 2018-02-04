@@ -9,6 +9,7 @@
 ## [WIP] 0.5.0 / 2018-January-??
 
 - Use bract.core 0.5.0
+- Add inducer `bract.ring.inducer/apply-middlewares` accepting Ring middleware
 - Wrappers (can toggle each with config flag)
   - Health check (/health)
   - Info endpoint (/info)

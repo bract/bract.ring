@@ -15,6 +15,25 @@
     [bract.ring.keydef  :as ring-kdef]))
 
 
+(defn apply-middlewares
+  "Given a context with a Ring handler under context key :bract.ring/ring-handler apply the Ring middleware i.e.
+  a seq of `(fn [handler & args]) -> handler`, finally updating the context with the wrapped handler."
+  [context middlewares]
+  (core-util/expected coll? "Ring middleware collection" middlewares)
+  (->> middlewares
+    (map (fn [middleware-spec] (let [[middleware-name & args] (core-util/as-vec middleware-spec)]
+                                 (core-type/->Function
+                                   (fn [ctx]
+                                     (let [handler    (ring-kdef/ctx-ring-handler ctx)
+                                           middleware (core-type/ifunc middleware-name)]
+                                       (->> args
+                                         (apply middleware handler)
+                                         (assoc ctx (key ring-kdef/ctx-ring-handler)))))
+                                   (core-type/iname middleware-name)
+                                   []))))
+    (core-inducer/induce context)))
+
+
 (defn apply-wrappers
   "Given a context with a Ring handler under context key :bract.ring/ring-handler apply the Ring handler wrappers i.e.
   a seq of `(fn [handler context]) -> handler`, finally updating the context with the wrapped handler."
