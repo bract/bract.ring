@@ -237,10 +237,10 @@
 
 (defn uri-trailing-slash-wrapper
   "Wrap handler such that the trailing slash is either added (if missing) or removed (if present) depending upon the
-  specified optional action.
+  specified optional action (:add/:remove).
   | Option        | Config key                           | Default config value |
   |---------------|--------------------------------------|----------------------|
-  | :action       | bract.ring.uri.trailing.slash.action | \"remove\"           |"
+  | :action       | bract.ring.uri.trailing.slash.action | :remove              |"
   ([handler context]
     (uri-trailing-slash-wrapper handler context {}))
   ([handler context options]
