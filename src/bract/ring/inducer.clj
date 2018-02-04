@@ -40,12 +40,14 @@
   [context wrappers]
   (core-util/expected coll? "Ring handler wrapper collection" wrappers)
   (->> wrappers
-    (map (fn [wrapper-spec] (core-type/->Function
-                              (fn [ctx]
-                                (let [handler (ring-kdef/ctx-ring-handler ctx)
-                                      wrapper (core-type/ifunc wrapper-spec)]
-                                  (->> (wrapper handler ctx)
-                                    (assoc ctx (key ring-kdef/ctx-ring-handler)))))
-                              (core-type/iname wrapper-spec)
-                              [])))
+    (map (fn [wrapper-spec] (let [[wrapper-name & args] (core-util/as-vec wrapper-spec)]
+                              (core-type/->Function
+                                (fn [ctx]
+                                  (let [handler (ring-kdef/ctx-ring-handler ctx)
+                                        wrapper (core-type/ifunc wrapper-name)]
+                                    (->> args
+                                      (apply wrapper handler ctx)
+                                      (assoc ctx (key ring-kdef/ctx-ring-handler)))))
+                                (core-type/iname wrapper-name)
+                                []))))
     (core-inducer/induce context)))

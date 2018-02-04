@@ -60,9 +60,9 @@
   handler)
 
 
-(defn wrapper-add2
-  [handler context]
-  (vswap! holder (fn [^long n] (+ n 2)))
+(defn wrapper-add
+  [handler context ^long delta]
+  (vswap! holder (fn [^long n] (+ n delta)))
   handler)
 
 
@@ -70,7 +70,8 @@
   (testing "happy cases, wrapper fns"
     (let [context {:bract.ring/ring-handler identity}]
       (vreset! holder 0)
-      (let [new-context (inducer/apply-wrappers context [wrapper-inc wrapper-add2])
+      (let [new-context (inducer/apply-wrappers context [wrapper-inc
+                                                         [wrapper-add 2]])
             new-handler (ring-kdef/ctx-ring-handler new-context)]
         (is (contains? new-context :bract.ring/ring-handler))
         (is (= :foo (new-handler :foo))))
@@ -79,7 +80,7 @@
     (let [context {:bract.ring/ring-handler identity}]
       (vreset! holder 0)
       (let [new-context (inducer/apply-wrappers context '[bract.ring.inducer-test/wrapper-inc
-                                                          bract.ring.inducer-test/wrapper-add2])
+                                                          [bract.ring.inducer-test/wrapper-add 2]])
             new-handler (ring-kdef/ctx-ring-handler new-context)]
         (is (contains? new-context :bract.ring/ring-handler))
         (is (= :foo (new-handler :foo))))
