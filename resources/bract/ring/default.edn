@@ -39,7 +39,7 @@
  "bract.ring.uri.trailing.slash.enabled" true
  "bract.ring.uri.trailing.slash.action"  :remove  ; :add or :remove
 
- "bract.ring.uri.prefix.match.enabled"   true
+ "bract.ring.uri.prefix.match.enabled"   false
  ;; "bract.ring.uri.prefix.match.token"     to be defined
  "bract.ring.uri.prefix.strip.flag"      true
  "bract.ring.uri.prefix.backup.flag"     true

@@ -299,8 +299,9 @@
   (testing "wrapper"
     (let [wrapped (wrapper/uri-prefix-match-wrapper handler
                     {:bract.core/config (assoc default-config
-                                          "bract.ring.uri.prefix.match.token" "/prefix"
-                                          "bract.ring.uri.prefix.backup.key"  :backup)})]
+                                          "bract.ring.uri.prefix.match.enabled" true
+                                          "bract.ring.uri.prefix.match.token"   "/prefix"
+                                          "bract.ring.uri.prefix.backup.key"    :backup)})]
       (is (= {:status 200
               :body "default"
               :headers {"Content-Type" "text/plain"}}
