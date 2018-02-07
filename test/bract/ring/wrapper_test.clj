@@ -254,10 +254,12 @@
                                                      :body (:uri request)})))
         add-trs (wrapper/uri-trailing-slash-wrapper handler
                   {:bract.core/config (assoc default-config
-                                        "bract.ring.uri.trailing.slash.action" :add)})
+                                        "bract.ring.uri.trailing.slash.enabled" true
+                                        "bract.ring.uri.trailing.slash.action"  :add)})
         rem-trs (wrapper/uri-trailing-slash-wrapper handler
                   {:bract.core/config (assoc default-config
-                                        "bract.ring.uri.trailing.slash.action" :remove)})]
+                                        "bract.ring.uri.trailing.slash.enabled" true
+                                        "bract.ring.uri.trailing.slash.action"  :remove)})]
     (testing "add trailing slash"
       (is (= {:status 200
               :body "/foo/"}

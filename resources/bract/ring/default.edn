@@ -36,7 +36,7 @@
  "bract.ring.ping.content.type"          "text/plain"
 
  ;; URI trailing slash wrapper
- "bract.ring.uri.trailing.slash.enabled" true
+ "bract.ring.uri.trailing.slash.enabled" false
  "bract.ring.uri.trailing.slash.action"  :remove  ; :add or :remove
 
  "bract.ring.uri.prefix.match.enabled"   false
