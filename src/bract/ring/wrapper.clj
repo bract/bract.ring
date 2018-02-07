@@ -213,9 +213,12 @@
   "Given a request map, remove any trailing slash from the URI and return updated request map."
   [request]
   (let [^String uri (:uri request)
-        uri-lastidx (unchecked-dec (.length uri))]
-    (if (identical? \/ (.charAt uri uri-lastidx))
-      (assoc request :uri (subs uri 0 uri-lastidx))
+        uri-length  (.length uri)
+        uri-lastidx (unchecked-dec uri-length)]
+    (if (> uri-length 1)
+      (if (identical? \/ (.charAt uri uri-lastidx))
+        (assoc request :uri (subs uri 0 uri-lastidx))
+        request)
       request)))
 
 
