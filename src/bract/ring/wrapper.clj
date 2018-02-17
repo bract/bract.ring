@@ -437,7 +437,7 @@
     (when-wrapper-enabled ring-kdef/cfg-traffic-drain-wrapper? handler context
       (let [conn-close?   (->> ring-kdef/cfg-traffic-drain-conn-close?
                             (opt-or-config :conn-close?))
-            shutdown-flag (core-kdef/ctx-shutdown-flag context)
+            shutdown-flag (core-kdef/*ctx-shutdown-flag context)
             response-503  (let [response {:status 503
                                           :headers {"Content-Type" "text/plain"}
                                           :body "503 Service Unavailable. Traffic draining is in progress."}]

@@ -381,7 +381,7 @@
   (let [sd-flag (volatile! false)
         wrapped (-> handler
                   (wrapper/traffic-drain-wrapper {:bract.core/config default-config
-                                                  :bract.core/shutdown-flag sd-flag}))]
+                                                  :bract.core/*shutdown-flag sd-flag}))]
     (is (= {:headers {"Content-Type" "text/plain"}
             :status 200
             :body "default"}
@@ -399,7 +399,7 @@
         wrapped (-> handler
                   (wrapper/traffic-drain-wrapper {:bract.core/config (assoc default-config
                                                                        "bract.ring.traffic.conn.close.flag" false)
-                                                  :bract.core/shutdown-flag sd-flag}))]
+                                                  :bract.core/*shutdown-flag sd-flag}))]
     (is (= {:headers {"Content-Type" "text/plain"}
             :status 200
             :body "default"}
