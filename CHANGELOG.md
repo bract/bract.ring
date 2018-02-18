@@ -8,7 +8,7 @@
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
 
 
-## [WIP] 0.5.0 / 2018-February-??
+## 0.5.0 / 2018-February-18
 
 - Use bract.core 0.5.0
 - Add inducer `bract.ring.inducer/apply-middlewares` accepting Ring middleware
