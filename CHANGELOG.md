@@ -2,7 +2,26 @@
 
 ## TODO
 
-- [TODO] Various middleware and wrappers
+- Key definitions
+  - [Todo] Support for dual or multiple handlers starting at different web server ports
+- Distributed trace
+  - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
+
+
+## [WIP] 0.5.0 / 2018-February-??
+
+- Use bract.core 0.5.0
+- Add inducer `bract.ring.inducer/apply-middlewares` accepting Ring middleware
+- Wrappers (can toggle each with config flag)
+  - Health check (/health)
+  - Info endpoint (/info)
+  - Ping endpoint (/ping)
+  - uri-trailing-slash
+  - uri-prefix-match
+  - params-normalize
+  - unexpected->500
+  - traffic-drain
+  - distributed-trace
 
 
 ## 0.4.1 / 2017-August-08
