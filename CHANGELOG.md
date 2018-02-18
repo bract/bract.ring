@@ -4,9 +4,11 @@
 
 - Key definitions
   - [Todo] Support for dual or multiple handlers starting at different web server ports
+- Distributed trace
+  - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
 
 
-## [WIP] 0.5.0 / 2018-January-??
+## [WIP] 0.5.0 / 2018-February-??
 
 - Use bract.core 0.5.0
 - Add inducer `bract.ring.inducer/apply-middlewares` accepting Ring middleware
