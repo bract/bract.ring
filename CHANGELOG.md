@@ -10,7 +10,8 @@
 
 ## [WIP] / 2018-February-??
 
-- [TODO] Use bract.core 0.5.1
+- Use bract.core 0.5.1
+  - [TODO] Use the GA version
 
 
 ## 0.5.0 / 2018-February-18
