@@ -6,6 +6,14 @@
   - [Todo] Support for dual or multiple handlers starting at different web server ports
 - Distributed trace
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
+- Rename resources
+  - [TODO - BREAKING CHANGE] Rename `default.edn` to `default-config.edn`
+  - [TODO - BREAKING CHANGE] Rename `devdelta.edn` to `dev-config.edn`
+
+
+## [WIP] / 2018-March-??
+
+- Use bract.core 0.5.1
 
 
 ## 0.5.0 / 2018-February-18
@@ -22,6 +30,9 @@
   - unexpected->500
   - traffic-drain
   - distributed-trace
+- Provide config files
+  - `bract/ring/default.edn`
+  - `bract/ring/devdelta.edn`
 
 
 ## 0.4.1 / 2017-August-08
