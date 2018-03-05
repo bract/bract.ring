@@ -11,7 +11,7 @@
   - [TODO - BREAKING CHANGE] Rename `devdelta.edn` to `dev-config.edn`
 
 
-## [WIP] / 2018-March-??
+## 0.5.1 / 2018-March-05
 
 - Use bract.core 0.5.1
 
