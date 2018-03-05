@@ -6,6 +6,10 @@
   - [Todo] Support for dual or multiple handlers starting at different web server ports
 - Distributed trace
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
+
+
+## [WIP] 0.6.0 / 2018-March-??
+
 - Rename resources
   - [TODO - BREAKING CHANGE] Rename `default.edn` to `default-config.edn`
   - [TODO - BREAKING CHANGE] Rename `devdelta.edn` to `dev-config.edn`
