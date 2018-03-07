@@ -1,10 +1,4 @@
-{;; Default config for bract.ring module - include in your project as a parent as follows:
- ;;
- ;; "parent.config.filenames" [;; other config files
- ;;                            "bract/ring/default.edn"]
- ;;
-
- ;; health-check wrapper
+{;; health-check wrapper
  "bract.ring.health.check.enabled"       true
  "bract.ring.health.check.uris"          ["/health" "/health/"]
  "bract.ring.health.body.encoder"        clojure.core/pr-str
