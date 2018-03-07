@@ -10,6 +10,8 @@
 
 ## [WIP] 0.6.0 / 2018-March-??
 
+- Use bract.core 0.6.0
+  - [Todo] Use the GA version
 - Rename resources
   - [TODO - BREAKING CHANGE] Rename `default.edn` to `default-config.edn`
   - [TODO - BREAKING CHANGE] Rename `devdelta.edn` to `dev-config.edn`
