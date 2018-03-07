@@ -12,7 +12,9 @@
 
 - Use bract.core 0.6.0
   - [Todo] Use the GA version
-- Rename resources
+- Resources
+  - Add `bract/ring/context.edn` with context entries
+  - Add `bract/ring/context.dev.edn` with context entries for dev mode
   - [TODO - BREAKING CHANGE] Rename `default.edn` to `default-config.edn`
   - [TODO - BREAKING CHANGE] Rename `devdelta.edn` to `dev-config.edn`
 
