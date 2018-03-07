@@ -15,8 +15,8 @@
 - Resources
   - Add `bract/ring/context.edn` with context entries
   - Add `bract/ring/context.dev.edn` with context entries for dev mode
-  - [TODO - BREAKING CHANGE] Rename `default.edn` to `default-config.edn`
-  - [TODO - BREAKING CHANGE] Rename `devdelta.edn` to `dev-config.edn`
+  - [BREAKING CHANGE] Rename `bract/ring/default.edn` to `bract/ring/config.edn`, removing non-config entries
+  - [BREAKING CHANGE] Rename `bract/ring/devdelta.edn` to `bract/ring/config.dev.edn`
 
 
 ## 0.5.1 / 2018-March-05
