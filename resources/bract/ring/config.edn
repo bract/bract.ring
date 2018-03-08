@@ -1,4 +1,8 @@
-{;; health-check wrapper
+{;;
+ ;; bract.ring default config
+ ;;
+
+ ;; health-check wrapper
  "bract.ring.health.check.enabled"       true
  "bract.ring.health.check.uris"          ["/health" "/health/"]
  "bract.ring.health.body.encoder"        clojure.core/pr-str

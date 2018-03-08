@@ -1,3 +1,7 @@
-{"bract.ring.unexpected.response.fn"     bract.ring.util/bad-response->verbose-500
+{;;
+ ;; bract.ring development config
+ ;;
+
+ "bract.ring.unexpected.response.fn"     bract.ring.util/bad-response->verbose-500
  "bract.ring.unexpected.exception.fn"    bract.ring.util/exception->verbose-500
  }
