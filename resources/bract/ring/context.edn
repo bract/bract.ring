@@ -1,4 +1,7 @@
-{:bract.ring/wrappers [bract.ring.wrapper/uri-prefix-match-wrapper
+{;;
+ ;; bract.ring default context
+ ;;
+ :bract.ring/wrappers [bract.ring.wrapper/uri-prefix-match-wrapper
                        bract.ring.wrapper/uri-trailing-slash-wrapper
                        bract.ring.wrapper/traffic-drain-wrapper
                        bract.ring.wrapper/distributed-trace-wrapper
