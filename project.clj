@@ -6,13 +6,14 @@
   :global-vars {*warn-on-reflection* true
                 *assert* true
                 *unchecked-math* :warn-on-boxed}
+  :pedantic? :warn
   :dependencies [[bract/bract.core "0.6.0-SNAPSHOT"]]
   :profiles {:provided {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :coverage {:plugins [[lein-cloverage "1.0.9"]]}
              :rel {:min-lein-version "2.7.1"
                    :pedantic? :abort}
              :dev {:dependencies [[ring "1.6.3"]
-                                  [clj-http "3.7.0"]
+                                  [clj-http "3.7.0" :exclusions [riddley]]
                                   [cheshire "5.8.0"]
                                   ;; web servers
                                   [aleph                   "0.4.4"]
