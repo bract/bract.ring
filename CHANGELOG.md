@@ -12,6 +12,17 @@
 
 - Use bract.core 0.6.0
   - [Todo] Use the GA version
+- Key definitions
+  - Context `:bract.ring/server-starter` starts server
+  - Context `:bract.ring/server-stopper` schedules stopper function for a started server
+  - Context `:bract.ring/server-options` options to be passed to server when starting
+  - Config `"bract.ring.server.options"` options to start server with
+- Inducer
+  - [Todo] Add `bract.ring.inducer/start-server` to easily start Ring server
+- Add server-startup functions in `bract.ring.server` namespace (dependency not included)
+  - Jetty   - `bract.ring.server/start-jetty-server`
+  - Aleph   - `bract.ring.server/start-aleph-server`
+  - HTTPKit - `bract.ring.server/start-http-kit-server`
 - Resources
   - Add `bract/ring/context.edn` with context entries
   - [BREAKING CHANGE] Rename `bract/ring/default.edn` to `bract/ring/config.edn`, removing non-config entries
