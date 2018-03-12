@@ -9,36 +9,38 @@
 
 (ns bract.ring.server
   "This namespace defines functions that start popular Ring servers, returning stopper function. Server dependencies
-  are not included - you must include them in the project.")
+  are not included - you must include them in the project."
+  (:require
+    [bract.core.util :as core-util])
+  (:import
+    [java.io Closeable]))
 
 
 (defn start-jetty-server
   "Start Jetty server using ring-jetty adapter. Include [ring/ring-jetty-adapter \"version\"] in your dependencies."
   [handler options]
-  (let [form `(do
-                (require 'ring.adapter.jetty)
-                (import 'org.eclipse.jetty.server.Server)
-                (let [^org.eclipse.jetty.server.Server server# (ring.adapter.jetty/run-jetty
-                                                                 ~handler ~options)]
-                  (fn [] (.stop server#))))]
-    (eval form)))
+  (require 'ring.adapter.jetty)
+  (if-let [f (find-var 'ring.adapter.jetty/run-jetty)]
+    (let [server (f handler options)]
+      (import 'org.eclipse.jetty.server.Server)
+      (fn [] (.stop server)))
+    (throw (ex-info "Cannot find Jetty server starter fn 'ring.adapter.jetty/run-jetty' in classpath." {}))))
 
 
 (defn start-aleph-server
   "Start Aleph server. Include [aleph \"version\"] in your dependencies."
   [handler options]
-  (let [form `(do
-                (require 'aleph.http)
-                (import 'java.io.Closeable)
-                (let [^java.io.Closeable server# (aleph.http/start-server ~handler ~options)]
-                  (fn [] (.close server#))))]
-    (eval form)))
+  (require 'aleph.http)
+  (if-let [f (find-var 'aleph.http/start-server)]
+    (let [^java.io.Closeable server (f handler options)]
+      (fn [] (.close server)))
+    (throw (ex-info "Cannot find Aleph server starter fn 'aleph.http/start-server' in classpath." {}))))
 
 
 (defn start-http-kit-server
   "Start HTTP-Kit server. Include [http-kit \"version\"] in your dependencies."
   [handler options]
-  (let [form `(do
-                (require 'org.httpkit.server)
-                (org.httpkit.server/run-server ~handler ~options))]
-    (eval form)))
+  (require 'org.httpkit.server)
+  (-> (find-var 'org.httpkit.server/run-server)
+    (or (throw (ex-info "Cannot find HTTP-Kit server starter fn 'org.httpkit.server/run-server' in classpath." {})))
+    (core-util/invoke handler options)))
