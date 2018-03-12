@@ -18,7 +18,7 @@
   - Context `:bract.ring/server-options` options to be passed to server when starting
   - Config `"bract.ring.server.options"` options to start server with
 - Inducer
-  - [Todo] Add `bract.ring.inducer/start-server` to easily start Ring server
+  - Add `bract.ring.inducer/start-server` to easily start Ring server
 - Add server-startup functions in `bract.ring.server` namespace (dependency not included)
   - Jetty   - `bract.ring.server/start-jetty-server`
   - Aleph   - `bract.ring.server/start-aleph-server`

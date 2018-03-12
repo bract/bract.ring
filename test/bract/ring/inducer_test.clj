@@ -10,8 +10,10 @@
 (ns bract.ring.inducer-test
   (:require
     [clojure.test :refer :all]
+    [bract.core.inducer :as core-inducer]
     [bract.ring.keydef  :as ring-kdef]
-    [bract.ring.inducer :as inducer]))
+    [bract.ring.inducer :as inducer]
+    [bract.ring.server-test :as stest]))
 
 
 (def holder (volatile! 10))
@@ -89,3 +91,24 @@
     (inducer/apply-wrappers {} []))
   (testing "missing Ring handler"
     (is (thrown? IllegalArgumentException (inducer/apply-wrappers {} [(fn [x y] x)])))))
+
+
+(deftest test-start-server
+  (doseq [each-starter ['bract.ring.server/start-aleph-server
+                        'bract.ring.server/start-http-kit-server
+                        'bract.ring.server/start-jetty-server]
+          context-delta [{:bract.ring/server-options {:port 3000
+                                                      :join? false}}
+                         {:bract.core/config {"bract.ring.server.options" {:port 3000
+                                                                           :join? false}}}]]
+    (testing "context options")
+    (testing "context options")
+    (let [context (merge {:bract.ring/ring-handler   stest/handler
+                          :bract.ring/server-starter each-starter}
+                    context-delta)
+          updated (inducer/start-server context)]
+      (is (= {:headers {}
+              :status 200
+              :body "OK"}
+            (stest/client-get)))
+      (core-inducer/invoke-stopper updated))))
