@@ -18,7 +18,7 @@
                                   ;; web servers
                                   [aleph                   "0.4.4"]
                                   [http-kit                "2.3.0-beta1"]
-                                  [org.immutant/immutant   "2.1.9"]
+                                  [org.immutant/immutant   "2.1.10"]
                                   [ring/ring-jetty-adapter "1.6.3"]]}
              :c17 {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :c18 {:dependencies [[org.clojure/clojure "1.8.0"]]}
