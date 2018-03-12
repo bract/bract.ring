@@ -20,9 +20,10 @@
 - Inducer
   - Add `bract.ring.inducer/start-server` to easily start Ring server
 - Add server-startup functions in `bract.ring.server` namespace (dependency not included)
-  - Jetty   - `bract.ring.server/start-jetty-server`
-  - Aleph   - `bract.ring.server/start-aleph-server`
-  - HTTPKit - `bract.ring.server/start-http-kit-server`
+  - Aleph    - `bract.ring.server/start-aleph-server`
+  - HTTP-Kit - `bract.ring.server/start-http-kit-server`
+  - Immutant - `bract.ring.server/start-immutant-server`
+  - Jetty    - `bract.ring.server/start-jetty-server`
 - Resources
   - Add `bract/ring/context.edn` with context entries
   - [BREAKING CHANGE] Rename `bract/ring/default.edn` to `bract/ring/config.edn`, removing non-config entries

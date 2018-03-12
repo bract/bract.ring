@@ -14,9 +14,11 @@
              :dev {:dependencies [[ring "1.6.3"]
                                   [clj-http "3.7.0"]
                                   [cheshire "5.8.0"]
-                                  [ring/ring-jetty-adapter "1.6.3"]
-                                  [aleph "0.4.4"]
-                                  [http-kit "2.3.0-beta1"]]}
+                                  ;; web servers
+                                  [aleph                   "0.4.4"]
+                                  [http-kit                "2.3.0-beta1"]
+                                  [org.immutant/immutant   "2.1.9"]
+                                  [ring/ring-jetty-adapter "1.6.3"]]}
              :c17 {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :c18 {:dependencies [[org.clojure/clojure "1.8.0"]]}
              :c19 {:dependencies [[org.clojure/clojure "1.9.0"]]}

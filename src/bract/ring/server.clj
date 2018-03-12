@@ -16,17 +16,6 @@
     [java.io Closeable]))
 
 
-(defn start-jetty-server
-  "Start Jetty server using ring-jetty adapter. Include [ring/ring-jetty-adapter \"version\"] in your dependencies."
-  [handler options]
-  (require 'ring.adapter.jetty)
-  (if-let [f (find-var 'ring.adapter.jetty/run-jetty)]
-    (let [server (f handler options)]
-      (import 'org.eclipse.jetty.server.Server)
-      (fn [] (.stop server)))
-    (throw (ex-info "Cannot find Jetty server starter fn 'ring.adapter.jetty/run-jetty' in classpath." {}))))
-
-
 (defn start-aleph-server
   "Start Aleph server. Include [aleph \"version\"] in your dependencies."
   [handler options]
@@ -44,3 +33,27 @@
   (-> (find-var 'org.httpkit.server/run-server)
     (or (throw (ex-info "Cannot find HTTP-Kit server starter fn 'org.httpkit.server/run-server' in classpath." {})))
     (core-util/invoke handler options)))
+
+
+(defn start-immutant-server
+  [handler options]
+  (require 'immutant.web)
+  (if-let [f (find-var 'immutant.web/run)]
+    (let [server (->> (seq options)
+                   (apply concat)
+                   (apply f handler))]
+      (if-let [stopper (find-var 'immutant.web/stop)]
+        (fn [] (stopper server))
+        (throw (ex-info "Cannot find Immutant server stopper fn 'immutant.web/stop' in classpath." {}))))
+    (throw (ex-info "Cannot find Immutant server starter fn 'immutant.web/run' in classpath." {}))))
+
+
+(defn start-jetty-server
+  "Start Jetty server using ring-jetty adapter. Include [ring/ring-jetty-adapter \"version\"] in your dependencies."
+  [handler options]
+  (require 'ring.adapter.jetty)
+  (if-let [f (find-var 'ring.adapter.jetty/run-jetty)]
+    (let [server (f handler options)]
+      (import 'org.eclipse.jetty.server.Server)
+      (fn [] (.stop server)))
+    (throw (ex-info "Cannot find Jetty server starter fn 'ring.adapter.jetty/run-jetty' in classpath." {}))))

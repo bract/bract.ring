@@ -49,6 +49,13 @@
     (stopper)))
 
 
+(deftest test-immutant
+  (let [stopper (server/start-immutant-server handler {:port 3000})]
+    (is (= {:headers {} :status 200 :body "OK"}
+          (client-get)))
+    (stopper)))
+
+
 (deftest test-jetty
   (let [stopper (server/start-jetty-server handler {:port 3000
                                                     :join? false})]
