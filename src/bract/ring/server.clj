@@ -21,7 +21,8 @@
   [handler options]
   (require 'aleph.http)
   (if-let [f (find-var 'aleph.http/start-server)]
-    (let [^java.io.Closeable server (f handler options)]
+    (let [^java.io.Closeable server (f handler (merge {:port 3000}
+                                                 options))]
       (fn [] (.close server)))
     (throw (ex-info "Cannot find Aleph server starter fn 'aleph.http/start-server' in classpath." {}))))
 
@@ -32,14 +33,18 @@
   (require 'org.httpkit.server)
   (-> (find-var 'org.httpkit.server/run-server)
     (or (throw (ex-info "Cannot find HTTP-Kit server starter fn 'org.httpkit.server/run-server' in classpath." {})))
-    (core-util/invoke handler options)))
+    (core-util/invoke handler (merge {:port 3000}
+                                options))))
 
 
 (defn start-immutant-server
+  "Start Jetty server using ring-jetty adapter. Include [org.immutant/immutant \"version\"] in your dependencies."
   [handler options]
   (require 'immutant.web)
   (if-let [f (find-var 'immutant.web/run)]
-    (let [server (->> (seq options)
+    (let [server (->> options
+                   (merge {:port 3000})
+                   seq
                    (apply concat)
                    (apply f handler))]
       (if-let [stopper (find-var 'immutant.web/stop)]
@@ -53,7 +58,9 @@
   [handler options]
   (require 'ring.adapter.jetty)
   (if-let [f (find-var 'ring.adapter.jetty/run-jetty)]
-    (let [server (f handler options)]
+    (let [server (f handler (merge {:port 3000
+                                    :join? false}
+                              options))]
       (import 'org.eclipse.jetty.server.Server)
       (fn [] (.stop server)))
     (throw (ex-info "Cannot find Jetty server starter fn 'ring.adapter.jetty/run-jetty' in classpath." {}))))
