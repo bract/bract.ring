@@ -10,8 +10,7 @@
 
 ## [WIP] 0.6.0 / 2018-March-??
 
-- Use bract.core 0.6.0
-  - [Todo] Use the GA version
+- Use bract.core 0.6.0-alpha1
 - Key definitions
   - Context `:bract.ring/server-starter` starts server
   - Context `:bract.ring/server-stopper` schedules stopper function for a started server
