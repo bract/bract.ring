@@ -81,12 +81,12 @@
                         (-> (format "Retrieving Ring server options for '%s' from context at key:" server-name)
                           (echo/echo ctx-key))
                         (-> (ring-kdef/ctx-server-options context)
-                          (echo/->echo (format "Starting Ring server using '%s' and context options:" server-name))))
+                          (echo/->echo (format "Starting Ring server using '%s' and context options" server-name))))
                       (do
                         (-> (format "Retrieving Ring server options for '%s' from config at key:" server-name)
                           (echo/echo cfg-key))
                         (-> (core-kdef/ctx-config context)
                           ring-kdef/cfg-server-options
-                          (echo/->echo (format "Starting Ring server using '%s' and config options:" server-name)))))
+                          (echo/->echo (format "Starting Ring server using '%s' and config options" server-name)))))
             stopper (server-func handler options)]
         (stopper-func context stopper)))))
