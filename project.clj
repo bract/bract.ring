@@ -1,4 +1,4 @@
-(defproject bract/bract.ring "0.6.0-alpha2-SNAPSHOT"
+(defproject bract/bract.ring "0.6.0-alpha2"
   :description "Bract module for Ring support"
   :url "https://github.com/bract/bract.ring"
   :license {:name "Eclipse Public License"
@@ -17,7 +17,7 @@
                                   [cheshire "5.8.0"]
                                   ;; web servers
                                   [aleph                   "0.4.4"]
-                                  [http-kit                "2.3.0-beta1"]
+                                  [http-kit                "2.3.0-beta2"]
                                   [org.immutant/immutant   "2.1.10"]
                                   [ring/ring-jetty-adapter "1.6.3"]]}
              :c17 {:dependencies [[org.clojure/clojure "1.7.0"]]}
