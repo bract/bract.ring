@@ -10,7 +10,8 @@
 
 ## [WIP] 0.6.0-alpha3 / 2018-March-??
 
-- [Todo] Use bract.core 0.6.0-alpha3
+- Use bract.core 0.6.0-alpha3
+  - [Todo] Use Clojars version
 
 
 ## 0.6.0-alpha2 / 2018-March-22
