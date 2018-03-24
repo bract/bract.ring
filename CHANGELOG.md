@@ -11,7 +11,7 @@
 ## [WIP] 0.6.0-alpha4 / 2018-March-??
 
 - Upgrade bract.core to 0.6.0-alpha4
-- [Todo] Emit "server started" message to STDERR for all supported servers
+- Emit "server started" message to STDERR for all supported servers
 
 
 ## 0.6.0-alpha3 / 2018-March-23

@@ -21,8 +21,9 @@
   [handler options]
   (require 'aleph.http)
   (if-let [f (find-var 'aleph.http/start-server)]
-    (let [^java.io.Closeable server (f handler (merge {:port 3000}
-                                                 options))]
+    (let [s-opts (merge {:port 3000} options)
+          ^java.io.Closeable server (f handler s-opts)]
+      (core-util/err-println (format "Aleph server started on port %d" (:port s-opts)))
       (fn [] (.close server)))
     (throw (ex-info "Cannot find Aleph server starter fn 'aleph.http/start-server' in classpath." {}))))
 
@@ -31,10 +32,11 @@
   "Start HTTP-Kit server. Include [http-kit \"version\"] in your dependencies."
   [handler options]
   (require 'org.httpkit.server)
-  (-> (find-var 'org.httpkit.server/run-server)
-    (or (throw (ex-info "Cannot find HTTP-Kit server starter fn 'org.httpkit.server/run-server' in classpath." {})))
-    (core-util/invoke handler (merge {:port 3000}
-                                options))))
+  (let [s-opts (merge {:port 3000} options)]
+    (-> (find-var 'org.httpkit.server/run-server)
+      (or (throw (ex-info "Cannot find HTTP-Kit server starter fn 'org.httpkit.server/run-server' in classpath." {})))
+      (core-util/invoke handler s-opts)
+      (doto (do (core-util/err-println (format "HTTP Kit server started on port %d" (:port s-opts))))))))
 
 
 (defn start-immutant-server
@@ -42,11 +44,12 @@
   [handler options]
   (require 'immutant.web)
   (if-let [f (find-var 'immutant.web/run)]
-    (let [server (->> options
-                   (merge {:port 3000})
+    (let [s-opts (merge {:port 3000} options)
+          server (->> s-opts
                    seq
                    (apply concat)
                    (apply f handler))]
+      (core-util/err-println (format "Immutant server started on port %d" (:port s-opts)))
       (if-let [stopper (find-var 'immutant.web/stop)]
         (fn [] (stopper server))
         (throw (ex-info "Cannot find Immutant server stopper fn 'immutant.web/stop' in classpath." {}))))
@@ -58,9 +61,9 @@
   [handler options]
   (require 'ring.adapter.jetty)
   (if-let [f (find-var 'ring.adapter.jetty/run-jetty)]
-    (let [server (f handler (merge {:port 3000
-                                    :join? false}
-                              options))]
+    (let [s-opts (merge {:port 3000 :join? false} options)
+          server (f handler s-opts)]
+      (core-util/err-println (format "Jetty server started on port %d" (:port s-opts)))
       (import 'org.eclipse.jetty.server.Server)
       (fn [] (.stop server)))
     (throw (ex-info "Cannot find Jetty server starter fn 'ring.adapter.jetty/run-jetty' in classpath." {}))))
