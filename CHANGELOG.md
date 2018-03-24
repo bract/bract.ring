@@ -8,6 +8,12 @@
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
 
 
+## [WIP] 0.6.0-alpha4 / 2018-March-??
+
+- [Todo] Upgrade bract.core to 0.6.0-alpha4
+- [Todo] Emit "server started" message to STDERR for all supported servers
+
+
 ## 0.6.0-alpha3 / 2018-March-23
 
 - Use bract.core 0.6.0-alpha3
