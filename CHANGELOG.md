@@ -11,7 +11,7 @@
 ## [WIP] 0.6.0-beta1 / 2018-March-??
 
 - Upgrade bract.core to 0.6.0-beta1
-- [Todo] Output server-started message to STDERR only when echo is disabled
+- Output server-started message to STDERR only when echo is disabled
 
 
 ## 0.6.0-alpha4 / 2018-March-25
