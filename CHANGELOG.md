@@ -8,7 +8,7 @@
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
 
 
-## [WIP] 0.6.0-beta1 / 2018-March-??
+## 0.6.0-beta1 / 2018-March-27
 
 - Upgrade bract.core to 0.6.0-beta1
 - Output server-started message to STDERR only when echo is disabled
