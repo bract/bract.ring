@@ -8,6 +8,12 @@
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
 
 
+## [WIP] 0.6.0-beta2 / 2018-April-??
+
+- [Todo] Upgrade bract.core to version `0.6.0-beta2`
+- [Todo] Upgrade http-kit version ref to `2.3.0`
+
+
 ## 0.6.0-beta1 / 2018-March-27
 
 - Upgrade bract.core to 0.6.0-beta1
