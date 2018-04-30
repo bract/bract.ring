@@ -17,7 +17,7 @@
                                   [cheshire "5.8.0"]
                                   ;; web servers
                                   [aleph                   "0.4.4"]
-                                  [http-kit                "2.3.0-beta2"]
+                                  [http-kit                "2.3.0"]
                                   [org.immutant/immutant   "2.1.10"]
                                   [ring/ring-jetty-adapter "1.6.3"]]}
              :c17 {:dependencies [[org.clojure/clojure "1.7.0"]]}
