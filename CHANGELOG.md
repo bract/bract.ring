@@ -10,7 +10,8 @@
 
 ## [WIP] 0.6.0-beta2 / 2018-April-??
 
-- [Todo] Upgrade bract.core to version `0.6.0-beta2`
+- Upgrade bract.core to version `0.6.0-beta2`
+  - [Todo] Use GA version
 - [Todo] Upgrade http-kit version ref to `2.3.0`
 
 
