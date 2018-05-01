@@ -11,7 +11,6 @@
 ## [WIP] 0.6.0-beta2 / 2018-April-??
 
 - Upgrade bract.core to version `0.6.0-beta2`
-  - [Todo] Use GA version
 
 
 ## 0.6.0-beta1 / 2018-March-27
