@@ -14,12 +14,24 @@
     [keypin.util :as kputil]
     [bract.core.echo    :as echo]
     [bract.core.inducer :as inducer]
+    [bract.core.keydef  :as core-kdef]
     [bract.core.util    :as core-util]
     [bract.ring.util    :as ring-util]))
 
 
 (keypin/defkey  ; context keys
-  ctx-ring-handler [:bract.ring/ring-handler fn? "Application Ring handler"])
+  ctx-ring-handler   [:bract.ring/ring-handler    fn?  "Application Ring handler"]
+  ctx-server-starter [:bract.ring/server-starter  fn?  "Ring server starter (fn [handler options]) -> (fn stopper [])"
+                      {:parser kputil/str->fn}]
+  ctx-server-stopper [:bract.ring/server-stopper  fn?  "Ring server stopper (fn [context (fn stopper [])]) -> context"
+                      {:parser kputil/str->fn
+                       :default (fn [context stopper] (assoc context (key core-kdef/ctx-stopper) stopper))}]
+  ctx-server-options [:bract.ring/server-options  map? "Ring server options" {:parser kputil/any->edn}])
+
+
+(keypin/defkey  ; config keys for Ring server
+  cfg-server-options ["bract.ring.server.options" map? "Ring web server options" {:parser kputil/any->edn
+                                                                                  :default {}}])
 
 
 (keypin/defkey  ; config keys for wrappers enabled flag

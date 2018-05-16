@@ -9,7 +9,9 @@
 
 (ns bract.ring.inducer
   (:require
+    [bract.core.echo    :as echo]
     [bract.core.inducer :as core-inducer]
+    [bract.core.keydef  :as core-kdef]
     [bract.core.type    :as core-type]
     [bract.core.util    :as core-util]
     [bract.ring.keydef  :as ring-kdef]))
@@ -51,3 +53,40 @@
                                 (core-type/iname wrapper-name)
                                 []))))
     (core-inducer/induce context)))
+
+
+(defn start-server
+  ([context]
+    (start-server context
+      (ring-kdef/ctx-server-starter context)
+      (ring-kdef/ctx-server-stopper context)))
+  ([context starter-fn]
+    (start-server context
+      starter-fn
+      (ring-kdef/ctx-server-stopper context)))
+  ([context starter-fn stopper-inducer]
+    (let [server-func  (core-type/ifunc starter-fn)
+          server-name  (core-type/iname starter-fn)
+          server-args  (core-type/iargs starter-fn)
+          stopper-func (core-type/ifunc stopper-inducer)
+          stopper-name (core-type/iname stopper-inducer)
+          stopper-args (core-type/iargs stopper-inducer)]
+      (core-util/expected empty? (format "no specified arguments for server-starter fn '%s'" server-name) server-args)
+      (core-util/expected empty? (format "no specified arguments for stopper-helper fn '%s'" stopper-name) stopper-args)
+      (let [handler (ring-kdef/ctx-ring-handler context)
+            ctx-key (key ring-kdef/ctx-server-options)
+            cfg-key (key ring-kdef/cfg-server-options)
+            options (if (contains? context ctx-key)
+                      (do
+                        (-> (format "Retrieving Ring server options for '%s' from context at key:" server-name)
+                          (echo/echo ctx-key))
+                        (-> (ring-kdef/ctx-server-options context)
+                          (echo/->echo (format "Starting Ring server using '%s' and context options" server-name))))
+                      (do
+                        (-> (format "Retrieving Ring server options for '%s' from config at key:" server-name)
+                          (echo/echo cfg-key))
+                        (-> (core-kdef/ctx-config context)
+                          ring-kdef/cfg-server-options
+                          (echo/->echo (format "Starting Ring server using '%s' and config options" server-name)))))
+            stopper (server-func handler options)]
+        (stopper-func context stopper)))))

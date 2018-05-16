@@ -1,0 +1,13 @@
+{;;
+ ;; bract.ring default context
+ ;;
+ :bract.ring/wrappers [bract.ring.wrapper/uri-prefix-match-wrapper
+                       bract.ring.wrapper/uri-trailing-slash-wrapper
+                       bract.ring.wrapper/traffic-drain-wrapper
+                       bract.ring.wrapper/distributed-trace-wrapper
+                       bract.ring.wrapper/params-normalize-wrapper
+                       bract.ring.wrapper/health-check-wrapper
+                       bract.ring.wrapper/info-endpoint-wrapper
+                       bract.ring.wrapper/ping-endpoint-wrapper
+                       bract.ring.wrapper/unexpected->500-wrapper]
+ }

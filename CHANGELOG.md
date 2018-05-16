@@ -6,9 +6,30 @@
   - [Todo] Support for dual or multiple handlers starting at different web server ports
 - Distributed trace
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
-- Rename resources
-  - [TODO - BREAKING CHANGE] Rename `default.edn` to `default-config.edn`
-  - [TODO - BREAKING CHANGE] Rename `devdelta.edn` to `dev-config.edn`
+
+
+## [WIP] 0.6.0-0.1.0 / 2018-May-??
+
+- Upgrade bract.core to 0.6.0
+- Key definitions
+  - Context `:bract.ring/server-starter` starts server
+  - Context `:bract.ring/server-stopper` schedules stopper function for a started server
+  - Context `:bract.ring/server-options` options to be passed to server when starting
+  - Config `"bract.ring.server.options"` options to start server with
+- Inducer
+  - Add `bract.ring.inducer/start-server` to easily start Ring server
+- Add server-startup functions in `bract.ring.server` namespace (dependency not included)
+  - Aleph    - `bract.ring.server/start-aleph-server`
+  - HTTP-Kit - `bract.ring.server/start-http-kit-server`
+  - Immutant - `bract.ring.server/start-immutant-server`
+  - Jetty    - `bract.ring.server/start-jetty-server`
+- Resources
+  - Add `bract/ring/context.edn` with context entries
+  - [BREAKING CHANGE] Rename `bract/ring/default.edn` to `bract/ring/config.edn`, removing non-config entries
+  - [BREAKING CHANGE] Rename `bract/ring/devdelta.edn` to `bract/ring/config.dev.edn`
+- Echo
+  - Emit "server started" message to STDERR for all supported servers
+  - Output server-started message to STDERR only when echo is disabled
 
 
 ## 0.5.1 / 2018-March-05

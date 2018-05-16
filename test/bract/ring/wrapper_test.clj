@@ -22,7 +22,7 @@
     [org.eclipse.jetty.server Server]))
 
 
-(def default-config (core-kdef/resolve-config {} ["bract/ring/default.edn"]))
+(def default-config (core-kdef/resolve-config {} ["bract/ring/config.edn"]))
 
 
 (def default-response {:status 200
