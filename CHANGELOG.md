@@ -11,43 +11,6 @@
 ## [WIP] 0.6.0-0.1.0 / 2018-May-??
 
 - Upgrade bract.core to 0.6.0
-
-
-## 0.6.0-beta3 / 2018-May-12
-
-- Upgrade bract.core to version `0.6.0-beta3`
-
-
-## 0.6.0-beta2 / 2018-May-01
-
-- Upgrade bract.core to version `0.6.0-beta2`
-
-
-## 0.6.0-beta1 / 2018-March-27
-
-- Upgrade bract.core to 0.6.0-beta1
-- Output server-started message to STDERR only when echo is disabled
-
-
-## 0.6.0-alpha4 / 2018-March-25
-
-- Upgrade bract.core to 0.6.0-alpha4
-- Emit "server started" message to STDERR for all supported servers
-
-
-## 0.6.0-alpha3 / 2018-March-23
-
-- Use bract.core 0.6.0-alpha3
-
-
-## 0.6.0-alpha2 / 2018-March-22
-
-- Use bract.core 0.6.0-alpha2
-
-
-## 0.6.0-alpha1 / 2018-March-14
-
-- Use bract.core 0.6.0-alpha1
 - Key definitions
   - Context `:bract.ring/server-starter` starts server
   - Context `:bract.ring/server-stopper` schedules stopper function for a started server
@@ -64,6 +27,9 @@
   - Add `bract/ring/context.edn` with context entries
   - [BREAKING CHANGE] Rename `bract/ring/default.edn` to `bract/ring/config.edn`, removing non-config entries
   - [BREAKING CHANGE] Rename `bract/ring/devdelta.edn` to `bract/ring/config.dev.edn`
+- Echo
+  - Emit "server started" message to STDERR for all supported servers
+  - Output server-started message to STDERR only when echo is disabled
 
 
 ## 0.5.1 / 2018-March-05
