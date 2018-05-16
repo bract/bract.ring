@@ -10,7 +10,7 @@
 
 ## [WIP] 0.6.0-0.1.0 / 2018-May-??
 
-- [Todo] Upgrade bract.core to 0.6.0
+- Upgrade bract.core to 0.6.0
 
 
 ## 0.6.0-beta3 / 2018-May-12
