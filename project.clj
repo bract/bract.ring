@@ -7,7 +7,7 @@
                 *assert* true
                 *unchecked-math* :warn-on-boxed}
   :pedantic? :warn
-  :dependencies [[bract/bract.core "0.6.0"]]
+  :dependencies [[bract/bract.core "0.6.1"]]
   :profiles {:provided {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :coverage {:plugins [[lein-cloverage "1.0.9"]]}
              :rel {:min-lein-version "2.7.1"
@@ -20,7 +20,8 @@
                                   [http-kit                "2.3.0"]
                                   [org.immutant/immutant   "2.1.10"]
                                   [ring/ring-jetty-adapter "1.6.3"]]}
-             :c17 {:dependencies [[org.clojure/clojure "1.7.0"]]}
-             :c18 {:dependencies [[org.clojure/clojure "1.8.0"]]}
-             :c19 {:dependencies [[org.clojure/clojure "1.9.0"]]}
+             :c07 {:dependencies [[org.clojure/clojure "1.7.0"]]}
+             :c08 {:dependencies [[org.clojure/clojure "1.8.0"]]}
+             :c09 {:dependencies [[org.clojure/clojure "1.9.0"]]}
+             :c10 {:dependencies [[org.clojure/clojure "1.10.0-beta2"]]}
              :dln {:jvm-opts ["-Dclojure.compiler.direct-linking=true"]}})
