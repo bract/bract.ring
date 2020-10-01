@@ -14,10 +14,10 @@
                    :pedantic? :abort}
              :dev {:dependencies [[ring "1.6.3"]
                                   [clj-http "3.7.0" :exclusions [riddley]]
-                                  [cheshire "5.8.0"]
+                                  [cheshire "5.10.0"]
                                   ;; web servers
                                   [aleph                   "0.4.4"]
-                                  [http-kit                "2.3.0"]
+                                  [http-kit                "2.5.0"]
                                   [org.immutant/immutant   "2.1.10"]
                                   [ring/ring-jetty-adapter "1.6.3"]]}
              :c07 {:dependencies [[org.clojure/clojure "1.7.0"]]}
