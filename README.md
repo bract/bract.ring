@@ -5,7 +5,7 @@
 
 ## Clojars coordinates
 
-`[bract/bract.ring "0.6.2-0.1.1-SNAPSHOT"]`
+`[bract/bract.ring "0.6.2-0.2.0-SNAPSHOT"]`
 
 
 ## Documentation
