@@ -8,6 +8,16 @@
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
 
 
+## [WIP] 0.6.2-0.1.1 / 2020-October-??
+
+- [Todo] Upgrade bract.core to 0.6.2
+- [Todo] Ensure lein-ring displays request/response logs in dev mode
+- Documentation
+  - [Todo] Add _cljdoc_ badge
+  - [Todo] Reformat docstring for _cljdoc_
+  - [Todo] Add documentation page with context and config keys
+
+
 ## 0.6.1-0.1.0 / 2018-October-10
 
 - Upgrade bract.core to 0.6.1
