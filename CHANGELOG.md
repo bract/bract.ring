@@ -12,7 +12,7 @@
 
 - Upgrade bract.core to 0.6.2
 - [Todo] Ensure lein-ring displays request/response logs in dev mode
-- [Todo] Support HTTP `POST` method in `/ping` middleware
+- Support HTTP `POST` method (with custom body) in `/ping` middleware
 - Documentation
   - [Todo] Add _cljdoc_ badge
   - [Todo] Reformat docstring for _cljdoc_

@@ -9,12 +9,15 @@
 
 (ns bract.ring.wrapper
   (:require
+    [clojure.java.io         :as io]
     [clojure.string          :as string]
     [bract.core.keydef       :as core-kdef]
     [bract.core.type         :as core-type]
     [bract.core.util         :as core-util]
     [bract.core.util.runtime :as bcu-runtime]
-    [bract.ring.keydef       :as ring-kdef]))
+    [bract.ring.keydef       :as ring-kdef])
+  (:import
+    [java.io InputStream]))
 
 
 (defmacro when-wrapper-enabled
@@ -180,17 +183,35 @@
             ping-response {:status 200
                            :body body
                            :headers {"Content-Type"  content-type
-                                     "Cache-Control" "no-store, no-cache, must-revalidate"}}]
+                                     "Cache-Control" "no-store, no-cache, must-revalidate"}}
+            find-response (fn [request]
+                            (let [method (:request-method request)]
+                              (if (identical? :get method)  ; GET method
+                                ping-response
+                                (let [content-type (get (:headers request) "content-type")
+                                      ct-token-set (if (some? content-type)
+                                                     (->> ";|,"
+                                                       (.split ^String content-type)
+                                                       (map #(.trim ^String %))
+                                                       set)
+                                                     #{"text/plain"}) ; unspecified - text/plain
+                                      request-body (:body request)]
+                                  (if (and (identical? :post method)  ; POST method, and
+                                        (ct-token-set "text/plain")   ; Content-type: text/plain
+                                        (instance? InputStream request-body))
+                                    (assoc ping-response
+                                      :body (slurp request-body))
+                                    ping-response)))))]
         (fn
           ([request]
             (if (->> (:uri request)
                   (contains? ping-uri-set))
-              ping-response
+              (try (find-response request) (catch Exception e (.printStackTrace e)))
               (handler request)))
           ([request respond raise]
             (if (->> (:uri request)
                   (contains? ping-uri-set))
-              (respond ping-response)
+              (respond (find-response request))
               (handler request respond raise))))))))
 
 

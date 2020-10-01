@@ -19,6 +19,7 @@
     [bract.ring.keydef      :as ring-kdef]
     [bract.ring.wrapper     :as wrapper])
   (:import
+    [java.io ByteArrayInputStream]
     [org.eclipse.jetty.server Server]))
 
 
@@ -55,6 +56,21 @@
         (update-in [:headers] dissoc "Date" "Connection" "Server"))))
   ([handler jetty-options path]
     (roundtrip-get handler jetty-options path {})))
+
+
+(defn roundtrip-post
+  ([handler jetty-options path]
+    (roundtrip-post handler jetty-options path nil))
+  ([handler jetty-options path http-options]
+    (with-jetty handler (conj {:port 3000 :join? false}
+                          jetty-options)
+      (-> (str "http://localhost:3000" path)
+        (client/post (merge {:throw-exceptions false} http-options))
+        (dissoc
+          :trace-redirects :length :orig-content-encoding
+          :request-time :repeatable? :protocol-version
+          :streaming? :chunked? :reason-phrase)
+        (update-in [:headers] dissoc "Date" "Connection" "Server")))))
 
 
 (defn roundtrip-put
@@ -233,6 +249,18 @@
             (-> (roundtrip-get wrapped-handler {} "/ping")
               :body)
             (-> (roundtrip-get wrapped-handler {:async? true} "/ping")
+              :body)))
+      (is (= "song"
+            (-> (wrapped-handler {:uri "/ping" :request-method :post :body (-> "song"
+                                                                             (.getBytes)
+                                                                             (ByteArrayInputStream.))})
+              :body)
+            (-> (roundtrip-post wrapped-handler {} "/ping" {:body "song"
+                                                            ;; :headers {"Content-type" "text/plain"}
+                                                            })
+              :body)
+            (-> (roundtrip-post wrapped-handler {:async? true} "/ping" {:body "song"
+                                                                        :headers {"Content-type" "text/plain"}})
               :body))))
     (testing "ping URI with trailing slash"
       (is (not= default-response
@@ -243,6 +271,18 @@
             (-> (roundtrip-get wrapped-handler {} "/ping/")
               :body)
             (-> (roundtrip-get wrapped-handler {:async? true} "/ping/")
+              :body)))
+      (is (= "song"
+            (-> (wrapped-handler {:uri "/ping" :request-method :post :body (-> "song"
+                                                                             (.getBytes)
+                                                                             (ByteArrayInputStream.))})
+              :body)
+            (-> (roundtrip-post wrapped-handler {} "/ping" {:body "song"
+                                                            ;; :headers {"Content-type" "text/plain"}
+                                                            })
+              :body)
+            (-> (roundtrip-post wrapped-handler {:async? true} "/ping" {:body "song"
+                                                                        :headers {"Content-type" "text/plain"}})
               :body))))))
 
 
