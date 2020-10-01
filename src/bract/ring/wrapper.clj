@@ -8,6 +8,8 @@
 
 
 (ns bract.ring.wrapper
+  "A bract.ring _wrapper_ is a function `(fn [ring-handler context & args])` to wrap the handler (like a middleware)
+  using information in the context. This namespace includes such wrappers and some helper functions."
   (:require
     [clojure.java.io         :as io]
     [clojure.string          :as string]
@@ -21,6 +23,8 @@
 
 
 (defmacro when-wrapper-enabled
+  "Given a predicate function, handler and context, evaluate body of code only when `(pred config)` returns truthy,
+  return the handler otherwise. The config is extracted from context before applying the predicate to it."
   [pred handler context & body]
   `(let [config# (core-kdef/ctx-config ~context)]
      (if (~pred config#)
@@ -57,14 +61,15 @@
 
 
 (defn health-check-wrapper
-  "Given optional URIs (default: /health), body encoder (default: EDN) and content type (default: application/edn),
+  "Given optional URIs (default: `/health`), body encoder (default: EDN) and content type (default: `application/edn`),
   wrap specified Ring handler such that it responds to application health query when health endpoint is requested.
-  | Option        | Config key                     | Default config value                       |
-  |---------------|--------------------------------|--------------------------------------------|
-  | :uris         | bract.ring.health.check.uris   | [\"/health\" \"/health/\"]                 |
-  | :body-encoder | bract.ring.health.body.encoder | clojure.core/pr-str                        |
-  | :content-type | bract.ring.health.content.type | application/edn                            |
-  | :http-codes   | bract.ring.health.http.codes   | {:critical 503 :degraded 500 :healthy 200} |"
+
+  | Option        | Config key                         | Default config value                       |
+  |---------------|------------------------------------|--------------------------------------------|
+  |`:uris`        |`\"bract.ring.health.check.uris\"`  |`[\"/health\" \"/health/\"]`                |
+  |`:body-encoder`|`\"bract.ring.health.body.encoder\"`|[[clojure.core/pr-str]]                     |
+  |`:content-type`|`\"bract.ring.health.content.type\"`|`\"application/edn\"`                       |
+  |`:http-codes`  |`\"bract.ring.health.http.codes\"`  |`{:critical 503 :degraded 500 :healthy 200}`|"
   ([handler context]
     (health-check-wrapper handler context {}))
   ([handler context options]
@@ -117,13 +122,14 @@
 
 
 (defn info-endpoint-wrapper
-  "Given Ring handler and Bract context, wrap the handler such that info (default: /info and /info/) URIs lead to
+  "Given Ring handler and Bract context, wrap the handler such that info (default: `/info` and `/info/`) URIs lead to
   returning a runtime info response.
-  | Option        | Config key                        | Default config value   |
-  |---------------|-----------------------------------|------------------------|
-  | :uris         | bract.ring.info.endpoint.uris     | [\"/info\" \"/info/\"] |
-  | :body-encoder | bract.ring.info.body.encoder      | clojure.core/pr-str    |
-  | :content-type | bract.ring.info.body.content.type | application/edn        |"
+
+  | Option        | Config key                            | Default config value   |
+  |---------------|---------------------------------------|------------------------|
+  |`:uris`        |`\"bract.ring.info.endpoint.uris\"`    |`[\"/info\" \"/info/\"]`|
+  |`:body-encoder`|`\"bract.ring.info.body.encoder\"`     |[[clojure.core/pr-str]] |
+  |`:content-type`|`\"bract.ring.info.body.content.type\"`|`\"application/edn\"`   |"
   ([handler context]
     (info-endpoint-wrapper handler context {}))
   ([handler context options]
@@ -162,13 +168,14 @@
 
 
 (defn ping-endpoint-wrapper
-  "Given Ring handler and Bract context, wrap the handler such that ping (default: /ping and /ping/) URIs lead to
+  "Given Ring handler and Bract context, wrap the handler such that ping (default: `/ping` and `/ping/`) URIs lead to
   returning a ping response.
-  | Option        | Config key                    | Default config value   |
-  |---------------|-------------------------------|------------------------|
-  | :uris         | bract.ring.ping.endpoint.uris | [\"/ping\" \"/ping/\"] |
-  | :body         | bract.ring.ping.endpoint.body | \"pong\"               |
-  | :content-type | bract.ring.ping.content.type  | text/plain             |"
+
+  | Option        | Config key                        | Default config value   |
+  |---------------|-----------------------------------|------------------------|
+  |`:uris`        |`\"bract.ring.ping.endpoint.uris\"`|`[\"/ping\" \"/ping/\"]`|
+  |`:body`        |`\"bract.ring.ping.endpoint.body\"`|`\"pong\"`              |
+  |`:content-type`|`\"bract.ring.ping.content.type\"` |`\"text/plain\"`        |"
   ([handler context]
     (ping-endpoint-wrapper handler context {}))
   ([handler context options]
@@ -262,9 +269,10 @@
 (defn uri-trailing-slash-wrapper
   "Wrap handler such that the trailing slash is either added (if missing) or removed (if present) depending upon the
   specified optional action (:add/:remove).
-  | Option        | Config key                           | Default config value |
-  |---------------|--------------------------------------|----------------------|
-  | :action       | bract.ring.uri.trailing.slash.action | :remove              |"
+
+  | Option        | Config key                               | Default config value |
+  |---------------|------------------------------------------|----------------------|
+  |`:action`      |`\"bract.ring.uri.trailing.slash.action\"`|`:remove`             |"
   ([handler context]
     (uri-trailing-slash-wrapper handler context {}))
   ([handler context options]
@@ -281,9 +289,10 @@
 
 
 (defn make-uri-prefix-matcher
-  "Given a URI prefix, a flag to decide whether to strip the prefix and a key (nil=disabled) to backup the old URI to,
-  return a function `(fn [request]) -> request?` returning updated request on successful prefix match, nil otherwise.
-  See: uri-prefix-match-wrapper"
+  "Given a URI prefix, a flag to decide whether to strip the prefix and a key (`nil`=disabled) to backup the old URI to,
+  return a function `(fn [request]) -> request?` returning updated request on successful prefix match, `nil` otherwise.
+
+  See: [[uri-prefix-match-wrapper]]"
   [^String uri-prefix strip-prefix? uri-backup? backup-key]
   (let [n (.length uri-prefix)
         backup-uri (if uri-backup?
@@ -304,16 +313,18 @@
 
 
 (defn uri-prefix-match-wrapper
-  "Given a Ring handler, a Bract context, a URI prefix, a flag to decide whether to strip the prefix and a key (nil
+  "Given a Ring handler, a Bract context, a URI prefix, a flag to decide whether to strip the prefix and a key (`nil`
   implies no-backup) to backup the old URI to, return updated Ring handler that matches prefix and proceeds on success
   or returns HTTP 400 on no match.
-  | Option         | Config key                        | Default config value |
-  |----------------|-----------------------------------|----------------------|
-  | :uri-prefix    | bract.ring.uri.prefix.match.token | (required config)    |
-  | :strip-prefix? | bract.ring.uri.prefix.strip.flag  | true                 |
-  | :backup-uri?   | bract.ring.uri.prefix.backup.flag | true                 |
-  | :backup-key    | bract.ring.uri.prefix.backup.key  | :original-uri        |
-  See: make-uri-prefix-matcher"
+
+  | Option         | Config key                            | Default config value |
+  |----------------|---------------------------------------|----------------------|
+  |`:uri-prefix`   |`\"bract.ring.uri.prefix.match.token\"`| (required config)    |
+  |`:strip-prefix?`|`\"bract.ring.uri.prefix.strip.flag\"` | `true`               |
+  |`:backup-uri?`  |`\"bract.ring.uri.prefix.backup.flag\"`| `true`               |
+  |`:backup-key`   |`\"bract.ring.uri.prefix.backup.key\"` | `:original-uri`      |
+
+  See: [[make-uri-prefix-matcher]]"
   ([handler context]
     (uri-prefix-match-wrapper handler context {}))
   ([handler context options]
@@ -345,21 +356,28 @@
 
 
 (defn params-normalize-wrapper
-  "Normalize the result of `wrap-params` middleware (this middleware may be invoked only after `wrap-params`) by
+  "Normalize the result of `ring.middleware.params/wrap-params` middleware (that is, the request map with `:params`) by
   transforming each request params value. The `wrap-params` middleware extracts params as string, but multiple values
   for same param are turned into a vector of string - this middleware turns all param values into vectors of string
   and applies normalizer to that vector.
-  | Option      | Config key                           | Default config value  |
-  |-------------|--------------------------------------|-----------------------|
-  | :normalizer | bract.ring.params.normalize.function | clojure.core/identity |
+
+  | Option      | Config key                               | Default config value     |
+  |-------------|------------------------------------------|--------------------------|
+  |`:normalizer`|`\"bract.ring.params.normalize.function\"`|[[clojure.core/identity]] |
 
   Without this middleware/wrapper:
+
+  ```edn
   {\"foo\" \"bar\"
    \"baz\" [\"quux\" \"corge\"]}
+  ```
 
   After using this middleware, where normalizer is `clojure.core/first`:
+
+  ```edn
   {\"foo\" \"bar\"
-   \"baz\" \"quux\"}"
+   \"baz\" \"quux\"}
+  ```"
   ([handler context]
     (params-normalize-wrapper handler context {}))
   ([handler context options]
@@ -398,10 +416,11 @@
 (defn unexpected->500-wrapper
   "Wrap given Ring handler such that if it returns unexpected Ring response (invalid/malformed response or exception)
   then return HTTP 500 Ring response.
-  | Option           | Config key                         | Default config value              |
-  |------------------|------------------------------------|-----------------------------------|
-  | :on-bad-response | bract.ring.unexpected.response.fn  | bract.ring.util/bad-response->500 |
-  | :on-exception    | bract.ring.unexpected.exception.fn | bract.ring.util/exception->500    |"
+
+  | Option           | Config key                             | Default config value                |
+  |------------------|----------------------------------------|-------------------------------------|
+  |`:on-bad-response`|`\"bract.ring.unexpected.response.fn\"` |[[bract.ring.util/bad-response->500]]|
+  |`:on-exception`   |`\"bract.ring.unexpected.exception.fn\"`|[[bract.ring.util/exception->500]]   |"
   ([handler context]
     (unexpected->500-wrapper handler context {}))
   ([handler context options]
@@ -449,9 +468,10 @@
 (defn traffic-drain-wrapper
   "Given a deref'able shutdown state and a boolean flag to respond with connection-close HTTP header, wrap specified
   Ring handler to respond with HTTP 503 (in order to drain current traffic) when the system is shutting down.
-  | Option       | Config key                         | Default config value  |
-  |--------------|------------------------------------|-----------------------|
-  | :conn-close? | bract.ring.traffic.conn.close.flag | true                  |"
+
+  | Option       | Config key                             | Default config value  |
+  |--------------|----------------------------------------|-----------------------|
+  |`:conn-close?`|`\"bract.ring.traffic.conn.close.flag\"`| `true`                |"
   ([handler context]
     (traffic-drain-wrapper handler context {}))
   ([handler context options]
@@ -500,15 +520,16 @@
 
 (defn distributed-trace-wrapper
   "Parse distributed trace HTTP headers and populate request with well configured attributes.
-  | Option                 | Config key                         | Default config value  |
-  |------------------------|------------------------------------|-----------------------|
-  | :trace-id-header       | bract.ring.trace.trace.id.header   | x-trace-id            |
-  | :parent-id-header      | bract.ring.trace.parent.id.header  | x-trace-parent-id     |
-  | :trace-id-required?    | bract.ring.trace.trace.id.req.flag | false                 |
-  | :trace-id-validator    | bract.ring.trace.trace.id.valid.fn | (constantly nil)      | ; retuns error message or nil
-  | :trace-id-request-key  | bract.ring.trace.trace.id.req.key  | :trace-id             |
-  | :span-id-request-key   | bract.ring.trace.span.id.req.key   | :span-id              |
-  | :parent-id-request-key | bract.ring.trace.parent.id.req.key | :parent-id            |"
+
+  | Option                 | Config key                             | Default config value  |
+  |------------------------|----------------------------------------|-----------------------|
+  |`:trace-id-header`      |`\"bract.ring.trace.trace.id.header\"`  |`\"x-trace-id\"`       |
+  |`:parent-id-header`     |`\"bract.ring.trace.parent.id.header\"` |`\"x-trace-parent-id\"`|
+  |`:trace-id-required?`   |`\"bract.ring.trace.trace.id.req.flag\"`|`false`                |
+  |`:trace-id-validator`   |`\"bract.ring.trace.trace.id.valid.fn\"`|`(constantly nil)`     |
+  |`:trace-id-request-key` |`\"bract.ring.trace.trace.id.req.key\"` |`:trace-id`            |
+  |`:span-id-request-key`  |`\"bract.ring.trace.span.id.req.key\"`  |`:span-id`             |
+  |`:parent-id-request-key`|`\"bract.ring.trace.parent.id.req.key\"`|`:parent-id`           |"
   ([handler context]
     (distributed-trace-wrapper handler context {}))
   ([handler context options]

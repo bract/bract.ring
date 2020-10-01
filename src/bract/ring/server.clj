@@ -19,7 +19,7 @@
 
 
 (defn start-aleph-server
-  "Start Aleph server. Include [aleph \"version\"] in your dependencies."
+  "Start Aleph server. Include `[aleph \"version\"]` in your dependencies."
   [handler options]
   (require 'aleph.http)
   (if-let [f (find-var 'aleph.http/start-server)]
@@ -34,7 +34,7 @@
 
 
 (defn start-http-kit-server
-  "Start HTTP-Kit server. Include [http-kit \"version\"] in your dependencies."
+  "Start HTTP-Kit server. Include `[http-kit \"version\"]` in your dependencies."
   [handler options]
   (require 'org.httpkit.server)
   (let [s-opts  (merge {:port 3000} options)
@@ -48,7 +48,7 @@
 
 
 (defn start-immutant-server
-  "Start Jetty server using ring-jetty adapter. Include [org.immutant/immutant \"version\"] in your dependencies."
+  "Start Jetty server using ring-jetty adapter. Include `[org.immutant/immutant \"version\"]` in your dependencies."
   [handler options]
   (require 'immutant.web)
   (if-let [f (find-var 'immutant.web/run)]
@@ -68,7 +68,7 @@
 
 
 (defn start-jetty-server
-  "Start Jetty server using ring-jetty adapter. Include [ring/ring-jetty-adapter \"version\"] in your dependencies."
+  "Start Jetty server using ring-jetty adapter. Include `[ring/ring-jetty-adapter \"version\"]` in your dependencies."
   [handler options]
   (require 'ring.adapter.jetty)
   (if-let [f (find-var 'ring.adapter.jetty/run-jetty)]

@@ -8,6 +8,7 @@
 
 
 (ns bract.ring.util
+  "Utility functions."
   (:require
     [bract.core.util :as core-util]))
 

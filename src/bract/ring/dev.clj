@@ -8,6 +8,7 @@
 
 
 (ns bract.ring.dev
+  "Development support for bract.ring module."
   (:require
     [bract.core.dev    :as core-dev]
     [bract.core.echo   :as core-echo]
@@ -34,8 +35,8 @@
 
 
 (defn init-once!
-  "Given a var e.g. (defonce a-var nil) having logical false value, set it to `true` and initialize app in DEV mode,
-  finally updating the bract.ring.dev/handler var."
+  "Given a var e.g. `(defonce a-var nil)` having logical false value, set it to `true` and initialize app in DEV mode,
+  finally updating the [[bract.ring.dev/handler]] var."
   ([]
     (when-let [context (core-dev/init-once!)]
       (init! context)))

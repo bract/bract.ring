@@ -11,11 +11,11 @@
 ## [WIP] 0.6.2-0.2.0 / 2020-October-??
 
 - Upgrade bract.core to 0.6.2
-- [Todo] Ensure lein-ring displays request/response logs in dev mode
 - Support HTTP `POST` method (with custom body) in `/ping` middleware
+- [Todo] Print banner when HTTP server starts
 - Documentation
   - [Todo] Add _cljdoc_ badge
-  - [Todo] Reformat docstring for _cljdoc_
+  - Reformat docstring for _cljdoc_
   - [Todo] Add documentation page with context and config keys
 
 
