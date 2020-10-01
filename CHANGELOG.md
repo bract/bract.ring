@@ -10,7 +10,7 @@
 
 ## [WIP] 0.6.2-0.2.0 / 2020-October-??
 
-- [Todo] Upgrade bract.core to 0.6.2
+- Upgrade bract.core to 0.6.2
 - [Todo] Ensure lein-ring displays request/response logs in dev mode
 - [Todo] Support HTTP `POST` method in `/ping` middleware
 - Documentation
