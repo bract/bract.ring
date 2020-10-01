@@ -12,7 +12,7 @@
 
 - Upgrade bract.core to 0.6.2
 - Support HTTP `POST` method (with custom body) in `/ping` middleware
-- [Todo] Print banner when HTTP server starts
+- Print banner when HTTP server starts
 - Documentation
   - [Todo] Add _cljdoc_ badge
   - Reformat docstring for _cljdoc_

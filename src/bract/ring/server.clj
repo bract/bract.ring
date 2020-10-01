@@ -28,7 +28,7 @@
           message (format "Aleph server started on port %d" (:port s-opts))]
       (if (Echo/isVerbose)
         (echo/echo message)
-        (core-util/err-println message))
+        (core-util/err-print-banner message))
       (fn [] (.close server)))
     (throw (ex-info "Cannot find Aleph server starter fn 'aleph.http/start-server' in classpath." {}))))
 
@@ -44,7 +44,7 @@
       (core-util/invoke handler s-opts)
       (doto (do (if (Echo/isVerbose)
                   (echo/echo message)
-                  (core-util/err-println message)))))))
+                  (core-util/err-print-banner message)))))))
 
 
 (defn start-immutant-server
@@ -60,7 +60,7 @@
           message (format "Immutant server started on port %d" (:port s-opts))]
       (if (Echo/isVerbose)
         (echo/echo message)
-        (core-util/err-println message))
+        (core-util/err-print-banner message))
       (if-let [stopper (find-var 'immutant.web/stop)]
         (fn [] (stopper server))
         (throw (ex-info "Cannot find Immutant server stopper fn 'immutant.web/stop' in classpath." {}))))
@@ -77,7 +77,7 @@
           message (format "Jetty server started on port %d" (:port s-opts))]
       (if (Echo/isVerbose)
         (echo/echo message)
-        (core-util/err-println message))
+        (core-util/err-print-banner message))
       (import 'org.eclipse.jetty.server.Server)
       (fn [] (.stop server)))
     (throw (ex-info "Cannot find Jetty server starter fn 'ring.adapter.jetty/run-jetty' in classpath." {}))))
