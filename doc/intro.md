@@ -187,7 +187,7 @@ The configs related to various wrappers are listed below:
 
 The files `resources/bract/ring/config.edn` (which may be referred as `bract/ring/context.edn` from an application)
 
-| File                                                | Available in application as | Contents                 |
-|-----------------------------------------------------|-----------------------------|--------------------------|
-|[config.edn](resources/bract/ring/config.edn)        |`bract/ring/config.edn`      | Useful defaults for prod |
-|[config.dev.edn](resources/bract/ring/config.dev.edn)|`bract/ring/config.dev.edn`  | Useful defaults DEV mode |
+| File                                                   | Available in application as | Contents                 |
+|--------------------------------------------------------|-----------------------------|--------------------------|
+|[config.edn](../resources/bract/ring/config.edn)        |`bract/ring/config.edn`      | Useful defaults for prod |
+|[config.dev.edn](../resources/bract/ring/config.dev.edn)|`bract/ring/config.dev.edn`  | Useful defaults DEV mode |
