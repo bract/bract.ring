@@ -5,7 +5,7 @@ This module provides [Ring](https://github.com/ring-clojure/ring) support for th
 
 ## Starting a web server
 
-The inducer [[bract.ring.inducer/start-server]] can start a web server using a supplied
+The inducer `bract.ring.inducer/start-server` can start a web server using a supplied
 [Ring handler](https://github.com/ring-clojure/ring/wiki/Concepts#handlers). Include it
 in your inducer chain and populate the following keys in the context:
 
@@ -23,7 +23,7 @@ options in the config (referred to by context key `:bract.core/config`) under th
 
 You may apply [middleware](https://github.com/ring-clojure/ring/wiki/Concepts#middleware) to a Ring handler
 (required to be available under the context key `:bract.ring/ring-handler`) using the inducer
-[[bract.ring.inducer/apply-middlewares]]:
+`bract.ring.inducer/apply-middlewares`:
 
 ```edn
   :bract.ring/ring-handler (fn [request])  ; a valid Ring handler
@@ -159,8 +159,8 @@ The configs related to various wrappers are listed below:
 
 | Config key                             | Value type | Description                                                  |
 |----------------------------------------|------------|--------------------------------------------------------------|
-|`"bract.ring.unexpected.response.fn"`   |arity-3 FQFN| Unexpected resp handler [[bract.ring.util/bad-response->500]]|
-|`"bract.ring.unexpected.exception.fn"`  |arity-2 FQFN| Exception handler, e.g. [[bract.ring.util/exception->500]]   |
+|`"bract.ring.unexpected.response.fn"`   |arity-3 FQFN| Unexpected response handler e.g. `b.r.util/bad-response->500`|
+|`"bract.ring.unexpected.exception.fn"`  |arity-2 FQFN| Exception handler, e.g. `b.r.util/exception->500`            |
 
 
 #### Traffic drain wrapper
