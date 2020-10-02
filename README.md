@@ -1,5 +1,7 @@
 # bract.ring
 
+[![cljdoc badge](https://cljdoc.org/badge/bract/bract.ring)](https://cljdoc.org/d/bract/bract.ring)
+
 [Ring](https://github.com/ring-clojure) support module for Bract.
 
 

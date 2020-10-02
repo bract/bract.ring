@@ -14,7 +14,7 @@
 - Support HTTP `POST` method (with custom body) in `/ping` middleware
 - Print banner when HTTP server starts
 - Documentation
-  - [Todo] Add _cljdoc_ badge
+  - Add _cljdoc_ badge
   - Reformat docstring for _cljdoc_
   - Add documentation page with context and config keys
 
