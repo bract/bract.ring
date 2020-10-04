@@ -8,6 +8,12 @@
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
 
 
+## [WIP] 0.6.2-0.2.0 / 2020-October-??
+
+- [Todo] Add Ring middleware for traffic logging
+- [Todo] Add Ring wrapper for traffic logging
+
+
 ## 0.6.2-0.2.0-alpha1 / 2020-October-03
 
 - Upgrade bract.core to 0.6.2
