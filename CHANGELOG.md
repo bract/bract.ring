@@ -10,7 +10,7 @@
 
 ## [WIP] 0.6.2-0.2.0 / 2020-October-??
 
-- [Todo] Add Ring middleware for traffic logging
+- Add Ring middleware for traffic logging
 - [Todo] Add Ring wrapper for traffic logging
 
 
