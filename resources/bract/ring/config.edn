@@ -55,4 +55,7 @@
  "bract.ring.trace.trace.id.req.key"     :trace-id
  "bract.ring.trace.span.id.req.key"      :span-id
  "bract.ring.trace.parent.id.req.key"    :parent-id
+
+ ;; traffic logging
+ "bract.ring.traffic.log.enabled"        true
  }

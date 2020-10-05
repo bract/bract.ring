@@ -45,7 +45,8 @@
   cfg-params-normalize-wrapper?   ["bract.ring.params.normalize.enabled"   {:desc "Params normalize enabled?"}]
   cfg-unexpected->500-wrapper?    ["bract.ring.unexpected.500.enabled"     {:desc "Unexpected->500 enabled?"}]
   cfg-traffic-drain-wrapper?      ["bract.ring.traffic.drain.enabled"      {:desc "Traffic-drain enabled?"}]
-  cfg-distributed-trace-wrapper?  ["bract.ring.distributed.trace.enabled"  {:desc "Distributed trace enabled?"}])
+  cfg-distributed-trace-wrapper?  ["bract.ring.distributed.trace.enabled"  {:desc "Distributed trace enabled?"}]
+  cfg-traffic-log-wrapper?        ["bract.ring.traffic.log.enabled"        {:desc "Traffic log enabled?"}])
 
 
 (keypin/defkey  ; config keys for health check wrapper

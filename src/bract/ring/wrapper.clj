@@ -8,8 +8,8 @@
 
 
 (ns bract.ring.wrapper
-  "A bract.ring _wrapper_ is a function `(fn [ring-handler context & args])` to wrap the handler (like a middleware)
-  using information in the context. This namespace includes such wrappers and some helper functions."
+  "A bract.ring _wrapper_ is a function `(fn [ring-handler context & args]) -> ring-handler` to wrap the handler (like
+  a middleware) using information in the context. This namespace includes such wrappers and some helper functions."
   (:require
     [clojure.java.io         :as io]
     [clojure.string          :as string]
@@ -17,7 +17,8 @@
     [bract.core.type         :as core-type]
     [bract.core.util         :as core-util]
     [bract.core.util.runtime :as bcu-runtime]
-    [bract.ring.keydef       :as ring-kdef])
+    [bract.ring.keydef       :as ring-kdef]
+    [bract.ring.middleware   :as ring-mware])
   (:import
     [java.io InputStream]))
 
@@ -588,3 +589,29 @@ Header '%s' has invalid value: %s" trace-id-header reason)})
             (handle-trace request identity []))
           ([request respond raise]
             (handle-trace request respond [respond raise])))))))
+
+
+;; ----- logging -----
+
+
+(defn traffic-log-wrapper
+  "Log traffic to the Ring handler.
+
+  | Kwarg             | Value type                                       | Description               | Default |
+  |-------------------|--------------------------------------------------|---------------------------|---------|
+  |`:request-logger`  |`(fn [request])`                                  | Request logger function   | No-op   |
+  |`:response-logger` |`(fn [request response ^double duration-millis])` | Response logger function  | No-op   |
+  |`:exception-logger`|`(fn [request exception ^double duration-millis])`| Exception logger function | No-op   |
+
+  See: [[ring-mware/traffic-log-middleware]]"
+  [handler context {:keys [request-logger
+                           response-logger
+                           exception-logger]
+                    :as options}]
+  (when-wrapper-enabled ring-kdef/cfg-traffic-log-wrapper? handler context
+    (let [request-logger   (when request-logger (core-type/ifunc request-logger))
+          response-logger  (when response-logger (core-type/ifunc response-logger))
+          exception-logger (when exception-logger (core-type/ifunc exception-logger))]
+      (ring-mware/traffic-log-middleware handler {:request-logger   request-logger
+                                                  :response-logger  response-logger
+                                                  :exception-logger exception-logger}))))

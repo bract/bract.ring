@@ -510,3 +510,59 @@ Every request must bear the header 'x-trace-id'"}
 Header 'x-trace-id' has invalid value: ID too short"}
           (roundtrip-get nlength {} "/" {:headers {"x-trace-id" "123"}})
           (roundtrip-get nlength {:async true} "/" {:headers {"x-trace-id" "123"}})))))
+
+
+(deftest test-traffic-log
+  (let [request-logger   (atom nil)
+        response-logger  (atom nil)
+        exception-logger (atom nil)
+        reset-loggers!   (fn []
+                           (reset! request-logger nil)
+                           (reset! response-logger nil)
+                           (reset! exception-logger nil))
+        happy-handler (fn self
+                        ([request]               {:status 200 :body "OK"})
+                        ([request respond raise] (respond (self request))))
+        error-handler (fn self
+                        ([request]               (throw (Exception. "test")))
+                        ([request respond raise] (raise (Exception. "test"))))
+        wrap-handler  (fn [f]
+                        (-> f
+                          (wrapper/traffic-log-wrapper {:bract.core/config default-config}
+                            {:request-logger (fn [request] (reset! request-logger :called))
+                             :response-logger (fn [request response ^double duration-millis]
+                                                (reset! response-logger :called))
+                             :exception-logger (fn [request response ^double duration-millis]
+                                                 (reset! exception-logger :called))})))]
+    (testing "happy sync"
+      (reset-loggers!)
+      (roundtrip-get (wrap-handler happy-handler) {} "/" {})
+      (is (= :called
+            @request-logger
+            @response-logger))
+      (is (nil?
+            @exception-logger)))
+    (testing "error sync"
+      (reset-loggers!)
+      (roundtrip-get (wrap-handler error-handler) {} "/" {})
+      (is (= :called
+            @request-logger
+            @exception-logger))
+      (is (nil?
+            @response-logger)))
+    (testing "happy async"
+      (reset-loggers!)
+      (roundtrip-get (wrap-handler happy-handler) {:async true} "/" {})
+      (is (= :called
+            @request-logger
+            @response-logger))
+      (is (nil?
+            @exception-logger)))
+    (testing "error sync"
+      (reset-loggers!)
+      (roundtrip-get (wrap-handler error-handler) {:async true} "/" {})
+      (is (= :called
+            @request-logger
+            @exception-logger))
+      (is (nil?
+            @response-logger)))))
