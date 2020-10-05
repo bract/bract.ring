@@ -8,7 +8,7 @@
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
 
 
-## [WIP] 0.6.2-0.2.0 / 2020-October-??
+## 0.6.2-0.2.0-alpha2 / 2020-October-05
 
 - Add Ring middleware for traffic logging
 - Add Ring wrapper for traffic logging
