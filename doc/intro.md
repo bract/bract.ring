@@ -98,6 +98,8 @@ The following config flags are looked up by respective Ring wrappers to determin
 |`"bract.ring.unexpected.500.enabled"`    | boolean    | Enable unexpected response 500 wrapper?|
 |`"bract.ring.traffic.drain.enabled"`     | boolean    | Enable traffic drain wrapper?          |
 |`"bract.ring.distributed.trace.enabled"` | boolean    | Enable distributed trace wrapper?      |
+|`"bract.ring.traffic.log.enabled"`       | boolean    | Enable traffic log wrapper?            |
+
 
 ### Wrapper config
 
@@ -181,6 +183,13 @@ The configs related to various wrappers are listed below:
 |`"bract.ring.trace.trace.id.req.key"`   | keyword    | Request key to put trace ID under, e.g. `:trace-id`          |
 |`"bract.ring.trace.span.id.req.key"`    | keyword    | Request key to put request ID under, e.g. `:span-id`         |
 |`"bract.ring.trace.parent.id.req.key"`  | keyword    | Request key to put parent ID under, e.g. `:parent-id`        |
+
+
+#### Traffic log wrapper
+
+| Config key                             | Value type | Description                                                   |
+|----------------------------------------|------------|---------------------------------------------------------------|
+|`"bract.ring.traffic.log.options"`      | map        |Keys `:request-logger`, `:response-logger`, `:exception-logger`|
 
 
 ### Provided default config
