@@ -610,10 +610,10 @@ Header '%s' has invalid value: %s" trace-id-header reason)})
     (when-wrapper-enabled ring-kdef/cfg-traffic-log-wrapper? handler context
       (let [{:keys [request-logger
                     response-logger
-                    exception-logger]} (merge (ring-kdef/ctx-traffic-log-wrapper-options context) options)
-            request-logger   (when request-logger   (core-type/ifunc request-logger))
-            response-logger  (when response-logger  (core-type/ifunc response-logger))
-            exception-logger (when exception-logger (core-type/ifunc exception-logger))]
-        (ring-mware/traffic-log-middleware handler {:request-logger   request-logger
-                                                    :response-logger  response-logger
-                                                    :exception-logger exception-logger})))))
+                    exception-logger]} (merge (ring-kdef/ctx-traffic-log-wrapper-options context) options)]
+        (ring-mware/traffic-log-middleware
+          handler
+          (cond-> {}
+            request-logger   (assoc :request-logger (core-type/ifunc request-logger))
+            response-logger  (assoc :response-logger (core-type/ifunc response-logger))
+            exception-logger (assoc :exception-logger (core-type/ifunc exception-logger))))))))
