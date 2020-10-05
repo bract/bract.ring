@@ -123,5 +123,4 @@
 
 
 (keypin/defkey  ; context keys for traffic log wrapper
-  ctx-traffic-log-wrapper-options [:bract.ring/traffic-log-wrapper-options map? "Option map for traffic-log-wrapper"
-                                   {:default {}}])
+  ctx-traffic-log-wrapper-options [:bract.ring/traffic-log-wrapper-options map? "Option map for traffic-log-wrapper"])
