@@ -8,6 +8,11 @@
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
 
 
+## 0.6.2-0.2.0-alpha2-2 / 2020-October-06
+
+- Use config instead of context for traffic-log wrapper options
+
+
 ## 0.6.2-0.2.0-alpha2-1 / 2020-October-05
 
 - Use bract.core 0.6.2-alpha2
