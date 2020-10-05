@@ -597,21 +597,23 @@ Header '%s' has invalid value: %s" trace-id-header reason)})
 (defn traffic-log-wrapper
   "Log traffic to the Ring handler.
 
-  | Kwarg             | Value type                                       | Description               | Default |
+  | Option            | Value type                                       | Description               | Default |
   |-------------------|--------------------------------------------------|---------------------------|---------|
   |`:request-logger`  |`(fn [request])`                                  | Request logger function   | No-op   |
   |`:response-logger` |`(fn [request response ^double duration-millis])` | Response logger function  | No-op   |
   |`:exception-logger`|`(fn [request exception ^double duration-millis])`| Exception logger function | No-op   |
 
   See: [[ring-mware/traffic-log-middleware]]"
-  [handler context {:keys [request-logger
-                           response-logger
-                           exception-logger]
-                    :as options}]
-  (when-wrapper-enabled ring-kdef/cfg-traffic-log-wrapper? handler context
-    (let [request-logger   (when request-logger (core-type/ifunc request-logger))
-          response-logger  (when response-logger (core-type/ifunc response-logger))
-          exception-logger (when exception-logger (core-type/ifunc exception-logger))]
-      (ring-mware/traffic-log-middleware handler {:request-logger   request-logger
-                                                  :response-logger  response-logger
-                                                  :exception-logger exception-logger}))))
+  ([handler context]
+    (traffic-log-wrapper handler context {}))
+  ([handler context options]
+    (when-wrapper-enabled ring-kdef/cfg-traffic-log-wrapper? handler context
+      (let [{:keys [request-logger
+                    response-logger
+                    exception-logger]} (merge (ring-kdef/ctx-traffic-log-wrapper-options context) options)
+            request-logger   (when request-logger   (core-type/ifunc request-logger))
+            response-logger  (when response-logger  (core-type/ifunc response-logger))
+            exception-logger (when exception-logger (core-type/ifunc exception-logger))]
+        (ring-mware/traffic-log-middleware handler {:request-logger   request-logger
+                                                    :response-logger  response-logger
+                                                    :exception-logger exception-logger})))))
