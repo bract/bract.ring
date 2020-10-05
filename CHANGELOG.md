@@ -8,6 +8,13 @@
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
 
 
+## 0.6.2-0.2.0-alpha2-1 / 2020-October-05
+
+- Use bract.core 0.6.2-alpha2
+- No default for context key lookup `:bract.ring/traffc-log-wrapper-options`
+- Do no pass `nil` option values in traffic-log-wrapper
+
+
 ## 0.6.2-0.2.0-alpha2 / 2020-October-05
 
 - Add Ring middleware for traffic logging
