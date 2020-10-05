@@ -80,7 +80,7 @@ Legend:
 
 | Config key                  | Value type     | Description                                           |
 |-----------------------------|----------------|-------------------------------------------------------|
-|`"bract.ring.server.options"`|
+|`"bract.ring.server.options"`| map            | Server options                                        |
 
 
 ### Wrapper enabled check
