@@ -528,7 +528,7 @@ Header 'x-trace-id' has invalid value: ID too short"}
                         ([request respond raise] (raise (Exception. "test"))))
         wrap-handler  (fn [f]
                         (-> f
-                          (wrapper/traffic-log-wrapper {:bract.core/config default-config}
+                          (wrapper/traffic-log-wrapper {:bract.core/config {"bract.ring.traffic.log.enabled" true}}
                             {:request-logger (fn [request] (reset! request-logger :called))
                              :response-logger (fn [request response ^double duration-millis]
                                                 (reset! response-logger :called))
