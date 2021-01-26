@@ -48,7 +48,7 @@
 
 
 (defn start-immutant-server
-  "Start Jetty server using ring-jetty adapter. Include `[org.immutant/immutant \"version\"]` in your dependencies."
+  "Start Immutant server. Include `[org.immutant/immutant \"version\"]` in your dependencies."
   [handler options]
   (require 'immutant.web)
   (if-let [f (find-var 'immutant.web/run)]
@@ -81,3 +81,21 @@
       (import 'org.eclipse.jetty.server.Server)
       (fn [] (.stop server)))
     (throw (ex-info "Cannot find Jetty server starter fn 'ring.adapter.jetty/run-jetty' in classpath." {}))))
+
+
+(defn start-nginx-embedded-server
+  "Start nginx embedded server. Include `[nginx-clojure/nginx-clojure-embed \"version\"]` in your dependencies."
+  [handler options]
+  (require 'nginx.clojure.embed)
+  (if-let [f (find-var 'nginx.clojure.embed/run-server)]
+    (let [s-opts  (merge {:port 3000} options)
+          server  (f handler s-opts)
+          message (format "nginx-embedded server started on port %d" (:port s-opts))]
+      (if (Echo/isVerbose)
+        (echo/echo message)
+        (core-util/err-print-banner message))
+      (if-let [stopper (find-var 'nginx.clojure.embed/stop-server)]
+        (fn [] (stopper))
+        (throw (ex-info "Cannot find nginx-embedded server stopper fn 'nginx.clojure.embed/stop-server' in classpath."
+                 {}))))
+    (throw (ex-info "Cannot find nginx-embedded server starter fn 'nginx.clojure.embed/run-server' in classpath." {}))))

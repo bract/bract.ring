@@ -19,7 +19,8 @@
                                   [aleph                   "0.4.4"]
                                   [http-kit                "2.5.0"]
                                   [org.immutant/immutant   "2.1.10"]
-                                  [ring/ring-jetty-adapter "1.6.3"]]}
+                                  [ring/ring-jetty-adapter "1.6.3"]
+                                  [nginx-clojure/nginx-clojure-embed "0.5.1"]]}
              :c07 {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :c08 {:dependencies [[org.clojure/clojure "1.8.0"]]}
              :c09 {:dependencies [[org.clojure/clojure "1.9.0"]]}
