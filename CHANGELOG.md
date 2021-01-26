@@ -10,7 +10,7 @@
 
 ## [WIP] 0.6.2-0.2.0 / 2021-January-??
 
-- [Todo] Use bract.core 0.6.2-beta1
+- Use bract.core 0.6.2-beta1
 - [Todo] Move `bract.dev.ring` stuff here in `bract.ring.dev`
 - [Todo] Add support for [nginx-clojure-embedded](https://github.com/nginx-clojure/nginx-clojure/tree/master/nginx-clojure-embed)
   - [Todo] bract.ring.server/start-nginx-clojure-embedded-server
