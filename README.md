@@ -7,7 +7,7 @@
 
 ## Clojars coordinates
 
-`[bract/bract.ring "0.6.2-0.2.0-alpha3"]`
+`[bract/bract.ring "0.6.2-0.2.0-beta1"]`
 
 
 ## Documentation
@@ -21,7 +21,7 @@ Demo applications: https://bract.github.io/documentation.html#demo-applications
 
 ## License
 
-Copyright © 2017-2020 Shantanu Kumar (kumar.shantanu@gmail.com)
+Copyright © 2017-2021 [Shantanu Kumar](https://github.com/kumarshantanu)
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.

@@ -8,7 +8,7 @@
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
 
 
-## [WIP] 0.6.2-0.2.0 / 2021-January-??
+## 0.6.2-0.2.0-beta1 / 2021-January-27
 
 - Use bract.core 0.6.2-beta1
 - Add DEV logger functions `bract.ring.dev/log-*` for `bract.ring.wrapper/traffic-log-wrapper`
