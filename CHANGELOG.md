@@ -11,7 +11,8 @@
 ## [WIP] 0.6.2-0.2.0 / 2021-January-??
 
 - Use bract.core 0.6.2-beta1
-- [Todo] Move `bract.dev.ring` stuff here in `bract.ring.dev`
+- Add DEV logger functions `bract.ring.dev/log-*` for `bract.ring.wrapper/traffic-log-wrapper`
+  - [Todo] Add DEV mode logger config in `config.dev.edn` file
 - Add support for [nginx-clojure-embedded](https://github.com/nginx-clojure/nginx-clojure/tree/master/nginx-clojure-embed)
   - `bract.ring.server/start-nginx-clojure-embedded-server`
 
