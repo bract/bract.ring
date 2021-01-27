@@ -2,6 +2,12 @@
  ;; bract.ring development config
  ;;
 
+ "bract.ring.traffic.log.enabled" true
+ "bract.ring.traffic.log.options" {:request-logger   bract.ring.dev/nop         ; log-request
+                                   :response-logger  bract.ring.dev/log-response
+                                   :exception-logger bract.ring.dev/log-exception}
+
+
  "bract.ring.unexpected.response.fn"     bract.ring.util/bad-response->verbose-500
  "bract.ring.unexpected.exception.fn"    bract.ring.util/exception->verbose-500
  }
