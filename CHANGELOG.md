@@ -8,7 +8,7 @@
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
 
 
-## [WIP] 0.6.2-0.2.0-beta2/ 2021-January-28
+## 0.6.2-0.2.0-beta2/ 2021-January-28
 
 - Use bract.core 0.6.2-beta2
 
