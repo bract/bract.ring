@@ -16,7 +16,7 @@
 ## [WIP] 0.6.2-0.2.0-beta3 / 2021-February-??
 
 - Use bract.core 0.6.2-beta3
-- [Todo] Echo message when stopping/stopped server
+- Echo message when server stopped
 - [Todo] Include `bract.ring.server.options` in example config (already there in doc)
 
 
