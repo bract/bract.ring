@@ -6,9 +6,21 @@
   - [Todo] Support for dual or multiple handlers starting at different web server ports
 - Distributed trace
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
+- [Idea] Define config for default (but how to distinguish when more then one server?)
+  - host: `APP_HTTP_SERVER_HOST`
+  - port: `APP_HTTP_SERVER_PORT`
+  - thread-pool size etc.
 
 
-## 0.6.2-0.2.0-beta2/ 2021-January-28
+
+## [WIP] 0.6.2-0.2.0-beta3 / 2021-February-??
+
+- [Todo] Use bract.core 0.6.2-beta3
+- [Todo] Echo message when stopping/stopped server
+- [Todo] Include `bract.ring.server.options` in example config (already there in doc)
+
+
+## 0.6.2-0.2.0-beta2 / 2021-January-28
 
 - Use bract.core 0.6.2-beta2
 
