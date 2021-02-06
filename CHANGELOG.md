@@ -17,7 +17,7 @@
 
 - Use bract.core 0.6.2-beta3
 - Echo message when server stopped
-- [Todo] Include `bract.ring.server.options` in example config (already there in doc)
+- Include default config value for `bract.ring.server.options` in `bract/ring/config.edn`
 
 
 ## 0.6.2-0.2.0-beta2 / 2021-January-28

@@ -58,4 +58,7 @@
 
  ;; traffic logging
  "bract.ring.traffic.log.enabled"        false
+
+ ;; server options
+ "bract.ring.server.options"             {:port 3000}
  }
