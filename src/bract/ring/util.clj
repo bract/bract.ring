@@ -51,12 +51,6 @@ Request: %s"
            (pr-str request))})
 
 
-(defn nop
-  "Do nothing at all, returning nil."
-  [& args]
-  nil)
-
-
 (defn elapsed-millis
   "Return elapsed milliseconds (with decimal places) since start time in nanoseconds."
   ^double [^long start-nanos]

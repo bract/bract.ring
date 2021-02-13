@@ -56,7 +56,7 @@
  "bract.ring.trace.trace.id.header"      "x-trace-id"
  "bract.ring.trace.parent.id.header"     "x-trace-parent-id"
  "bract.ring.trace.trace.id.req.flag"    false
- "bract.ring.trace.trace.id.valid.fn"    bract.ring.util/nop
+ "bract.ring.trace.trace.id.valid.fn"    bract.core.util/nop
  "bract.ring.trace.trace.id.req.key"     :trace-id
  "bract.ring.trace.span.id.req.key"      :span-id
  "bract.ring.trace.parent.id.req.key"    :parent-id

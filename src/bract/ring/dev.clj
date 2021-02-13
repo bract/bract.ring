@@ -135,9 +135,6 @@
    })
 
 
-(def nop (constantly nil))
-
-
 (defn log-request
   "Log Ring request.
   See: `bract.ring.middleware/traffic-log-middleware`, `bract.ring.wrapper/traffic-log-wrapper`"

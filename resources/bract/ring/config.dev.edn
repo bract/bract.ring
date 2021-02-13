@@ -3,7 +3,7 @@
  ;;
 
  "bract.ring.traffic.log.enabled" true
- "bract.ring.traffic.log.options" {:request-logger   bract.ring.dev/nop         ; log-request
+ "bract.ring.traffic.log.options" {:request-logger   bract.core.util/nop         ; bract.ring.dev/log-request
                                    :response-logger  bract.ring.dev/log-response
                                    :exception-logger bract.ring.dev/log-exception}
 
