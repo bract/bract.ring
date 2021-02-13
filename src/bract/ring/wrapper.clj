@@ -44,6 +44,22 @@
        ~config-f)))
 
 
+(defmacro after
+  "Create a function `(fn [arg]) -> arg` that returns the supplied argument after evaluating body of code."
+  [& body]
+  `(fn [result#]
+     ~@body
+     result#))
+
+
+(defmacro doafter
+  "Evaluate supplied expression and return it after evaluating body of code."
+  [expr & body]
+  `(let [result# ~expr]
+     ~@body
+     result#))
+
+
 ;; ----- /health check -----
 
 
@@ -89,10 +105,16 @@
                            (merge {:critical 503
                                    :degraded 500
                                    :healthy  200}))
+            event-name    (-> context
+                            core-kdef/ctx-config
+                            ring-kdef/cfg-health-event-name)
+            event-logger  (core-kdef/resolve-event-logger context event-name)
             check-now    (fn [request]
                            (let [method (:request-method request)]
                              (if (= :get method)
-                               (health-check-response hc-functions http-codes body-encoder content-type)
+                               (doafter
+                                 (health-check-response hc-functions http-codes body-encoder content-type)
+                                 (event-logger event-name))
                                {:status 405
                                 :body (str "Expected HTTP GET request for health check endpoint, but found "
                                         (-> method
@@ -144,10 +166,16 @@
             content-type (->> ring-kdef/cfg-info-content-type
                            (opt-or-config :content-type))
             info-gen-fns (core-kdef/ctx-runtime-info context)
+            event-name    (-> context
+                            core-kdef/ctx-config
+                            ring-kdef/cfg-info-event-name)
+            event-logger  (core-kdef/resolve-event-logger context event-name)
             info-process (fn [request]
                            (let [method (:request-method request)]
                              (if (= :get method)
-                               (info-response info-gen-fns body-encoder content-type)
+                               (doafter
+                                 (info-response info-gen-fns body-encoder content-type)
+                                 (event-logger event-name))
                                {:status 405
                                 :body (str "Expected HTTP GET request for info endpoint, but found "
                                         (-> method
@@ -192,24 +220,30 @@
                            :body body
                            :headers {"Content-Type"  content-type
                                      "Cache-Control" "no-store, no-cache, must-revalidate"}}
+            event-name    (-> context
+                            core-kdef/ctx-config
+                            ring-kdef/cfg-ping-event-name)
+            event-logger  (core-kdef/resolve-event-logger context event-name)
             find-response (fn [request]
-                            (let [method (:request-method request)]
-                              (if (identical? :get method)  ; GET method
-                                ping-response
-                                (let [content-type (get (:headers request) "content-type")
-                                      ct-token-set (if (some? content-type)
-                                                     (->> ";|,"
-                                                       (.split ^String content-type)
-                                                       (map #(.trim ^String %))
-                                                       set)
-                                                     #{"text/plain"}) ; unspecified - text/plain
-                                      request-body (:body request)]
-                                  (if (and (identical? :post method)  ; POST method, and
-                                        (ct-token-set "text/plain")   ; Content-type: text/plain
-                                        (instance? InputStream request-body))
-                                    (assoc ping-response
-                                      :body (slurp request-body))
-                                    ping-response)))))]
+                            (doafter
+                              (let [method (:request-method request)]
+                                (if (identical? :get method)  ; GET method
+                                  ping-response
+                                  (let [content-type (get (:headers request) "content-type")
+                                        ct-token-set (if (some? content-type)
+                                                       (->> ";|,"
+                                                         (.split ^String content-type)
+                                                         (map #(.trim ^String %))
+                                                         set)
+                                                       #{"text/plain"}) ; unspecified - text/plain
+                                        request-body (:body request)]
+                                    (if (and (identical? :post method)  ; POST method, and
+                                          (ct-token-set "text/plain")   ; Content-type: text/plain
+                                          (instance? InputStream request-body))
+                                      (assoc ping-response
+                                        :body (slurp request-body))
+                                      ping-response))))
+                              (event-logger event-name)))]
         (fn
           ([request]
             (if (->> (:uri request)
@@ -426,12 +460,24 @@
     (unexpected->500-wrapper handler context {}))
   ([handler context options]
     (when-wrapper-enabled ring-kdef/cfg-unexpected->500-wrapper? handler context
-      (let [on-bad-response (->> ring-kdef/cfg-unexpected-response-fn
+      (let [;; --- bad response ---
+            event-name-br   (-> context
+                              core-kdef/ctx-config
+                              ring-kdef/cfg-unexpected-badres-event-name)
+            event-logger-br (core-kdef/resolve-event-logger context event-name-br)
+            on-bad-response (->> ring-kdef/cfg-unexpected-response-fn
                               (opt-or-config :on-bad-response)
-                              core-type/ifunc)
+                              core-type/ifunc
+                              (comp (after (event-logger-br event-name-br))))
+            ;; --- exception ---
+            event-name-ex   (-> context
+                              core-kdef/ctx-config
+                              ring-kdef/cfg-unexpected-thrown-event-name)
+            event-logger-ex (core-kdef/resolve-event-logger context event-name-ex)
             on-exception    (->> ring-kdef/cfg-unexpected-exception-fn
                               (opt-or-config :on-exception)
-                              core-type/ifunc)
+                              core-type/ifunc
+                              (comp (after (event-logger-ex event-name-ex))))
             unexpected->500 (fn [request response]
                               (let [status (:status response)
                                     body   (:body response)]

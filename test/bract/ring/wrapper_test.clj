@@ -23,7 +23,9 @@
     [org.eclipse.jetty.server Server]))
 
 
-(def default-config (core-kdef/resolve-config {} ["bract/ring/config.edn"]))
+(def default-config (-> {}
+                      (core-kdef/resolve-config ["bract/ring/config.edn"])
+                      (assoc "bract.core.eventlog.enable" true)))
 
 
 (def default-response {:status 200

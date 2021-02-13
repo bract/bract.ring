@@ -113,6 +113,7 @@ The configs related to various wrappers are listed below:
 |`"bract.ring.health.body.encoder"`| FNable-1         | (fn [data]) -> Ring response body, e.g. `clojure.core/pr-str`|
 |`"bract.ring.health.content.type"`| string           | Ring response Content-type header, e.g. `"application/edn"`  |
 |`"bract.ring.health.http.codes"`  |map keyword:string| HTTP codes, e.g. `{:critical 503 :degraded 500 :healthy 200}`|
+|`"bract.ring.health.event.name"`  | string           | Event name to log on successful processing                   |
 
 
 #### /info endpoint wrapper
@@ -122,6 +123,7 @@ The configs related to various wrappers are listed below:
 |`"bract.ring.info.endpoint.uris"` | vector of string | URIs for /info endpoint, e.g. `["/info" "/info/"]`           |
 |`"bract.ring.info.body.encoder"`  | FNable-1         | (fn [data]) -> Ring response body, e.g. `clojure.core/pr-str`|
 |`"bract.ring.info.content.type"`  | string           | Ring response Content-type header, e.g. `"application/edn"`  |
+|`"bract.ring.info.event.name"`    | string           | Event name to log on successful processing                   |
 
 
 #### /ping endpoint wrapper
@@ -131,6 +133,7 @@ The configs related to various wrappers are listed below:
 |`"bract.ring.ping.endpoint.uris"` | vector of string | URIs for /info endpoint, e.g. `["/info" "/info/"]`           |
 |`"bract.ring.ping.endpoint.body"` |Ring response body| A valid Ring response body, e.g. `"pong"`                    |
 |`"bract.ring.ping.content.type"`  | string           | Ring response Content-type header, e.g. `"text/plain"`       |
+|`"bract.ring.ping.event.name"`    | string           | Event name to log on successful processing                   |
 
 
 #### Trailing slash wrapper
@@ -159,10 +162,12 @@ The configs related to various wrappers are listed below:
 
 #### Unexpected->500 wrapper
 
-| Config key                             | Value type | Description                                                  |
-|----------------------------------------|------------|--------------------------------------------------------------|
-|`"bract.ring.unexpected.response.fn"`   |arity-3 FQFN| Unexpected response handler e.g. `b.r.util/bad-response->500`|
-|`"bract.ring.unexpected.exception.fn"`  |arity-2 FQFN| Exception handler, e.g. `b.r.util/exception->500`            |
+| Config key                                | Value type | Description                                                  |
+|-------------------------------------------|------------|--------------------------------------------------------------|
+|`"bract.ring.unexpected.response.fn"`      |arity-3 FQFN| Unexpected response handler e.g. `b.r.util/bad-response->500`|
+|`"bract.ring.unexpected.exception.fn"`     |arity-2 FQFN| Exception handler, e.g. `b.r.util/exception->500`            |
+|`"bract.ring.unexpected.badres.event.name"`| string     | Event name to log on invalid Ring response                   |
+|`"bract.ring.unexpected.thrown.event.name"`| string     | Event name to log on exception instead of Ring response      |
 
 
 #### Traffic drain wrapper

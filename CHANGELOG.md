@@ -16,7 +16,11 @@
 ## [WIP] 0.6.2-0.2.0-alpha4 / 2021-February-??
 
 - Use bract.core 0.6.2-alpha4
-- [Todo] Accept metrics hook in ping middleware
+- Log events in wrappers
+  - Health - config `"bract.ring.health.event.name"`
+  - Info   - config `"bract.ring.info.event.name"`
+  - Ping   - config `"bract.ring.ping.event.name"`
+- [Todo] Drop `bract.ring.util/nop`, `bract.ring.dev/nop` in favour of `bract.core.util/nop`
 
 
 ## 0.6.2-0.2.0-beta3 / 2021-February-06

@@ -56,7 +56,8 @@
                                    {:parser kputil/any->var->deref}]
   cfg-health-content-type         ["bract.ring.health.content.type"     string? "Content type for health-check body"]
   cfg-health-http-codes           ["bract.ring.health.http.codes"       map?    "Map of health status to HTTP status"
-                                   {:parser kputil/any->edn}])
+                                   {:parser kputil/any->edn}]
+  cfg-health-event-name           ["bract.ring.health.event.name"       string? "Event name for health endpoint"])
 
 
 (keypin/defkey  ; config keys for info endpoint wrapper
@@ -64,14 +65,16 @@
                                    {:parser kputil/any->edn}]
   cfg-info-body-encoder           ["bract.ring.info.body.encoder"       fn?     "Function to encode info data as body"
                                    {:parser kputil/any->var->deref}]
-  cfg-info-content-type           ["bract.ring.info.content.type"       string? "Content type for info body"])
+  cfg-info-content-type           ["bract.ring.info.content.type"       string? "Content type for info body"]
+  cfg-info-event-name             ["bract.ring.info.event.name"         string? "Event name for info endpoint"])
 
 
 (keypin/defkey  ; config keys for ping endpoint wrapper
   cfg-ping-endpoint-uris          ["bract.ring.ping.endpoint.uris"      vector? "Vector of ping endpoint URIs"
                                    {:parser kputil/any->edn}]
   cfg-ping-endpoint-body          ["bract.ring.ping.endpoint.body"      string? "String body for ping response"]
-  cfg-ping-content-type           ["bract.ring.ping.content.type"       string? "Content type for ping body"])
+  cfg-ping-content-type           ["bract.ring.ping.content.type"       string? "Content type for ping body"]
+  cfg-ping-event-name             ["bract.ring.ping.event.name"         string? "Event name for ping endpoint"])
 
 
 (keypin/defkey  ; config keys for URI trailing slash wrapper
@@ -99,7 +102,9 @@
   cfg-unexpected-response-fn      ["bract.ring.unexpected.response.fn"  fn? "Fn (fn [req res cause]) for bad responses"
                                    {:parser kputil/any->var->deref}]
   cfg-unexpected-exception-fn     ["bract.ring.unexpected.exception.fn" fn? "Fn (fn [req ex]) to handle exception"
-                                   {:parser kputil/any->var->deref}])
+                                   {:parser kputil/any->var->deref}]
+  cfg-unexpected-badres-event-name ["bract.ring.unexpected.badres.event.name" string? "Event name for invalid response"]
+  cfg-unexpected-thrown-event-name ["bract.ring.unexpected.thrown.event.name" string? "Event name for exception thrown"])
 
 
 (keypin/defkey  ; config keys for traffic drain wrapper
