@@ -15,7 +15,7 @@
 
 ## [WIP] 0.6.2-0.2.0-alpha4 / 2021-February-??
 
-- [Todo] Use bract.core 0.6.2-alpha4
+- Use bract.core 0.6.2-alpha4
 - [Todo] Accept metrics hook in ping middleware
 
 
