@@ -12,7 +12,7 @@
   - thread-pool size etc.
 
 
-## [WIP] 0.6.2-0.2.0-beta4 / 2021-February-??
+## 0.6.2-0.2.0-beta4 / 2021-February-14
 
 - Use bract.core 0.6.2-beta4
 - Drop `bract.ring.wrapper/(after, doafter)` in favour of `bract.core.util/(after, doafter)`
