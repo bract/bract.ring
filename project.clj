@@ -1,4 +1,4 @@
-(defproject bract/bract.ring "0.6.2-0.2.0-alpha4"
+(defproject bract/bract.ring "0.6.2-0.2.0-beta4-SNAPSHOT"
   :description "Bract module for Ring support"
   :url "https://github.com/bract/bract.ring"
   :license {:name "Eclipse Public License"
@@ -7,7 +7,7 @@
                 *assert* true
                 *unchecked-math* :warn-on-boxed}
   :pedantic? :warn
-  :dependencies [[bract/bract.core "0.6.2-alpha4"]]
+  :dependencies [[bract/bract.core "0.6.2-beta4"]]
   :profiles {:provided {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :coverage {:plugins [[lein-cloverage "1.0.9"]]}
              :rel {:min-lein-version "2.7.1"
