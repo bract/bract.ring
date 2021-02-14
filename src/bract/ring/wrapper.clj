@@ -44,22 +44,6 @@
        ~config-f)))
 
 
-(defmacro after
-  "Create a function `(fn [arg]) -> arg` that returns the supplied argument after evaluating body of code."
-  [& body]
-  `(fn [result#]
-     ~@body
-     result#))
-
-
-(defmacro doafter
-  "Evaluate supplied expression and return it after evaluating body of code."
-  [expr & body]
-  `(let [result# ~expr]
-     ~@body
-     result#))
-
-
 ;; ----- /health check -----
 
 
@@ -112,7 +96,7 @@
             check-now    (fn [request]
                            (let [method (:request-method request)]
                              (if (= :get method)
-                               (doafter
+                               (core-util/doafter
                                  (health-check-response hc-functions http-codes body-encoder content-type)
                                  (event-logger event-name))
                                {:status 405
@@ -173,7 +157,7 @@
             info-process (fn [request]
                            (let [method (:request-method request)]
                              (if (= :get method)
-                               (doafter
+                               (core-util/doafter
                                  (info-response info-gen-fns body-encoder content-type)
                                  (event-logger event-name))
                                {:status 405
@@ -225,7 +209,7 @@
                             ring-kdef/cfg-ping-event-name)
             event-logger  (core-kdef/resolve-event-logger context event-name)
             find-response (fn [request]
-                            (doafter
+                            (core-util/doafter
                               (let [method (:request-method request)]
                                 (if (identical? :get method)  ; GET method
                                   ping-response
@@ -468,7 +452,7 @@
             on-bad-response (->> ring-kdef/cfg-unexpected-response-fn
                               (opt-or-config :on-bad-response)
                               core-type/ifunc
-                              (comp (after (event-logger-br event-name-br))))
+                              (comp (core-util/after (event-logger-br event-name-br))))
             ;; --- exception ---
             event-name-ex   (-> context
                               core-kdef/ctx-config
@@ -477,7 +461,7 @@
             on-exception    (->> ring-kdef/cfg-unexpected-exception-fn
                               (opt-or-config :on-exception)
                               core-type/ifunc
-                              (comp (after (event-logger-ex event-name-ex))))
+                              (comp (core-util/after (event-logger-ex event-name-ex))))
             unexpected->500 (fn [request response]
                               (let [status (:status response)
                                     body   (:body response)]
