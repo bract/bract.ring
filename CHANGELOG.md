@@ -15,7 +15,7 @@
 ## [WIP] 0.6.2-0.2.0 / 2021-February-??
 
 - Dependency update
-  - [Todo] Upgrade bract.core to `0.6.2`
+  - Upgrade bract.core to `0.6.2`
 - Breaking changes
   - Drop `bract.ring.util/nop`, `bract.ring.dev/nop` in favour of `bract.core.util/nop`
 - New features
