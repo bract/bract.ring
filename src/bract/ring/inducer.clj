@@ -8,6 +8,7 @@
 
 
 (ns bract.ring.inducer
+  "Inducers provided in the bract.ring module."
   (:require
     [bract.core.echo    :as echo]
     [bract.core.inducer :as core-inducer]
@@ -18,7 +19,7 @@
 
 
 (defn apply-middlewares
-  "Given a context with a Ring handler under context key :bract.ring/ring-handler apply the Ring middleware i.e.
+  "Given a context with a Ring handler under context key `:bract.ring/ring-handler` apply the Ring middleware i.e.
   a seq of `(fn [handler & args]) -> handler`, finally updating the context with the wrapped handler."
   [context middlewares]
   (core-util/expected coll? "Ring middleware collection" middlewares)
@@ -37,7 +38,7 @@
 
 
 (defn apply-wrappers
-  "Given a context with a Ring handler under context key :bract.ring/ring-handler apply the Ring handler wrappers i.e.
+  "Given a context with a Ring handler under context key `:bract.ring/ring-handler` apply the Ring handler wrappers i.e.
   a seq of `(fn [handler context]) -> handler`, finally updating the context with the wrapped handler."
   [context wrappers]
   (core-util/expected coll? "Ring handler wrapper collection" wrappers)
@@ -56,6 +57,9 @@
 
 
 (defn start-server
+  "Given a context with a Ring handler under context key `:bract.ring/ring-handler` start a web server (specified as
+  argument or under the context key `:bract.ring/server-starter`) using server options available under context key
+  `:bract.ring/server-options` and config key `\"bract.ring.server.options\"`."
   ([context]
     (start-server context
       (ring-kdef/ctx-server-starter context)

@@ -62,3 +62,10 @@
     (is (= {:headers {} :status 200 :body "OK"}
           (client-get)))
     (stopper)))
+
+
+(deftest test-nginx-embedded
+  (let [stopper (server/start-nginx-embedded-server handler {:port 3000})]
+    (is (= {:headers {"Content-Type" "text/html"} :status 200 :body "OK"}
+          (client-get)))
+    (stopper)))

@@ -8,6 +8,7 @@
 
 
 (ns bract.ring.util
+  "Utility functions."
   (:require
     [bract.core.util :as core-util]))
 
@@ -50,7 +51,8 @@ Request: %s"
            (pr-str request))})
 
 
-(defn nop
-  "Do nothing at all, returning nil."
-  [& args]
-  nil)
+(defn elapsed-millis
+  "Return elapsed milliseconds (with decimal places) since start time in nanoseconds."
+  ^double [^long start-nanos]
+  (let [total-ns (unchecked-subtract (System/nanoTime) start-nanos)]
+    (double (/ total-ns 1e6))))

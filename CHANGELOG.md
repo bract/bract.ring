@@ -6,6 +6,38 @@
   - [Todo] Support for dual or multiple handlers starting at different web server ports
 - Distributed trace
   - [Todo] Sync with https://w3c.github.io/distributed-tracing/report-trace-context.html
+- [Idea] Define config for default (but how to distinguish when more then one server?)
+  - host: `APP_HTTP_SERVER_HOST`
+  - port: `APP_HTTP_SERVER_PORT`
+  - thread-pool size etc.
+
+
+## [WIP] 0.6.2-0.2.0 / 2021-February-??
+
+- Dependency update
+  - Upgrade bract.core to `0.6.2`
+- Breaking changes
+  - Drop `bract.ring.util/nop`, `bract.ring.dev/nop` in favour of `bract.core.util/nop`
+- New features
+  - Add Ring middleware for traffic logging
+  - Add Ring wrapper for traffic logging
+  - Add support for [nginx-clojure-embedded](https://github.com/nginx-clojure/nginx-clojure/tree/master/nginx-clojure-embed)
+    - `bract.ring.server/start-nginx-clojure-embedded-server`
+  - Add DEV logger functions `bract.ring.dev/log-*` for `bract.ring.wrapper/traffic-log-wrapper`
+    - Add DEV mode logger config in `config.dev.edn` file
+- Improvements
+  - Support HTTP `POST` method (with custom body) in `/ping` middleware
+  - Print banner when HTTP server starts
+  - Log events in wrappers
+    - Health - config `"bract.ring.health.event.name"`
+    - Info   - config `"bract.ring.info.event.name"`
+    - Ping   - config `"bract.ring.ping.event.name"`
+  - Echo message when server stopped
+  - Include default config value for `bract.ring.server.options` in `bract/ring/config.edn`
+- Documentation
+  - Add _cljdoc_ badge
+  - Reformat docstring for _cljdoc_
+  - Add documentation page with context and config keys
 
 
 ## 0.6.1-0.1.0 / 2018-October-10

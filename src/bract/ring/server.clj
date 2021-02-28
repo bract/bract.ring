@@ -19,36 +19,43 @@
 
 
 (defn start-aleph-server
-  "Start Aleph server. Include [aleph \"version\"] in your dependencies."
+  "Start Aleph server. Include `[aleph \"version\"]` in your dependencies."
   [handler options]
   (require 'aleph.http)
   (if-let [f (find-var 'aleph.http/start-server)]
     (let [s-opts  (merge {:port 3000} options)
           ^java.io.Closeable server (f handler s-opts)
-          message (format "Aleph server started on port %d" (:port s-opts))]
+          message (format "Aleph server started on port %d" (:port s-opts))
+          stopmsg (format "STOPPED Aleph server on port %d" (:port s-opts))]
       (if (Echo/isVerbose)
         (echo/echo message)
-        (core-util/err-println message))
-      (fn [] (.close server)))
+        (core-util/err-print-banner message))
+      (fn aleph-stopper []
+        (.close server)
+        (echo/echo stopmsg)))
     (throw (ex-info "Cannot find Aleph server starter fn 'aleph.http/start-server' in classpath." {}))))
 
 
 (defn start-http-kit-server
-  "Start HTTP-Kit server. Include [http-kit \"version\"] in your dependencies."
+  "Start HTTP-Kit server. Include `[http-kit \"version\"]` in your dependencies."
   [handler options]
   (require 'org.httpkit.server)
-  (let [s-opts  (merge {:port 3000} options)
-        message (format "HTTP Kit server started on port %d" (:port s-opts))]
-    (-> (find-var 'org.httpkit.server/run-server)
-      (or (throw (ex-info "Cannot find HTTP-Kit server starter fn 'org.httpkit.server/run-server' in classpath." {})))
-      (core-util/invoke handler s-opts)
-      (doto (do (if (Echo/isVerbose)
-                  (echo/echo message)
-                  (core-util/err-println message)))))))
+  (if-let [f (find-var 'org.httpkit.server/run-server)]
+    (let [s-opts  (merge {:port 3000} options)
+          stopper (f handler s-opts)
+          message (format "HTTP Kit server started on port %d" (:port s-opts))
+          stopmsg (format "STOPPED HTTP Kit server on port %d" (:port s-opts))]
+      (if (Echo/isVerbose)
+        (echo/echo message)
+        (core-util/err-print-banner message))
+      (fn http-kit-stopper []
+        (stopper)
+        (echo/echo stopmsg)))
+    (throw (ex-info "Cannot find HTTP-Kit server starter fn 'org.httpkit.server/run-server' in classpath." {}))))
 
 
 (defn start-immutant-server
-  "Start Jetty server using ring-jetty adapter. Include [org.immutant/immutant \"version\"] in your dependencies."
+  "Start Immutant server. Include `[org.immutant/immutant \"version\"]` in your dependencies."
   [handler options]
   (require 'immutant.web)
   (if-let [f (find-var 'immutant.web/run)]
@@ -57,27 +64,54 @@
                     seq
                     (apply concat)
                     (apply f handler))
-          message (format "Immutant server started on port %d" (:port s-opts))]
+          message (format "Immutant server started on port %d" (:port s-opts))
+          stopmsg (format "STOPPED Immutant server on port %d" (:port s-opts))]
       (if (Echo/isVerbose)
         (echo/echo message)
-        (core-util/err-println message))
+        (core-util/err-print-banner message))
       (if-let [stopper (find-var 'immutant.web/stop)]
-        (fn [] (stopper server))
+        (fn immutant-stopper []
+          (stopper server)
+          (echo/echo stopmsg))
         (throw (ex-info "Cannot find Immutant server stopper fn 'immutant.web/stop' in classpath." {}))))
     (throw (ex-info "Cannot find Immutant server starter fn 'immutant.web/run' in classpath." {}))))
 
 
 (defn start-jetty-server
-  "Start Jetty server using ring-jetty adapter. Include [ring/ring-jetty-adapter \"version\"] in your dependencies."
+  "Start Jetty server using ring-jetty adapter. Include `[ring/ring-jetty-adapter \"version\"]` in your dependencies."
   [handler options]
   (require 'ring.adapter.jetty)
   (if-let [f (find-var 'ring.adapter.jetty/run-jetty)]
     (let [s-opts  (merge {:port 3000 :join? false} options)
           server  (f handler s-opts)
-          message (format "Jetty server started on port %d" (:port s-opts))]
+          message (format "Jetty server started on port %d" (:port s-opts))
+          stopmsg (format "STOPPED Jetty server on port %d" (:port s-opts))]
       (if (Echo/isVerbose)
         (echo/echo message)
-        (core-util/err-println message))
+        (core-util/err-print-banner message))
       (import 'org.eclipse.jetty.server.Server)
-      (fn [] (.stop server)))
+      (fn jetty-stopper []
+        (.stop server)
+        (echo/echo stopmsg)))
     (throw (ex-info "Cannot find Jetty server starter fn 'ring.adapter.jetty/run-jetty' in classpath." {}))))
+
+
+(defn start-nginx-embedded-server
+  "Start nginx embedded server. Include `[nginx-clojure/nginx-clojure-embed \"version\"]` in your dependencies."
+  [handler options]
+  (require 'nginx.clojure.embed)
+  (if-let [f (find-var 'nginx.clojure.embed/run-server)]
+    (let [s-opts  (merge {:port 3000} options)
+          server  (f handler s-opts)
+          message (format "nginx-embedded server started on port %d" (:port s-opts))
+          stopmsg (format "STOPPED nginx-embedded server on port %d" (:port s-opts))]
+      (if (Echo/isVerbose)
+        (echo/echo message)
+        (core-util/err-print-banner message))
+      (if-let [stopper (find-var 'nginx.clojure.embed/stop-server)]
+        (fn nginx-embedded-stopper []
+          (stopper)
+          (echo/echo stopmsg))
+        (throw (ex-info "Cannot find nginx-embedded server stopper fn 'nginx.clojure.embed/stop-server' in classpath."
+                 {}))))
+    (throw (ex-info "Cannot find nginx-embedded server starter fn 'nginx.clojure.embed/run-server' in classpath." {}))))

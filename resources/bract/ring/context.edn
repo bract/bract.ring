@@ -9,5 +9,6 @@
                        bract.ring.wrapper/health-check-wrapper
                        bract.ring.wrapper/info-endpoint-wrapper
                        bract.ring.wrapper/ping-endpoint-wrapper
-                       bract.ring.wrapper/unexpected->500-wrapper]
+                       bract.ring.wrapper/unexpected->500-wrapper
+                       bract.ring.wrapper/traffic-log-wrapper]
  }

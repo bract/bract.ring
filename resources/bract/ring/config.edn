@@ -10,18 +10,21 @@
  "bract.ring.health.http.codes"          {:critical 503
                                           :degraded 500
                                           :healthy  200}
+ "bract.ring.health.event.name"          "bract.ring.health.endpoint"
 
  ;; /info endpoint wrappper
  "bract.ring.info.endpoint.enabled"      true
  "bract.ring.info.endpoint.uris"         ["/info" "/info/"]
  "bract.ring.info.body.encoder"          clojure.core/pr-str
  "bract.ring.info.content.type"          "application/edn"
+ "bract.ring.info.event.name"            "bract.ring.info.endpoint"
 
  ;; /ping endpoint wrapper
  "bract.ring.ping.endpoint.enabled"      true
  "bract.ring.ping.endpoint.uris"         ["/ping" "/ping/"]
  "bract.ring.ping.endpoint.body"         "pong"
  "bract.ring.ping.content.type"          "text/plain"
+ "bract.ring.ping.event.name"            "bract.ring.ping.endpoint"
 
  ;; URI trailing slash wrapper
  "bract.ring.uri.trailing.slash.enabled" false
@@ -41,6 +44,8 @@
  "bract.ring.unexpected.500.enabled"     true
  "bract.ring.unexpected.response.fn"     bract.ring.util/bad-response->500
  "bract.ring.unexpected.exception.fn"    bract.ring.util/exception->500
+ "bract.ring.unexpected.badres.event.name" "bract.ring.invalid.response"
+ "bract.ring.unexpected.thrown.event.name" "bract.ring.exception.thrown"
 
  ;; traffic drain wrapper
  "bract.ring.traffic.drain.enabled"      true
@@ -51,8 +56,14 @@
  "bract.ring.trace.trace.id.header"      "x-trace-id"
  "bract.ring.trace.parent.id.header"     "x-trace-parent-id"
  "bract.ring.trace.trace.id.req.flag"    false
- "bract.ring.trace.trace.id.valid.fn"    bract.ring.util/nop
+ "bract.ring.trace.trace.id.valid.fn"    bract.core.util/nop
  "bract.ring.trace.trace.id.req.key"     :trace-id
  "bract.ring.trace.span.id.req.key"      :span-id
  "bract.ring.trace.parent.id.req.key"    :parent-id
+
+ ;; traffic logging
+ "bract.ring.traffic.log.enabled"        false
+
+ ;; server options
+ "bract.ring.server.options"             {:port 3000}
  }
