@@ -12,81 +12,28 @@
   - thread-pool size etc.
 
 
-## 0.6.2-0.2.0-beta6 / 2021-February-21
+## [WIP] 0.6.2-0.2.0 / 2021-February-??
 
-- Use bract.core 0.6.2-beta6
-
-
-## 0.6.2-0.2.0-beta5 / 2021-February-18
-
-- Use bract.core 0.6.2-beta5
-
-
-## 0.6.2-0.2.0-beta4 / 2021-February-14
-
-- Use bract.core 0.6.2-beta4
-- Drop `bract.ring.wrapper/(after, doafter)` in favour of `bract.core.util/(after, doafter)`
-
-
-## 0.6.2-0.2.0-alpha4 / 2021-February-14
-
-- Use bract.core 0.6.2-alpha4
-- Log events in wrappers
-  - Health - config `"bract.ring.health.event.name"`
-  - Info   - config `"bract.ring.info.event.name"`
-  - Ping   - config `"bract.ring.ping.event.name"`
-- Drop `bract.ring.util/nop`, `bract.ring.dev/nop` in favour of `bract.core.util/nop`
-
-
-## 0.6.2-0.2.0-beta3 / 2021-February-06
-
-- Use bract.core 0.6.2-beta3
-- Echo message when server stopped
-- Include default config value for `bract.ring.server.options` in `bract/ring/config.edn`
-
-
-## 0.6.2-0.2.0-beta2 / 2021-January-28
-
-- Use bract.core 0.6.2-beta2
-
-
-## 0.6.2-0.2.0-beta1 / 2021-January-27
-
-- Use bract.core 0.6.2-beta1
-- Add DEV logger functions `bract.ring.dev/log-*` for `bract.ring.wrapper/traffic-log-wrapper`
-  - Add DEV mode logger config in `config.dev.edn` file
-- Add support for [nginx-clojure-embedded](https://github.com/nginx-clojure/nginx-clojure/tree/master/nginx-clojure-embed)
-  - `bract.ring.server/start-nginx-clojure-embedded-server`
-
-
-## 0.6.2-0.2.0-alpha3 / 2020-October-12
-
-- Use bract.core 0.6.2-alpha3
-
-
-## 0.6.2-0.2.0-alpha2-2 / 2020-October-06
-
-- Use config instead of context for traffic-log wrapper options
-
-
-## 0.6.2-0.2.0-alpha2-1 / 2020-October-05
-
-- Use bract.core 0.6.2-alpha2
-- No default for context key lookup `:bract.ring/traffc-log-wrapper-options`
-- Do no pass `nil` option values in traffic-log-wrapper
-
-
-## 0.6.2-0.2.0-alpha2 / 2020-October-05
-
-- Add Ring middleware for traffic logging
-- Add Ring wrapper for traffic logging
-
-
-## 0.6.2-0.2.0-alpha1 / 2020-October-03
-
-- Upgrade bract.core to 0.6.2
-- Support HTTP `POST` method (with custom body) in `/ping` middleware
-- Print banner when HTTP server starts
+- Dependency update
+  - [Todo] Upgrade bract.core to `0.6.2`
+- Breaking changes
+  - Drop `bract.ring.util/nop`, `bract.ring.dev/nop` in favour of `bract.core.util/nop`
+- New features
+  - Add Ring middleware for traffic logging
+  - Add Ring wrapper for traffic logging
+  - Add support for [nginx-clojure-embedded](https://github.com/nginx-clojure/nginx-clojure/tree/master/nginx-clojure-embed)
+    - `bract.ring.server/start-nginx-clojure-embedded-server`
+  - Add DEV logger functions `bract.ring.dev/log-*` for `bract.ring.wrapper/traffic-log-wrapper`
+    - Add DEV mode logger config in `config.dev.edn` file
+- Improvements
+  - Support HTTP `POST` method (with custom body) in `/ping` middleware
+  - Print banner when HTTP server starts
+  - Log events in wrappers
+    - Health - config `"bract.ring.health.event.name"`
+    - Info   - config `"bract.ring.info.event.name"`
+    - Ping   - config `"bract.ring.ping.event.name"`
+  - Echo message when server stopped
+  - Include default config value for `bract.ring.server.options` in `bract/ring/config.edn`
 - Documentation
   - Add _cljdoc_ badge
   - Reformat docstring for _cljdoc_
