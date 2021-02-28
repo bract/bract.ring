@@ -12,7 +12,7 @@
   - thread-pool size etc.
 
 
-## [WIP] 0.6.2-0.2.0 / 2021-February-??
+## 0.6.2-0.2.0 / 2021-February-28
 
 - Dependency update
   - Upgrade bract.core to `0.6.2`
